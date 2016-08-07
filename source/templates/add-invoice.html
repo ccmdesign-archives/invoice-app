@@ -1,0 +1,28 @@
+{% extends '_base.html' %}
+{% block body_class %}form-page{% endblock %}
+{% block content %}
+
+<div class="wrapper">
+  <h1 class="divider">New Invoice</h1>
+  <form class="base-form" action="">
+    <div class="row">
+      <div class="column large-9">
+        <input type="text" placeholder="Client">{# Auto-complete?? #}
+        <input type="text" placeholder="Service Title">
+        <textarea name="" id="" cols="30" rows="10" placeholder="Service Description"></textarea>
+      </div>
+      <div class="column large-3">
+        <a href="./add-client.html" class="button button--positive">New Client</a>
+        <input type="text" placeholder="Amount">
+        <div class="checkbox"><input type="checkbox" id="paid-checkbox"><label for="paid-checkbox">Paid</label></div>
+        <input type="text" placeholder="Currency"> {# Auto Populate with client currency? #} 
+        <input type="text" placeholder="Date"> {# Auto Populate with Today, and switch to type="date" - Placeholder issue #} 
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-12 column"><button class="button button--positive" type="submit">Save</button></div>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

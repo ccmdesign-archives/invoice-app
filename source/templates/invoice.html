@@ -1,0 +1,98 @@
+{% extends '_base.html' %}
+{% block body_class %}invoice-page{% endblock %}
+{% block content %}
+
+{# Setting the Companies in this invoice #}
+{% set company = companies[0] %}
+{% set client = clients[1] %}
+{% set invoice = invoices[0] %}
+
+<article class="invoice">
+  <div class="invoice__branding">
+    <h1>Invoice</h1>
+    <img class="company-logo" src="./images/{{company.logo}}" alt="">
+  </div>
+
+<header >
+
+  
+  <div class="company-info">
+    <h3>From</h3>
+    <h2>{{company.name}}</h2>
+    <p>{{company.contact}}</p>
+    <p>{{company.email}}</p>
+    <p>{{company.phone}}</p>
+    <div>
+      {% for i in company.gov_registries %}
+        <p>{{i.name}}: {{i.value}}</p>
+      {% endfor %}
+    </div>
+    
+    <div class="company-info__extra">
+      <h4>Address</h4>      
+      <p>{{company.address}}</p>
+      <p>{{company.city}}, {{company.state}}</p>
+      <p>{{company.country}}</p>
+      <h4>Banking Information</h4>
+      <p>{{company.bank_info | safe}}</p>  
+    </div>
+  </div>
+
+  <div class="client-info">
+    <h3>To</h3>
+    <h2>{{client.name}}</h2>
+    <p>{{client.vendor_number}}</p>
+    <p>{{client.contact}}</p>
+    <p>{{client.email}}</p>
+    <p>{{client.phone}}</p>
+    <p>{{client.fax}}</p>
+    <p>{{client.address}}</p>
+    <p>{{client.city}}, {{client.state}}</p>
+    <p>{{client.country}}</p>
+  </div>
+
+</header>
+
+<section class="invoice__summary">
+  <p class="invoice__title">{{invoice.service_title}}</p>
+  <p class="invoice__description">{{invoice.service_description}}</p>
+  <p class="invoice__total">Total 
+    <span class="invoice__amount">
+      {% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %}
+      {{invoice.amount}}
+    </span>
+  </p>
+  <p>{{invoice.date}}</p>
+</section>
+
+{# =========================== #}
+<div class="page-break"></div>
+{# =========================== #}
+
+<h1 class="invoice__title">Hour Breakdown</h1>
+<section class="timesheet">
+  <table>
+    <thead>
+      <th class="description">Description</th>
+      <th class="start">Date</th>
+      <th class="duration">Duration</th>
+      <th class="amount">Amount</th>
+    </thead>
+    {% for i in invoice.timesheet %}
+      <tr>
+        <td class="description">{{i.Description}}</td>
+        <td class="start">{{i.Start_date}}</td>
+        <td class="duration">{{i.Duration}}</td>
+        <td class="amount">{{i.Amount}}</td>
+      </tr>
+    {% endfor %}  
+  </table>
+</section>
+
+
+
+
+
+  
+</article>
+{% endblock %}

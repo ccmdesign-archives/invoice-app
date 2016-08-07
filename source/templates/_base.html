@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>{% block title %}Open Data 150 - Canada{% endblock %}</title>
+
+        <link rel="stylesheet" href="vendor/foundation.min.css"/>
+        <link rel="stylesheet" href="styles/custom-styles.css"/>
+        <script src="https://use.typekit.net/mvc3cdb.js"></script>
+        <script>try{Typekit.load({ async: true });}catch(e){}</script>
+        {# <link href="https://fonts.googleapis.com/css?family=Quicksand|Roboto+Condensed" rel="stylesheet"> #}
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    </head>
+
+    <body class="{% block body_class %}{% endblock %}">
+        <header class="homepage-header">
+          <h1 class="homepage-header__logo"><a href="./">Invoice App</a></h1>
+
+          <div class="homepage-header__dashboard">
+            <div class="widget">
+              <h2 class="widget__primary-value">8</h2>
+              <p class="widget__text">Sent</p>
+              <p class="widget__secondary-value">$ 999,000<span>.00</span></p>
+              <p class="widget__control">This Month</p>
+            </div>
+            <div class="widget">
+              <h2 class="widget__primary-value">2</h2>
+              <p class="widget__text">Pending</p>
+              <p class="widget__secondary-value">$ 1200<span>,00</span></p>
+              <p class="widget__control">This Month</p>
+            </div>
+          </div>
+        </header>
+        <div class="controls">
+          <a href="./add-invoice.html" class="button"><i class="material-icons">description</i>New Invoice</a>
+          <a href="./add-client.html" class="button"><i class="material-icons">business</i> Add Client</a>
+        </div>
+
+        {% block content %}{% endblock %}
+
+        <div id="overlay" class="js-overlay"></div>
+        <script src="./vendor/jquery-2.1.4.min.js"></script>
+        <script src="./scripts.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js"></script>
+    </body>
+</html>
