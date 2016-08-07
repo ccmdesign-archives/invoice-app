@@ -4,17 +4,17 @@
         <meta charset="UTF-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>{% block title %}Open Data 150 - Canada{% endblock %}</title>
+        <title>Invoice App - Interface 0.1</title>
 
         <link rel="stylesheet" href="vendor/foundation.min.css"/>
         <link rel="stylesheet" href="styles/custom-styles.css"/>
         <script src="https://use.typekit.net/mvc3cdb.js"></script>
         <script>try{Typekit.load({ async: true });}catch(e){}</script>
-        {# <link href="https://fonts.googleapis.com/css?family=Quicksand|Roboto+Condensed" rel="stylesheet"> #}
+        
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
 
-    <body class="{% block body_class %}{% endblock %}">
+    <body class="form-page">
         <header class="homepage-header">
           <h1 class="homepage-header__logo"><a href="./">Invoice App</a></h1>
 
@@ -38,7 +38,32 @@
           <a href="./add-client.html" class="button"><i class="material-icons">business</i> Add Client</a>
         </div>
 
-        {% block content %}{% endblock %}
+        
+
+<div class="wrapper">
+  <h1 class="divider">New Invoice</h1>
+  <form class="base-form" action="">
+    <div class="row">
+      <div class="column large-9">
+        <input type="text" placeholder="Client">
+        <input type="text" placeholder="Service Title">
+        <textarea name="" id="" cols="30" rows="10" placeholder="Service Description"></textarea>
+      </div>
+      <div class="column large-3">
+        <a href="./add-client.html" class="button button--positive">New Client</a>
+        <input type="text" placeholder="Amount">
+        <div class="checkbox"><input type="checkbox" id="paid-checkbox"><label for="paid-checkbox">Paid</label></div>
+        <input type="text" placeholder="Currency">  
+        <input type="text" placeholder="Date">  
+      </div>
+    </div>
+    <div class="row">
+      <div class="large-12 column"><button class="button button--positive" type="submit">Save</button></div>
+    </div>
+  </form>
+</div>
+
+
 
         <div id="overlay" class="js-overlay"></div>
         <script src="./vendor/jquery-2.1.4.min.js"></script>
