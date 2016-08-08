@@ -1,5 +1,6 @@
 {% extends '_base.html' %}
 {% block body_class %}invoice-page{% endblock %}
+{% block header %}{% endblock %}
 {% block content %}
 
 {# Setting the Companies in this invoice #}
@@ -9,7 +10,7 @@
 
 <article class="invoice">
   <div class="invoice__branding">
-    <h1>Invoice</h1>
+    <h1>Invoice <span>#201604</span></h1>
     <img class="company-logo" src="./images/{{company.logo}}" alt="">
   </div>
 

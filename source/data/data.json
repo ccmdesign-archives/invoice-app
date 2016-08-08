@@ -19,11 +19,13 @@
       }, 
       {
         "name": "TPS",
-        "value": "788666691"
+        "value": "788666691",
+        "tax": "0.045"
       }, 
       {
         "name": "TVQ", 
-        "value": "1223524563"
+        "value": "1223524563",
+        "tax": "0.09"
       }
     ],
     "bank_info": "Branch Transit: 47261<br>Institution Number: 004<br>Acc Number: 5007913<br>Swift Code: TDOMCATTTOR<br>Branch Address: 51, Mont-Royal Avenue Ouest, Montreal, QC H2T 2S5<br>Routing Number (international): 026-009-593"
@@ -35,7 +37,7 @@
     "name": "GovLab",
     "vendor_number": "",
     "currency": "USD",
-    "contact:": "Lauren Yu",
+    "contact": "Lauren Yu",
     "email": "lauren@thgovlab.org",
     "phone": "1 (646) 997-3150 ",
     "fax": "",
@@ -48,7 +50,7 @@
     "name": "Open North",
     "currency": "CAD",
     "vendor_number": "12345",
-    "contact:": "Laurence Leclerc",
+    "contact": "Laurence Leclerc",
     "email": "laurence@opennorth.ca",
     "phone": "1-888-750-4980",
     "fax": "",
@@ -61,7 +63,7 @@
     "name": "Zero Cool",
     "vendor_number": "",
     "currency": "USD",
-    "contact:": "Seena Jon",
+    "contact": "Seena Jon",
     "email": "",
     "phone": "",
     "fax": "",
@@ -73,7 +75,7 @@
     "name": "Fi",
     "vendor_number": "",
     "currency": "BRL",
-    "contact:": "YY",
+    "contact": "YY",
     "email": "",
     "phone": "",
     "fax": "",
