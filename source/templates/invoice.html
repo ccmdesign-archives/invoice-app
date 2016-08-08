@@ -1,5 +1,6 @@
 {% extends '_base.html' %}
 {% block body_class %}invoice-page{% endblock %}
+
 {% block header %}
 <header class="small-header">
 <div class="row expanded collapse">
@@ -7,21 +8,25 @@
     <h1><a href="./">Invoice App</a></h1>
   </div>
   <div class="column large-4">
-    <nav class="top-nav"><a class="button button--naked" href="./login.html">Login</a><a class="button button--naked" href="./register.html">Register</a></nav>
+    <nav class="top-nav"><a class="button button--naked" href="./user-index.html">Login</a><a class="button button--naked" href="./register.html">Register</a></nav>
   </div>
 </div>
 </header>
 {% endblock %}
-{% block content %}
 
+{% block data %}
 {# Setting the Companies in this invoice #}
-{% set company = companies[0] %}
-{% set client = clients[0] %}
+{% set company = companies[1] %}
+{% set client = clients[1] %}
 {% set invoice = invoices[0] %}
+
+{% endblock %}
+
+{% block content %}
 
 <article class="invoice">
   <div class="invoice__branding">
-    <img class="company-logo" src="./images/{{company.logo}}" alt="">
+    {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% else %} <h2>{{company.name}}</h2>{% endif %}
     <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
   </div>
   <header >
@@ -38,7 +43,7 @@
         <table>
         {% for i in company.gov_registries %}
           <tr>
-            <td class="editable" contenteditable>{{i.name}}</td><td class="editable" contenteditable>{{i.value}}</td><td class="editable" contenteditable>{{i.tax}}</td>
+            <td class="editable" contenteditable>{{i.name}}</td><td class="editable" contenteditable>{{i.value}}</td><td class="editable" contenteditable>{{i.tax}}</td></td>
           </tr>
         {% endfor %}
         </table>
@@ -54,7 +59,7 @@
     <div class="client-info">
       <h3>To</h3>
       <h2 class="editable" contenteditable>{{client.name}}</h2>
-      <p class="editable" contenteditable>{{client.vendor_number}}</p>
+      {% if client.vendor_number %}<p class="editable" contenteditable>{{client.vendor_number}}</p>{% endif %}
       <p class="editable" contenteditable>{{client.contact}}</p>
       <p class="editable" contenteditable>{{client.email}}</p>
       <p class="editable" contenteditable>{{client.phone}}</p>
@@ -88,13 +93,13 @@
           </tr>
         </tbody>
       </table>
-
-      
     </div>  
     {% else %}
+
     <div class="invoice__grand-total">Total 
       <span class="invoice__amount editable" contenteditable>
-        {% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount}}</span>
+        {# {% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} 
+        {% endif %} #} {{invoice.amount}}</span>
     </div>
     {% endif %}
     

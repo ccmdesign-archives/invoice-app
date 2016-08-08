@@ -2,7 +2,7 @@
 "companies": [
   {
     "name": "Company Name",
-    "logo": "add your logo here",
+    "logo": "",
     "contact": "Contact Person Name",
     "email": "Contact Email",
     "phone": "Phone",
@@ -85,8 +85,8 @@
     "currency": "CAD",
     "vendor_number": "12345",
     "calculate_tax": true,
-    "contact": "Laurence Leclerc",
-    "email": "laurence@opennorth.ca",
+    "contact": "Lauren",
+    "email": "email@opennorth.ca",
     "phone": "1-888-750-4980",
     "fax": "",
     "address": "5445 avenue de Gaspé, Suite 602",

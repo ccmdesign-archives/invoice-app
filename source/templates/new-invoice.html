@@ -1,0 +1,10 @@
+{% extends 'invoice.html' %}
+{% block body_class %}invoice-page{% endblock %}
+
+{% block data %}
+{# Setting the Companies in this invoice #}
+{% set company = companies[0] %}
+{% set client = clients[0] %}
+{% set invoice = invoices[0] %}
+
+{% endblock %}
