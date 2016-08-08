@@ -1,0 +1,54 @@
+.button {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background-color: rgba(black, .1);
+    cursor: pointer;
+    padding: 15px 20px;
+    text-decoration: none;
+    font-weight: 600;
+
+    @extend .u-transition;
+
+    &:hover {
+        text-decoration: none;
+        @extend .u-transition;
+        background-color: rgba(black, .2);
+    }
+
+    & i {
+        margin-left: 15px;
+        vertical-align: middle;
+        float: right;
+    }
+
+    &--icon-only i {
+        margin-left: 0;
+        float: none;
+    }
+
+    &--colored {
+      background-color: $accent-color;
+      color: white;
+
+      &:hover { background-color: darken($accent-color, 4); }
+    }
+
+    &--disabled {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    &--naked {
+        background-color: transparent;
+
+        &:hover {
+            background-color: rgba(black, .2);
+            @extend .u-transition;
+        }
+    }
+}
+
+
+
+

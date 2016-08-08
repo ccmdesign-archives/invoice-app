@@ -1,6 +1,26 @@
 { 
 "companies": [
   {
+    "name": "Company Name",
+    "logo": "add your logo here",
+    "contact": "Contact Person Name",
+    "email": "Contact Email",
+    "phone": "Phone",
+    "fax": "Fax",
+    "address": "Company Address",
+    "city": "City",
+    "state": "State",
+    "country": "Country",
+    "currency": "USD",
+    "gov_registries": [
+      {
+        "name": "Registration", 
+        "value": "Number"
+      }
+    ],
+    "bank_info": "Banking Information for Deposit"
+  },
+  {
     "name": "Claudio Mendonca Design Inc.",
     "logo": "ccmdesign-logo.svg",
     "contact": "Claudio Mendonca",
@@ -34,6 +54,20 @@
 
 "clients": [
   {
+    "name": "Client Name",
+    "vendor_number": "Your vendor # with that client",
+    "currency": false,
+    "contact": "Client Contact Name",
+    "email": "client email",
+    "phone": "client phone",
+    "fax": "client fax",
+    "address": "client address",
+    "city": "client city",
+    "state": "client state",
+    "country": "client country",
+    "zip": "client postal code"
+  },
+  {
     "name": "GovLab",
     "vendor_number": "",
     "currency": "USD",
@@ -50,6 +84,7 @@
     "name": "Open North",
     "currency": "CAD",
     "vendor_number": "12345",
+    "calculate_tax": true,
     "contact": "Laurence Leclerc",
     "email": "laurence@opennorth.ca",
     "phone": "1-888-750-4980",
@@ -91,6 +126,7 @@
     "number": false,
     "client": "GovLab",
     "time_based": true,
+    "calculate_tax": true,
     "service_title": "Design Services",
     "service_description": "Development of Brightcove Audio Player and Design of the Video Visual Manual",
     "amount": 9999.99,

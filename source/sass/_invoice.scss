@@ -1,0 +1,230 @@
+@media screen {
+  // Simulating Page
+  .invoice {
+    margin: 30px auto;
+    width: 21cm;
+    height: 29cm;
+    background-color: #FFF;
+    box-shadow: 0 0 10px rgba(black, .1);
+    padding: 1cm 1.5cm;
+  }  
+}
+
+.invoice-page { background-color: #eee; }
+
+
+.invoice {
+
+  .editable  {
+    &:hover { background-color: rgba(black, .1); }
+    &:focus {
+      -webkit-appearance: none;
+      outline: 0;
+      background-color: rgba($main-color, .1);
+    }
+  }
+
+  &__branding {
+    display: flex;
+    border-bottom: 1px solid rgba($main-color, .4);
+    margin-bottom: 20px;
+
+    h1 {
+      color: $main-color;
+      text-transform: uppercase;
+      font-size: 24px;
+      font-weight: bold;
+      flex: 1;
+      text-align: right;
+
+      span {
+        font-size: 20px;
+        display: inline-block;
+        margin-left: 20px;
+        color: rgba(black, .5);
+      }
+    }
+  }
+
+  header {
+    display: flex;
+  }
+
+  &__summary {
+
+  }
+
+  &__title {
+    font-weight: bold;
+    text-align: center;
+    border-top: 1px solid rgba($main-color, .4);
+    border-bottom: 1px solid rgba($main-color, .4);
+    font-size: 14pt;
+    padding: 10px 0;
+    margin-top: 40px;
+
+    input {
+      color: currentColor;
+    }
+  }
+
+  .company-info,
+  .client-info {
+    flex: 1;
+
+    h2 {
+      font-size: 12pt;
+      font-weight: bold;
+      margin: 0 0 10px;
+      padding: 0 5px;
+    }
+
+    h3 {
+      font-size: 10pt;
+      text-transform: uppercase;
+      color: rgba(black, .5);
+      margin: 0;
+      padding: 0 5px;
+    }
+
+    h4 {
+      font-size: 10pt;
+      text-transform: uppercase;
+      color: rgba(black, .5);
+      padding: 0 5px;
+      margin: 10px 0 0;
+    }
+
+    p {
+      margin: 0;
+      padding: 0 5px;
+      font-size: 11pt;
+      line-height: 1.3;
+    }
+
+    &__extra { 
+      font-size: 10pt; 
+      
+      table {
+        width: 100%;
+
+        td:first-child {
+          padding-left: 5px;
+        }
+
+
+      }
+    }
+  }
+
+  .company-info {
+    padding-right: 30px;
+  }
+
+
+
+  &__total {
+    width: 100%;
+    
+    tr { border-bottom: 1px solid rgba(black, .1); }
+    td { padding: 5px 15px; }
+
+
+    td:first-child { width: 70%; }
+    td:last-child { text-align: right; }
+  }
+
+  &__grand-total {
+    font-weight: bold;
+    font-size: 20px;
+    color: rgba(white, .6);
+    background-color: $main-color;
+  }
+
+  &__amount {
+    color: white;
+    margin: -10px -10px -10px 0;
+    padding: 10px;
+  }
+
+  &__date {
+    text-align: right;
+    margin-top: 40px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(black, .2);
+    width: 200px;
+    float: right;
+  }
+
+  .timesheet {
+    table-layout: fixed;
+    width: 100%;
+
+    th, td {
+      font-size: 10pt;
+      padding: 5px 15px;
+    }
+
+    tr:nth-child(even) {
+      background-color: rgba(black, .05);
+    }
+
+    th { 
+      text-align: left; 
+      background-color: $main-color;
+      color: white;
+    }
+    td { text-align: left; }
+
+    .amount {
+      text-align: right;
+    }
+  }
+}
+
+.company-logo {
+  
+}
+
+
+
+
+
+.page-break {
+  border-bottom: 1px dotted rgba(black, .2);
+  text-align: center;
+  margin-left: -1.5cm;
+  width: calc(100% + 3cm);
+  
+  &:before {
+    content: "Page Break";
+    display: inline-block;
+    color: rgba(black, .3);
+    text-transform: uppercase;
+    font-size: .7rem;
+    
+  } 
+}
+
+
+@media print { 
+  .page-break    { display:block; page-break-before:always; } 
+  
+  @page { margin: 2cm; }
+
+  .invoice {
+    color: black;
+    &__total {
+    background-color: transparent;
+    padding: 15px;
+    color: black;
+    font-weight: bold;
+    font-size: 20px;
+    border: 1px solid black;
+    }
+    &__amount {
+      float: right;
+      color: black;
+    }
+  }
+}

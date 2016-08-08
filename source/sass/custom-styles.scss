@@ -1,6 +1,18 @@
 $main-color: #389482;
+$accent-color: orange;
 
+.clearfix:after {
+   content: " "; /* Older browser do not support empty content */
+   visibility: hidden;
+   display: block;
+   height: 0;
+   clear: both;
+}
 
+@import "button";
 @import "form";
+@import "invoice";
+
 @import "custom";
+@import "guest-homepage";
 @import "homepage";

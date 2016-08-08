@@ -1,0 +1,37 @@
+.guest-home-page {
+  background-color: white;
+}
+
+.header-section {
+  background-color: $main-color;
+  text-align: center;
+
+  h1 {
+    margin: 80px 0;
+    text-transform: uppercase;
+  }
+
+  nav {
+    text-align: right;
+  }
+  
+  &__main-button {
+    position: relative;
+    top: 25px;
+    box-shadow: 2px 2px 10px rgba(black, .1);
+    padding: 15px 40px;
+    border-radius: 30px;
+  }
+
+}
+
+
+
+.page-section {
+  padding: 80px 0;
+
+  &--dark {
+    background-color: rgba(black, .7);
+    color: white;
+  }
+}

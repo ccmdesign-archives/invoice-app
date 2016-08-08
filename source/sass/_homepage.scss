@@ -26,6 +26,11 @@
   }
 }
 
+
+
+
+
+
 .controls {
   background-color: darken($main-color, 2);
   padding: 20px;
@@ -75,49 +80,6 @@
     font-weight: 600;
     text-transform: uppercase;
   }  
-}
-
-.button {
-  padding: 4px 30px 9px;
-  border: 1px solid rgba(white, .5);
-  border-radius: 30px;
-  color: #fff;
-  font-weight: 600;
-  text-transform: uppercase;
-  text-decoration: none;
-  display: inline-block;
-  margin: 0 10px;
-
-
-
-  .material-icons {
-    position: relative;
-    right: 10px;
-    top: 6px;
-  }
-
-  &:hover {
-    background-color: #FFF;
-    color: $main-color;
-  }
-
-  &--positive {
-    color: $main-color;
-    border-color: $main-color;
-
-    &:hover {
-      color: white;
-      background-color: $main-color;
-    }
-  }
-}
-
-button.button {
-  padding-top: 9px;
-}
-
-form .button {
-  padding: 8px 30px 7px;
 }
 
 .base-form {

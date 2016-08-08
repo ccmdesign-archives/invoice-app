@@ -1,66 +1,42 @@
 {% extends '_base.html' %}
-{% set company = companies[0] %}
-{% block body_class %}home-page{% endblock %}
+{% block body_class %}guest-home-page{% endblock %}
+{% block header %}{% endblock %}
 {% block content %}
 
 
-<section class="main-list wrapper">
-  <table class="list">
-    <thead>
-      <th></th>
-      <th>#</th>
-      <th>Date</th>
-      <th>Client</th>
-      <th>Title</th>
-      <th class="amount">Amount</th>
-      <th></th>
-    </thead>
-    <tbody>
-      {% for invoice in invoices %}
-        {% if not(invoice.paid) %}
-        <tr>
-          <td><i class="material-icons">check_box_outline_blank</i></td>
-          <td><a href="./invoice.html">2016{{loop.index}}</a></td>
-          <td>{{invoice.date | truncate(5, False, '')}}</td>
-          <td>{{invoice.client}}</td>
-          <td>{{invoice.service_title}}</td>
-          <td class="amount">{% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount}}</td>
-          <td><i class="material-icons">print</i></td>
-          {# Use this plugin to download the PDF https://github.com/MrRio/jsPDF / https://parall.ax/products/jspdf# #}
-        </tr>
-        {%endif%}
-      {% endfor %}
-    </tbody>
-  </table>
-  
-  <h1 class="divider">Paid Invoices</h1>
-  <table class="list list--archived">
-    <thead>
-      <th>#</th>
-      <th>Date</th>
-      <th>Client</th>
-      <th>Title</th>
-      <th class="amount">Amount</th>
-      <th></th>
-    </thead>
-    <tbody>
-      {% for invoice in invoices %}
-        {% if invoice.paid %}
-        <tr>
-          <td><i class="material-icons">check_box</i></td>
-          <td><a href="./invoice.html">2016{{loop.index}}</a></td>
-          <td>{{invoice.date | truncate(5, False, '')}}</td>
-          <td>{{invoice.client}}</td>
-          <td>{{invoice.service_title}}</td>
-          {# This needs to match the client name in the invoice and the client name in the client DB #}
-          <td class="amount">{% if invoice.currency %} {{ invoice.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount}}</td>
-          <td><i class="material-icons">print</i></td>
-        </tr>
-        {%endif%}
-      {% endfor %}
-    </tbody>
-  </table>
+<header class="header-section">
+  <nav class="top-nav"><a class="button button--naked" href="./login.html">Login</a><a class="button button--naked" href="./register.html">Register</a></nav>
+  <h1>Invoice App</h1>
+  <a href="./invoice.html" class="header-section__main-button button button--colored">Create Invoice</a>
+</header>
+<section class="page-section">
+  <div class="row">
+    <div class="large-6 column">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius, unde ratione sit sequi quasi mollitia et rerum. Similique tenetur laborum ab id ut, quisquam! Assumenda pariatur culpa eum deserunt ad.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius, unde ratione sit sequi quasi mollitia et rerum. Similique tenetur laborum ab id ut, quisquam! Assumenda pariatur culpa eum deserunt ad.</p>
+    </div>
+    <div class="large-6 column">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam molestias optio quam cupiditate qui voluptates natus, alias aliquid quod laudantium, vitae corporis. Voluptate repudiandae soluta, nulla officiis maiores quae molestiae?</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam molestias optio quam cupiditate qui voluptates natus, alias aliquid quod laudantium, vitae corporis. Voluptate repudiandae soluta, nulla officiis maiores quae molestiae?</p>
+    </div>
+  </div>
 </section>
+<section class="page-section page-section--dark">
+  <div class="row">
+    <div class="large-12 column">
+      <h1>What is this about?</h1>
+    </div>
+    <div class="large-6 column">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius, unde ratione sit sequi quasi mollitia et rerum. Similique tenetur laborum ab id ut, quisquam! Assumenda pariatur culpa eum deserunt ad.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius, unde ratione sit sequi quasi mollitia et rerum. Similique tenetur laborum ab id ut, quisquam! Assumenda pariatur culpa eum deserunt ad.</p>
+    </div>
+    <div class="large-6 column">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam molestias optio quam cupiditate qui voluptates natus, alias aliquid quod laudantium, vitae corporis. Voluptate repudiandae soluta, nulla officiis maiores quae molestiae?</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam molestias optio quam cupiditate qui voluptates natus, alias aliquid quod laudantium, vitae corporis. Voluptate repudiandae soluta, nulla officiis maiores quae molestiae?</p>
+    </div>
+  </div>  
+</section>
+
 
 
 

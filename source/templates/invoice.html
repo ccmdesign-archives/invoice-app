@@ -1,99 +1,132 @@
 {% extends '_base.html' %}
 {% block body_class %}invoice-page{% endblock %}
-{% block header %}{% endblock %}
+{% block header %}
+<header class="small-header">
+<div class="row expanded collapse">
+  <div class="column large-8">
+    <h1><a href="./">Invoice App</a></h1>
+  </div>
+  <div class="column large-4">
+    <nav class="top-nav"><a class="button button--naked" href="./login.html">Login</a><a class="button button--naked" href="./register.html">Register</a></nav>
+  </div>
+</div>
+</header>
+{% endblock %}
 {% block content %}
 
 {# Setting the Companies in this invoice #}
 {% set company = companies[0] %}
-{% set client = clients[1] %}
+{% set client = clients[0] %}
 {% set invoice = invoices[0] %}
 
 <article class="invoice">
   <div class="invoice__branding">
-    <h1>Invoice <span>#201604</span></h1>
     <img class="company-logo" src="./images/{{company.logo}}" alt="">
+    <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
   </div>
-
-<header >
-
+  <header >
   
-  <div class="company-info">
-    <h3>From</h3>
-    <h2>{{company.name}}</h2>
-    <p>{{company.contact}}</p>
-    <p>{{company.email}}</p>
-    <p>{{company.phone}}</p>
-    <div>
-      {% for i in company.gov_registries %}
-        <p>{{i.name}}: {{i.value}}</p>
-      {% endfor %}
+    <div class="company-info">
+      <h3>From</h3>
+      <h2 class="editable" contenteditable>{{company.name}}</h2>
+      <p class="editable" contenteditable>{{company.contact}}</p>
+      <p class="editable" contenteditable>{{company.email}}</p>
+      <p class="editable" contenteditable>{{company.phone}}</p>
+      
+      <div class="company-info__extra">
+        <h4>Government Registration</h4>
+        <table>
+        {% for i in company.gov_registries %}
+          <tr>
+            <td class="editable" contenteditable>{{i.name}}</td><td class="editable" contenteditable>{{i.value}}</td><td class="editable" contenteditable>{{i.tax}}</td>
+          </tr>
+        {% endfor %}
+        </table>
+        <h4>Address</h4>      
+        <p class="editable" contenteditable>{{company.address}}</p>
+        <p class="editable" contenteditable>{{company.city}}, {{company.state}}</p>
+        <p class="editable" contenteditable>{{company.country}}</p>
+        <h4>Banking Information</h4>
+        <p class="editable" contenteditable>{{company.bank_info | safe}}</p>  
+      </div>
     </div>
+
+    <div class="client-info">
+      <h3>To</h3>
+      <h2 class="editable" contenteditable>{{client.name}}</h2>
+      <p class="editable" contenteditable>{{client.vendor_number}}</p>
+      <p class="editable" contenteditable>{{client.contact}}</p>
+      <p class="editable" contenteditable>{{client.email}}</p>
+      <p class="editable" contenteditable>{{client.phone}}</p>
+      <p class="editable" contenteditable>{{client.fax}}</p>
+      <p class="editable" contenteditable>{{client.address}}</p>
+      <p class="editable" contenteditable>{{client.city}}, {{client.state}}</p>
+      <p class="editable" contenteditable>{{client.country}}</p>
+    </div>
+
+  </header>
+
+  <section class="invoice__summary">
+    <p class="invoice__title editable" contenteditable>{{invoice.service_title}}</p>
+    <p class="invoice__description editable" contenteditable>{{invoice.service_description}}</p>
+    {% if client.calculate_tax or invoice.calculate_tax %}
+      <table class="invoice__total">
+        <tbody>
+          <tr>
+            <td>Services Total</td><td class="editable" contenteditable>{{invoice.amount}}</td>
+          </tr>
+          {% for i in company.gov_registries %}
+            {% if i.tax %}
+              <tr>
+                <td>{{i.name}}</td><td>{{invoice.amount * i.tax | round(2) }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+          <tr class="invoice__grand-total">
+            <td>Total</td>
+            <td class="invoice__amount" >{% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount * 1.15 | round(2, 'ceil')}}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      
+    </div>  
+    {% else %}
+    <div class="invoice__grand-total">Total 
+      <span class="invoice__amount editable" contenteditable>
+        {% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount}}</span>
+    </div>
+    {% endif %}
     
-    <div class="company-info__extra">
-      <h4>Address</h4>      
-      <p>{{company.address}}</p>
-      <p>{{company.city}}, {{company.state}}</p>
-      <p>{{company.country}}</p>
-      <h4>Banking Information</h4>
-      <p>{{company.bank_info | safe}}</p>  
-    </div>
-  </div>
-
-  <div class="client-info">
-    <h3>To</h3>
-    <h2>{{client.name}}</h2>
-    <p>{{client.vendor_number}}</p>
-    <p>{{client.contact}}</p>
-    <p>{{client.email}}</p>
-    <p>{{client.phone}}</p>
-    <p>{{client.fax}}</p>
-    <p>{{client.address}}</p>
-    <p>{{client.city}}, {{client.state}}</p>
-    <p>{{client.country}}</p>
-  </div>
-
-</header>
-
-<section class="invoice__summary">
-  <p class="invoice__title">{{invoice.service_title}}</p>
-  <p class="invoice__description">{{invoice.service_description}}</p>
-  <p class="invoice__total">Total 
-    <span class="invoice__amount">
-      {% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %}
-      {{invoice.amount}}
-    </span>
-  </p>
-  <p>{{invoice.date}}</p>
-</section>
+  </section>
+  <footer class="clearfix">
+    <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
+  </footer>
+</article>
 
 {# =========================== #}
 <div class="page-break"></div>
 {# =========================== #}
 
-<h1 class="invoice__title">Hour Breakdown</h1>
-<section class="timesheet">
-  <table>
-    <thead>
-      <th class="description">Description</th>
-      <th class="start">Date</th>
-      <th class="duration">Duration</th>
-      <th class="amount">Amount</th>
-    </thead>
-    {% for i in invoice.timesheet %}
-      <tr>
-        <td class="description">{{i.Description}}</td>
-        <td class="start">{{i.Start_date}}</td>
-        <td class="duration">{{i.Duration}}</td>
-        <td class="amount">{{i.Amount}}</td>
-      </tr>
-    {% endfor %}  
-  </table>
-</section>
-
-
-
-
-
-  
+<article class="invoice">
+  <h1 class="invoice__title">Hour Breakdown</h1>
+  <section>
+    <table class="timesheet">
+      <thead>
+        <th class="description">Description</th>
+        <th class="start">Date</th>
+        <th class="duration">Duration</th>
+        <th class="amount">Amount</th>
+      </thead>
+      {% for i in invoice.timesheet %}
+        <tr>
+          <td class="description">{{i.Description}}</td>
+          <td class="start">{{i.Start_date}}</td>
+          <td class="duration">{{i.Duration}}</td>
+          <td class="amount">{{i.Amount}}</td>
+        </tr>
+      {% endfor %}  
+    </table>
+  </section>
 </article>
 {% endblock %}
