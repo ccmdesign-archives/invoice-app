@@ -14,7 +14,7 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
 
-    <body class="form-page">
+    <body class="home-page">
         
         
         <header class="homepage-header">
@@ -44,28 +44,73 @@
 
         
 
-<div class="wrapper">
-  <h1 class="divider">New Invoice</h1>
-  <form class="base-form" action="">
-    <div class="row">
-      <div class="column large-9">
-        <input type="text" placeholder="Client">
-        <input type="text" placeholder="Service Title">
-        <textarea name="" id="" cols="30" rows="10" placeholder="Service Description"></textarea>
-      </div>
-      <div class="column large-3">
-        <a href="./add-client.html" class="button button--positive">New Client</a>
-        <input type="text" placeholder="Amount">
-        <div class="checkbox"><input type="checkbox" id="paid-checkbox"><label for="paid-checkbox">Paid</label></div>
-        <input type="text" placeholder="Currency">  
-        <input type="text" placeholder="Date">  
-      </div>
-    </div>
-    <div class="row">
-      <div class="large-12 column"><button class="button button--positive" type="submit">Save</button></div>
-    </div>
-  </form>
-</div>
+
+<section class="main-list wrapper">
+  <table class="list">
+    <thead>
+      <th class="status"></th>
+      <th>Client</th>
+      <th>Contact</th>
+      <th>email</th>
+      <th class="amount">Amount</th>
+    </thead>
+    <tbody>
+      
+        <tr>
+          <td class="status"><i class="material-icons">done_all</i></td>
+          
+          <td><a href="#">Client Name</a></td>
+          <td>Client Contact Name</td>
+          <td>client email</td>
+          <td class="amount"> USD  99.000</td>
+          
+        </tr>
+      
+        <tr>
+          <td class="status"><i class="material-icons">done_all</i></td>
+          
+          <td><a href="#">GovLab</a></td>
+          <td>Lauren Yu</td>
+          <td>lauren@thgovlab.org</td>
+          <td class="amount"> USD  99.000</td>
+          
+        </tr>
+      
+        <tr>
+          <td class="status"><i class="material-icons">done_all</i></td>
+          
+          <td><a href="#">Open North</a></td>
+          <td>Laurence Leclerc</td>
+          <td>laurence@opennorth.ca</td>
+          <td class="amount"> CAD  99.000</td>
+          
+        </tr>
+      
+        <tr>
+          <td class="status"><i class="material-icons">done_all</i></td>
+          
+          <td><a href="#">Zero Cool</a></td>
+          <td>Seena Jon</td>
+          <td></td>
+          <td class="amount"> USD  99.000</td>
+          
+        </tr>
+      
+        <tr>
+          <td class="status"><i class="material-icons">done_all</i></td>
+          
+          <td><a href="#">Fi</a></td>
+          <td>YY</td>
+          <td></td>
+          <td class="amount"> BRL  99.000</td>
+          
+        </tr>
+      
+    </tbody>
+  </table>
+</section>
+
+
 
 
 

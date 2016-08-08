@@ -8,35 +8,26 @@
 
         <link rel="stylesheet" href="vendor/foundation.min.css"/>
         <link rel="stylesheet" href="styles/custom-styles.css"/>
-        <script src="https://use.typekit.net/mvc3cdb.js"></script>
+        <script src="https://use.typekit.net/ioh1apd.js"></script>
         <script>try{Typekit.load({ async: true });}catch(e){}</script>
         
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     </head>
 
     <body class="invoice-page">
-        <header class="homepage-header">
-          <h1 class="homepage-header__logo"><a href="./">Invoice App</a></h1>
-
-          <div class="homepage-header__dashboard">
-            <div class="widget">
-              <h2 class="widget__primary-value">8</h2>
-              <p class="widget__text">Sent</p>
-              <p class="widget__secondary-value">$ 999,000<span>.00</span></p>
-              <p class="widget__control">This Month</p>
-            </div>
-            <div class="widget">
-              <h2 class="widget__primary-value">2</h2>
-              <p class="widget__text">Pending</p>
-              <p class="widget__secondary-value">$ 1200<span>,00</span></p>
-              <p class="widget__control">This Month</p>
-            </div>
-          </div>
-        </header>
-        <div class="controls">
-          <a href="./add-invoice.html" class="button"><i class="material-icons">description</i>New Invoice</a>
-          <a href="./add-client.html" class="button"><i class="material-icons">business</i> Add Client</a>
-        </div>
+        
+        
+<header class="small-header">
+<div class="row expanded collapse">
+  <div class="column large-8">
+    <h1><a href="./">Invoice App</a></h1>
+  </div>
+  <div class="column large-4">
+    <nav class="top-nav"><a class="button button--naked" href="./login.html">Login</a><a class="button button--naked" href="./register.html">Register</a></nav>
+  </div>
+</div>
+</header>
+        
 
         
 
@@ -47,137 +38,146 @@
 
 <article class="invoice">
   <div class="invoice__branding">
-    <h1>Invoice</h1>
-    <img class="company-logo" src="./images/ccmdesign-logo.svg" alt="">
+    <img class="company-logo" src="./images/add your logo here" alt="">
+    <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
   </div>
-
-<header >
-
+  <header >
   
-  <div class="company-info">
-    <h3>From</h3>
-    <h2>Claudio Mendonca Design Inc.</h2>
-    <p>Claudio Mendonca</p>
-    <p>claudio@ccmdesign.ca</p>
-    <p>1 514 781 9801</p>
-    <div>
+    <div class="company-info">
+      <h3>From</h3>
+      <h2 class="editable" contenteditable>Company Name</h2>
+      <p class="editable" contenteditable>Contact Person Name</p>
+      <p class="editable" contenteditable>Contact Email</p>
+      <p class="editable" contenteditable>Phone</p>
       
-        <p>NEQ: 1171539027</p>
-      
-        <p>TPS: 788666691</p>
-      
-        <p>TVQ: 1223524563</p>
-      
+      <div class="company-info__extra">
+        <h4>Government Registration</h4>
+        <table>
+        
+          <tr>
+            <td class="editable" contenteditable>Registration</td><td class="editable" contenteditable>Number</td><td class="editable" contenteditable></td>
+          </tr>
+        
+        </table>
+        <h4>Address</h4>      
+        <p class="editable" contenteditable>Company Address</p>
+        <p class="editable" contenteditable>City, State</p>
+        <p class="editable" contenteditable>Country</p>
+        <h4>Banking Information</h4>
+        <p class="editable" contenteditable>Banking Information for Deposit</p>  
+      </div>
     </div>
+
+    <div class="client-info">
+      <h3>To</h3>
+      <h2 class="editable" contenteditable>Client Name</h2>
+      <p class="editable" contenteditable>Your vendor # with that client</p>
+      <p class="editable" contenteditable>Client Contact Name</p>
+      <p class="editable" contenteditable>client email</p>
+      <p class="editable" contenteditable>client phone</p>
+      <p class="editable" contenteditable>client fax</p>
+      <p class="editable" contenteditable>client address</p>
+      <p class="editable" contenteditable>client city, client state</p>
+      <p class="editable" contenteditable>client country</p>
+    </div>
+
+  </header>
+
+  <section class="invoice__summary">
+    <p class="invoice__title editable" contenteditable>Design Services</p>
+    <p class="invoice__description editable" contenteditable>Development of Brightcove Audio Player and Design of the Video Visual Manual</p>
     
-    <div class="company-info__extra">
-      <h4>Address</h4>      
-      <p>App 2, 4418, Avenue de l&#39;Hotel de Ville</p>
-      <p>Montreal, Quebec</p>
-      <p>Canada</p>
-      <h4>Banking Information</h4>
-      <p>Branch Transit: 47261<br>Institution Number: 004<br>Acc Number: 5007913<br>Swift Code: TDOMCATTTOR<br>Branch Address: 51, Mont-Royal Avenue Ouest, Montreal, QC H2T 2S5<br>Routing Number (international): 026-009-593</p>  
-    </div>
-  </div>
+      <table class="invoice__total">
+        <tbody>
+          <tr>
+            <td>Services Total</td><td class="editable" contenteditable>9999.99</td>
+          </tr>
+          
+            
+          
+          <tr class="invoice__grand-total">
+            <td>Total</td>
+            <td class="invoice__amount" > USD  11499.9885</td>
+          </tr>
+        </tbody>
+      </table>
 
-  <div class="client-info">
-    <h3>To</h3>
-    <h2>Open North</h2>
-    <p>12345</p>
-    <p></p>
-    <p>laurence@opennorth.ca</p>
-    <p>1-888-750-4980</p>
-    <p></p>
-    <p>5445 avenue de Gaspé, Suite 602</p>
-    <p>Montréal, QC</p>
-    <p>Canada</p>
-  </div>
-
-</header>
-
-<section class="invoice__summary">
-  <p class="invoice__title">Design Services</p>
-  <p class="invoice__description">Development of Brightcove Audio Player and Design of the Video Visual Manual</p>
-  <p class="invoice__total">Total 
-    <span class="invoice__amount">
-       USD 
-      9999.99
-    </span>
-  </p>
-  <p>04/05/2016</p>
-</section>
+      
+    </div>  
+    
+    
+  </section>
+  <footer class="clearfix">
+    <p class="invoice__date editable" contenteditable>04/05/2016</p>
+  </footer>
+</article>
 
 
 <div class="page-break"></div>
 
 
-<h1 class="invoice__title">Hour Breakdown</h1>
-<section class="timesheet">
-  <table>
-    <thead>
-      <th class="description">Description</th>
-      <th class="start">Date</th>
-      <th class="duration">Duration</th>
-      <th class="amount">Amount</th>
-    </thead>
-    
-      <tr>
-        <td class="description">reviewing</td>
-        <td class="start">2016-08-01</td>
-        <td class="duration">00:58:00</td>
-        <td class="amount">999</td>
-      </tr>
-    
-      <tr>
-        <td class="description">review</td>
-        <td class="start">2016-08-01</td>
-        <td class="duration">00:18:10</td>
-        <td class="amount">999</td>
-      </tr>
-    
-      <tr>
-        <td class="description">documentation</td>
-        <td class="start">2016-08-01</td>
-        <td class="duration">00:35:00</td>
-        <td class="amount">999</td>
-      </tr>
-    
-      <tr>
-        <td class="description">specs</td>
-        <td class="start">2016-08-02</td>
-        <td class="duration">00:15:00</td>
-        <td class="amount">999</td>
-      </tr>
-    
-      <tr>
-        <td class="description"></td>
-        <td class="start">2016-08-02</td>
-        <td class="duration">02:30:00</td>
-        <td class="amount">999</td>
-      </tr>
-    
-      <tr>
-        <td class="description">design</td>
-        <td class="start">2016-08-04</td>
-        <td class="duration">03:42:28</td>
-        <td class="amount">111</td>
-      </tr>
-    
-      <tr>
-        <td class="description"></td>
-        <td class="start">2016-08-05</td>
-        <td class="duration">00:45:23</td>
-        <td class="amount">111</td>
-      </tr>
+<article class="invoice">
+  <h1 class="invoice__title">Hour Breakdown</h1>
+  <section>
+    <table class="timesheet">
+      <thead>
+        <th class="description">Description</th>
+        <th class="start">Date</th>
+        <th class="duration">Duration</th>
+        <th class="amount">Amount</th>
+      </thead>
       
-  </table>
-</section>
-
-
-
-
-
-  
+        <tr>
+          <td class="description">reviewing</td>
+          <td class="start">2016-08-01</td>
+          <td class="duration">00:58:00</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description">review</td>
+          <td class="start">2016-08-01</td>
+          <td class="duration">00:18:10</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description">documentation</td>
+          <td class="start">2016-08-01</td>
+          <td class="duration">00:35:00</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description">specs</td>
+          <td class="start">2016-08-02</td>
+          <td class="duration">00:15:00</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description"></td>
+          <td class="start">2016-08-02</td>
+          <td class="duration">02:30:00</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description">design</td>
+          <td class="start">2016-08-04</td>
+          <td class="duration">03:42:28</td>
+          <td class="amount">111</td>
+        </tr>
+      
+        <tr>
+          <td class="description"></td>
+          <td class="start">2016-08-05</td>
+          <td class="duration">00:45:23</td>
+          <td class="amount">111</td>
+        </tr>
+        
+    </table>
+  </section>
 </article>
 
 
