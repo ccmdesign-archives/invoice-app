@@ -1,35 +1,5 @@
 .invoice-page { background-color: #eee; }
 
-.invoice-controls {
-  position: fixed;
-  right: 35px;
-  top: 90px;
-
-  &__button {
-    box-shadow: 1px 1px 4px rgba(black, .1);
-    background-color: white;
-    color: lighten($main-color, 20);
-    border: 1px solid lighten($main-color, 20);
-    border-radius: 50%;
-    cursor: pointer;
-    margin-top: 0;
-    position: static;
-    display: block;
-    margin-bottom: 10px;
-    padding: 10px;
-    font-size: 28px;
-    @extend .u-material-icons;
-    @extend .u-transition;
-
-    &:hover {
-      background-color: $main-color;
-      color: rgba(black, .4);
-      border-color: $main-color;
-      @extend .u-transition;
-    }
-    }
-  }
-
 .invoice {
   display: flex;
   flex-flow: column;
@@ -188,14 +158,15 @@
   &__grand-total {
     font-weight: bold;
     font-size: 20px;
-    color: rgba(white, .6);
-    background-color: $main-color;
+    color: $main-color;
+    background-color: rgba(black, .05);
   }
 
   &__amount {
     color: white;
     margin: -10px -10px -10px 0;
     padding: 10px;
+    color: $main-color;
   }
 
   &__date {

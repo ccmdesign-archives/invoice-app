@@ -10,7 +10,12 @@
 
 
 <section class="main-list wrapper">
-  <table class="list">
+  <div class="controls controls--with-header">
+    <a href="./add-invoice.html" class="controls__button" title="New Invoice"><i>description</i></a>
+    <a href="./add-client.html" class="controls__button" title="New Client"><i>person_add</i></a>
+    <a href="./clients.html" class="controls__button" title="Client List"><i>people</i></a>
+  </div>
+  <table class="list form">
     <thead>
       <th></th>
       <th>#</th>
@@ -30,7 +35,7 @@
           <td>{{invoice.client}}</td>
           <td>{{invoice.service_title}}</td>
           <td class="amount">{% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount}}</td>
-          <td><i class="material-icons">print</i></td>
+          <td><i class="material-icons">file_download</i></td>
           {# Use this plugin to download the PDF https://github.com/MrRio/jsPDF / https://parall.ax/products/jspdf# #}
         </tr>
         {%endif%}
@@ -41,6 +46,7 @@
   <h1 class="divider">Paid Invoices</h1>
   <table class="list list--archived">
     <thead>
+      <th></th>
       <th>#</th>
       <th>Date</th>
       <th>Client</th>
@@ -59,7 +65,7 @@
           <td>{{invoice.service_title}}</td>
           {# This needs to match the client name in the invoice and the client name in the client DB #}
           <td class="amount">{% if invoice.currency %} {{ invoice.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount}}</td>
-          <td><i class="material-icons">print</i></td>
+          <td><i class="material-icons">file_download</i></td>
         </tr>
         {%endif%}
       {% endfor %}
