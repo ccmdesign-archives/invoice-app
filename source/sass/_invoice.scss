@@ -1,11 +1,39 @@
-
-
 .invoice-page { background-color: #eee; }
 
+.invoice-controls {
+  position: fixed;
+  right: 35px;
+  top: 90px;
+
+  &__button {
+    box-shadow: 1px 1px 4px rgba(black, .1);
+    background-color: white;
+    color: lighten($main-color, 20);
+    border: 1px solid lighten($main-color, 20);
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: 0;
+    position: static;
+    display: block;
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 28px;
+    @extend .u-material-icons;
+    @extend .u-transition;
+
+    &:hover {
+      background-color: $main-color;
+      color: rgba(black, .4);
+      border-color: $main-color;
+      @extend .u-transition;
+    }
+    }
+  }
 
 .invoice {
   display: flex;
   flex-flow: column;
+  position: relative;
 
   .editable  {
     &:hover { background-color: rgba(black, .1); }
@@ -38,11 +66,9 @@
     }
   }
 
-  section, header { flex: 1; }
-
-
+  &__header,
   &__summary {
-
+     flex: 1;
   }
 
   &__title {
@@ -78,9 +104,14 @@
 
     h4 {
       font-size: 11pt;
-      color: rgba(black, .3);
+      color: $main-color;
       padding: 0 5px;
-      margin: 10px 0 0;
+      margin: 0;
+      text-transform: uppercase;
+
+      &.spaced {
+        margin-top: 8px;
+      }
     }
 
     p {
@@ -99,11 +130,36 @@
         td:first-child {
           padding-left: 5px;
         }
-
-
       }
     }
   }
+
+  &__button {
+    position: absolute;
+    box-shadow: 1px 1px 4px rgba(black, .1);
+    background-color: white;
+    border: 1px solid lighten($main-color, 20);
+    color: lighten($main-color, 30);
+    border-radius: 50%;
+    cursor: pointer;
+    @extend .u-transition;
+    @extend .u-material-icons;
+
+    &--small {
+      left: 25px;
+      margin-top: -3px !important;
+      padding: 3px !important;
+      font-size: 16px !important;
+    }
+
+    &:hover {
+      background-color: $main-color !important;
+      color: rgba(black, .4) !important;
+      border-color: $main-color !important;
+    }
+  }
+
+  
 
   .company-info {
     border-top: 1px solid rgba(black, .2);
@@ -115,6 +171,7 @@
 
   &__total {
     width: 100%;
+    border-top: 1px solid rgba(black, .2);
     
     tr { border-bottom: 1px solid rgba(black, .1); }
     td { padding: 5px 15px; }
@@ -122,6 +179,10 @@
 
     td:first-child { width: 70%; }
     td:last-child { text-align: right; }
+  }
+
+  &__description {
+    padding: 0 15px;
   }
 
   &__grand-total {
@@ -149,6 +210,11 @@
   &__timesheet-title { text-align: center; }
 }
 
+
+
+
+
+
 .timesheet {
   table-layout: fixed;
   width: 100%;
@@ -174,9 +240,6 @@
   }
 }
 
-.company-logo {
-  
-}
 
 
 
@@ -194,8 +257,9 @@
   .page-break {
     border-bottom: 1px dotted rgba(black, .2);
     text-align: center;
-    margin-left: -1.5cm;
-    width: calc(100% + 3cm);
+    margin-left: auto;
+    margin-right: auto;
+    width: 95%;
     
     &:before {
       content: "Page Break";
@@ -224,6 +288,7 @@
   .invoice {
     color: black;
     
+    &__button,
     &__interface {
       display: none;
     }
