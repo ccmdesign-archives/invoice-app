@@ -41,50 +41,69 @@
         
 
 <article class="invoice">
-  <div class="invoice__branding">
-     <h2>Company Name</h2>
-    <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
-  </div>
-  <header >
-  
-    <div class="company-info">
-      <h3>From</h3>
-      <h2 class="editable" contenteditable>Company Name</h2>
-      <p class="editable" contenteditable>Contact Person Name</p>
-      <p class="editable" contenteditable>Contact Email</p>
-      <p class="editable" contenteditable>Phone</p>
-      
-      <div class="company-info__extra">
-        <h4>Government Registration</h4>
-        <table>
-        
-          <tr>
-            <td class="editable" contenteditable>Registration</td><td class="editable" contenteditable>Number</td><td class="editable" contenteditable></td></td>
-          </tr>
-        
-        </table>
-        <h4>Address</h4>      
-        <p class="editable" contenteditable>Company Address</p>
-        <p class="editable" contenteditable>City, State</p>
-        <p class="editable" contenteditable>Country</p>
-        <h4>Banking Information</h4>
-        <p class="editable" contenteditable>Banking Information for Deposit</p>  
+  <header>
+    <div class="invoice__branding">
+       <h2>Company Name</h2>
+      <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
+    </div>
+    <div class="client-info">
+      <div class="row  large-collapse">
+        <div class="large-12 column"><h2>To <span class="editable" contenteditable>Client Name</span></h2></div>
+        <div class="large-6 column">
+          <p class="editable" contenteditable>Your vendor # with that client</p>
+          <p class="editable" contenteditable>Client Contact Name</p>
+          <p class="editable" contenteditable>client email</p>
+          <p class="editable" contenteditable>client phone</p>
+          <p class="editable" contenteditable>client fax</p>    
+        </div>
+        <div class="large-6 column">
+          <h4>Address</h4>
+          <p class="editable" contenteditable>client address</p>
+          <p><span class="editable" contenteditable>client city</span>, <span class="editable" contenteditable>client state</span>, <span class="editable" contenteditable>client country</span></p>    
+        </div>
       </div>
     </div>
+    <div class="company-info">
+      <div class="row large-collapse">
+        <div class="large-12 column"><h2>From <span class="editable" contenteditable>Company Name</span></h2></div>
+        <div class="large-6 column">
+          <p class="editable" contenteditable>Contact Person Name</p>
+          <p class="editable" contenteditable>Contact Email</p>
+          <p class="editable" contenteditable>Phone</p>
+          
+          
+            <h4>Address</h4>      
+            <p class="editable" contenteditable>Company Address</p>
+            <p><span class="editable" contenteditable>City</span>, <span class="editable" contenteditable>State</span>, <span class="editable" contenteditable>Country</span></p>
+            
+          
+          <div class="company-info__extra">
+          
+            <h4>Government Registration</h4>
+            <table>
+            
+              <tr>
+                <td class="editable" contenteditable>Registration</td><td class="editable" contenteditable>Number</td><td class="editable" contenteditable></td></td>
+              </tr>
+            
+            <tr class="invoice__interface">
+              <td class="editable" contenteditable>Registry</td><td class="editable" contenteditable>Number</td><td class="editable" contenteditable>Tax %</td></td>
+            </tr>
+            </table>
+          
+          </div>
+        </div>
+        <div class="large-6 column">
+          <div class="company-info__extra">
+            
+            <h4>Banking Information</h4>
+            <p class="editable" contenteditable>Banking Information for Deposit</p>
+            
+          </div>
+        </div>
 
-    <div class="client-info">
-      <h3>To</h3>
-      <h2 class="editable" contenteditable>Client Name</h2>
-      <p class="editable" contenteditable>Your vendor # with that client</p>
-      <p class="editable" contenteditable>Client Contact Name</p>
-      <p class="editable" contenteditable>client email</p>
-      <p class="editable" contenteditable>client phone</p>
-      <p class="editable" contenteditable>client fax</p>
-      <p class="editable" contenteditable>client address</p>
-      <p class="editable" contenteditable>client city, client state</p>
-      <p class="editable" contenteditable>client country</p>
-    </div>
-
+        </div>
+      </div>
   </header>
 
   <section class="invoice__summary">
@@ -94,14 +113,14 @@
       <table class="invoice__total">
         <tbody>
           <tr>
-            <td>Services Total</td><td class="editable" contenteditable>9999.99</td>
+            <td>Design Services</td><td class="editable" contenteditable>1000</td>
           </tr>
           
             
           
           <tr class="invoice__grand-total">
             <td>Total</td>
-            <td class="invoice__amount" > USD  11499.9885</td>
+            <td class="invoice__amount" > USD  1150</td>
           </tr>
         </tbody>
       </table>
@@ -115,11 +134,16 @@
 </article>
 
 
+
 <div class="page-break"></div>
 
 
 <article class="invoice">
-  <h1 class="invoice__title">Hour Breakdown</h1>
+  <div class="invoice__branding">
+     <h2>Company Name</h2>
+    <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
+  </div>
+  <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
   <section>
     <table class="timesheet">
       <thead>
@@ -181,6 +205,8 @@
     </table>
   </section>
 </article>
+
+
 
 
         <div id="overlay" class="js-overlay"></div>
