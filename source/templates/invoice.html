@@ -25,50 +25,69 @@
 {% block content %}
 
 <article class="invoice">
-  <div class="invoice__branding">
-    {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% else %} <h2>{{company.name}}</h2>{% endif %}
-    <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
-  </div>
-  <header >
-  
-    <div class="company-info">
-      <h3>From</h3>
-      <h2 class="editable" contenteditable>{{company.name}}</h2>
-      <p class="editable" contenteditable>{{company.contact}}</p>
-      <p class="editable" contenteditable>{{company.email}}</p>
-      <p class="editable" contenteditable>{{company.phone}}</p>
-      
-      <div class="company-info__extra">
-        <h4>Government Registration</h4>
-        <table>
-        {% for i in company.gov_registries %}
-          <tr>
-            <td class="editable" contenteditable>{{i.name}}</td><td class="editable" contenteditable>{{i.value}}</td><td class="editable" contenteditable>{{i.tax}}</td></td>
-          </tr>
-        {% endfor %}
-        </table>
-        <h4>Address</h4>      
-        <p class="editable" contenteditable>{{company.address}}</p>
-        <p class="editable" contenteditable>{{company.city}}, {{company.state}}</p>
-        <p class="editable" contenteditable>{{company.country}}</p>
-        <h4>Banking Information</h4>
-        <p class="editable" contenteditable>{{company.bank_info | safe}}</p>  
+  <header>
+    <div class="invoice__branding">
+      {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% else %} <h2>{{company.name}}</h2>{% endif %}
+      <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
+    </div>
+    <div class="client-info">
+      <div class="row  large-collapse">
+        <div class="large-12 column"><h2>To <span class="editable" contenteditable>{{client.name}}</span></h2></div>
+        <div class="large-6 column">
+          {% if client.vendor_number %}<p class="editable" contenteditable>{{client.vendor_number}}</p>{% endif %}
+          {% if client.contact %}<p class="editable" contenteditable>{{client.contact}}</p>{% endif %}
+          {% if client.email %}<p class="editable" contenteditable>{{client.email}}</p>{% endif %}
+          {% if client.phone %}<p class="editable" contenteditable>{{client.phone}}</p>{% endif %}
+          {% if client.fax %}<p class="editable" contenteditable>{{client.fax}}</p>{% endif %}    
+        </div>
+        <div class="large-6 column">
+          <h4>Address</h4>
+          {% if client.address %}<p class="editable" contenteditable>{{client.address}}</p>{% endif %}
+          {% if client.city or client.state or client.country %}<p><span class="editable" contenteditable>{{client.city}}</span>, <span class="editable" contenteditable>{{client.state}}</span>, <span class="editable" contenteditable>{{client.country}}</span></p>{% endif %}    
+        </div>
       </div>
     </div>
+    <div class="company-info">
+      <div class="row large-collapse">
+        <div class="large-12 column"><h2>From <span class="editable" contenteditable>{{company.name}}</span></h2></div>
+        <div class="large-6 column">
+          {% if company.contact %}<p class="editable" contenteditable>{{company.contact}}</p>{% endif %}
+          {% if company.email %}<p class="editable" contenteditable>{{company.email}}</p>{% endif %}
+          {% if company.phone %}<p class="editable" contenteditable>{{company.phone}}</p>{% endif %}
+          
+          {% if company.address or company.city or company.state or company.country %}
+            <h4>Address</h4>      
+            {% if company.address %}<p class="editable" contenteditable>{{company.address}}</p>{% endif %}
+            {% if company.city or company.state or company.country %}<p><span class="editable" contenteditable>{{company.city}}</span>, <span class="editable" contenteditable>{{company.state}}</span>, <span class="editable" contenteditable>{{company.country}}</span></p>{% endif %}
+          {% endif %}  
+          
+          <div class="company-info__extra">
+          {% if company.gov_registries %}
+            <h4>Government Registration</h4>
+            <table>
+            {% for i in company.gov_registries %}
+              <tr>
+                <td class="editable" contenteditable>{{i.name}}</td><td class="editable" contenteditable>{{i.value}}</td><td class="editable" contenteditable>{{i.tax}}</td></td>
+              </tr>
+            {% endfor %}
+            <tr class="invoice__interface">
+              <td class="editable" contenteditable>Registry</td><td class="editable" contenteditable>Number</td><td class="editable" contenteditable>Tax %</td></td>
+            </tr>
+            </table>
+          {% endif %}
+          </div>
+        </div>
+        <div class="large-6 column">
+          <div class="company-info__extra">
+            {% if company.bank_info %}
+            <h4>Banking Information</h4>
+            <p class="editable" contenteditable>{{company.bank_info | safe}}</p>
+            {% endif %}
+          </div>
+        </div>
 
-    <div class="client-info">
-      <h3>To</h3>
-      <h2 class="editable" contenteditable>{{client.name}}</h2>
-      {% if client.vendor_number %}<p class="editable" contenteditable>{{client.vendor_number}}</p>{% endif %}
-      <p class="editable" contenteditable>{{client.contact}}</p>
-      <p class="editable" contenteditable>{{client.email}}</p>
-      <p class="editable" contenteditable>{{client.phone}}</p>
-      <p class="editable" contenteditable>{{client.fax}}</p>
-      <p class="editable" contenteditable>{{client.address}}</p>
-      <p class="editable" contenteditable>{{client.city}}, {{client.state}}</p>
-      <p class="editable" contenteditable>{{client.country}}</p>
-    </div>
-
+        </div>
+      </div>
   </header>
 
   <section class="invoice__summary">
@@ -78,7 +97,7 @@
       <table class="invoice__total">
         <tbody>
           <tr>
-            <td>Services Total</td><td class="editable" contenteditable>{{invoice.amount}}</td>
+            <td>{{invoice.service_title}}</td><td class="editable" contenteditable>{{invoice.amount}}</td>
           </tr>
           {% for i in company.gov_registries %}
             {% if i.tax %}
@@ -89,18 +108,21 @@
           {% endfor %}
           <tr class="invoice__grand-total">
             <td>Total</td>
-            <td class="invoice__amount" >{% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount * 1.15 | round(2, 'ceil')}}</td>
+            <td class="invoice__amount" >{% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount * 1.15 | round(2)}}</td>
           </tr>
         </tbody>
       </table>
     </div>  
     {% else %}
 
-    <div class="invoice__grand-total">Total 
-      <span class="invoice__amount editable" contenteditable>
-        {# {% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} 
-        {% endif %} #} {{invoice.amount}}</span>
-    </div>
+    <table class="invoice__total">
+        <tbody>
+          <tr class="invoice__grand-total">
+            <td>Total</td>
+            <td class="invoice__amount" >{% if invoice.currency %} {{ invoice.currency }} {% elif client.currency %} {{ client.currency }} {% else %} {{ company.currency }} {% endif %} {{invoice.amount}}</td>
+          </tr>
+        </tbody>
+      </table>
     {% endif %}
     
   </section>
@@ -109,12 +131,17 @@
   </footer>
 </article>
 
+{% if invoice.timesheet %}
 {# =========================== #}
 <div class="page-break"></div>
 {# =========================== #}
 
 <article class="invoice">
-  <h1 class="invoice__title">Hour Breakdown</h1>
+  <div class="invoice__branding">
+    {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% else %} <h2>{{company.name}}</h2>{% endif %}
+    <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
+  </div>
+  <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
   <section>
     <table class="timesheet">
       <thead>
@@ -134,4 +161,6 @@
     </table>
   </section>
 </article>
+{% endif %}
+
 {% endblock %}

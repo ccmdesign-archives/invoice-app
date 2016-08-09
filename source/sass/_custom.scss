@@ -22,7 +22,8 @@ body {
 }
 
 .small-header {
-
+  
+  
   h1 {
     font-size: 16px;
     text-transform: uppercase;
@@ -31,5 +32,10 @@ body {
 
   .top-nav {
     text-align: right;
+  }
+
+  .button:hover {
+    background-color: $main-color;
+    color: white;
   }
 }
