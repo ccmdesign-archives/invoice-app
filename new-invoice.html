@@ -27,6 +27,11 @@
   </div>
 </div>
 </header>
+<div class="controls">
+  <a class="controls__button" href="#" title="Download PDF"><i>file_download</i></a>
+  <a class="controls__button" href="#" title="Save Draft"><i>save</i></a>
+  <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a>
+</div>
  
         
         
@@ -41,14 +46,16 @@
         
 
 <article class="invoice">
-  <header>
+  <header class="invoice__header">
     <div class="invoice__branding">
        <h2>Company Name</h2>
       <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
     </div>
     <div class="client-info">
-      <div class="row  large-collapse">
-        <div class="large-12 column"><h2>To <span class="editable" contenteditable>Client Name</span></h2></div>
+      <div class="row large-collapse">
+        <div class="large-12 column">
+          <h2>To <span class="editable" contenteditable>Client Name</span></h2>
+        </div>
         <div class="large-6 column">
           <p class="editable" contenteditable>Your vendor # with that client</p>
           <p class="editable" contenteditable>Client Contact Name</p>
@@ -64,6 +71,7 @@
       </div>
     </div>
     <div class="company-info">
+  
       <div class="row large-collapse">
         <div class="large-12 column"><h2>From <span class="editable" contenteditable>Company Name</span></h2></div>
         <div class="large-6 column">
@@ -72,14 +80,14 @@
           <p class="editable" contenteditable>Phone</p>
           
           
-            <h4>Address</h4>      
+            <h4 class="spaced">Address</h4>      
             <p class="editable" contenteditable>Company Address</p>
             <p><span class="editable" contenteditable>City</span>, <span class="editable" contenteditable>State</span>, <span class="editable" contenteditable>Country</span></p>
             
           
           <div class="company-info__extra">
           
-            <h4>Government Registration</h4>
+            <h4 class="spaced">Government Registration</h4>
             <table>
             
               <tr>
@@ -87,7 +95,7 @@
               </tr>
             
             <tr class="invoice__interface">
-              <td class="editable" contenteditable>Registry</td><td class="editable" contenteditable>Number</td><td class="editable" contenteditable>Tax %</td></td>
+              <td class="editable" contenteditable><i class="invoice__button invoice__button--small material-icons" contenteditable="false">add</i>Registry</td><td class="editable" contenteditable>Number</td><td class="editable" contenteditable>Tax %</td></td>
             </tr>
             </table>
           
@@ -108,6 +116,7 @@
 
   <section class="invoice__summary">
     <p class="invoice__title editable" contenteditable>Design Services</p>
+
     <p class="invoice__description editable" contenteditable>Development of Brightcove Audio Player and Design of the Video Visual Manual</p>
     
       <table class="invoice__total">
@@ -128,7 +137,7 @@
     
     
   </section>
-  <footer class="clearfix">
+  <footer class="invoice__footer" class="clearfix">
     <p class="invoice__date editable" contenteditable>04/05/2016</p>
   </footer>
 </article>
@@ -144,7 +153,9 @@
     <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
   </div>
   <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
-  <section>
+  <section class="invoice__summary">
+
+
     <table class="timesheet">
       <thead>
         <th class="description">Description</th>
@@ -204,7 +215,12 @@
         
     </table>
   </section>
+  <footer class="invoice__footer" class="clearfix">
+    <p class="invoice__date editable" contenteditable>04/05/2016</p>
+  </footer>
 </article>
+
+
 
 
 
