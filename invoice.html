@@ -29,7 +29,7 @@
 </header>
 <div class="controls">
   <a class="controls__button" href="#" title="Download PDF"><i>file_download</i></a>
-  <a class="controls__button" href="#" title="Save Draft"><i>save</i></a>
+  
   <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a>
 </div>
  
@@ -54,19 +54,21 @@
     <div class="client-info">
       <div class="row large-collapse">
         <div class="large-12 column">
+          <i class="invoice__button invoice__button--small material-icons" contenteditable="false">add</i>
           <h2>To <span class="editable" contenteditable>GovLab</span></h2>
+
         </div>
         <div class="large-6 column">
           
           <p class="editable" contenteditable>Lauren Yu</p>
           <p class="editable" contenteditable>lauren@thgovlab.org</p>
           <p class="editable" contenteditable>1 (646) 997-3150 </p>
-              
         </div>
         <div class="large-6 column">
+          
           <h4>Address</h4>
-          <p class="editable" contenteditable>2 MetroTech Center, 9th Floor</p>
-          <p><span class="editable" contenteditable>Brooklyn</span>, <span class="editable" contenteditable>NY</span>, <span class="editable" contenteditable>USA</span></p>    
+          <p class="editable" contenteditable>2 MetroTech Center, 9th Floor <br>Brooklyn, NY, USA, 11201</p>
+          
         </div>
       </div>
     </div>
@@ -81,8 +83,7 @@
           
           
             <h4 class="spaced">Address</h4>      
-            <p class="editable" contenteditable>App 2, 4418, Avenue de l&#39;Hotel de Ville</p>
-            <p><span class="editable" contenteditable>Montreal</span>, <span class="editable" contenteditable>Quebec</span>, <span class="editable" contenteditable>Canada</span></p>
+            <p class="editable" contenteditable>4418, Avenue de l'Hotel de Ville, App 2 <br>Montreal, Quebec, Canada</p>
             
           
           <div class="company-info__extra">
@@ -145,11 +146,82 @@
 </article>
 
 
-<div class="row">
-  <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
-    <div class="button">Upload Timesheet CSV</div>
+
+<div class="page-break"></div>
+
+
+<article class="invoice">
+  <div class="invoice__branding">
+    <img class="company-logo" src="./images/ccmdesign-logo.svg" alt="">
+    <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
   </div>
-</div>
+  <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+  <section class="invoice__summary">
+
+
+    <table class="timesheet">
+      <thead>
+        <th class="description">Description</th>
+        <th class="start">Date</th>
+        <th class="duration">Duration</th>
+        <th class="amount">Amount</th>
+      </thead>
+      
+        <tr>
+          <td class="description">reviewing</td>
+          <td class="start">2016-08-01</td>
+          <td class="duration">00:58:00</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description">review</td>
+          <td class="start">2016-08-01</td>
+          <td class="duration">00:18:10</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description">documentation</td>
+          <td class="start">2016-08-01</td>
+          <td class="duration">00:35:00</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description">specs</td>
+          <td class="start">2016-08-02</td>
+          <td class="duration">00:15:00</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description"></td>
+          <td class="start">2016-08-02</td>
+          <td class="duration">02:30:00</td>
+          <td class="amount">999</td>
+        </tr>
+      
+        <tr>
+          <td class="description">design</td>
+          <td class="start">2016-08-04</td>
+          <td class="duration">03:42:28</td>
+          <td class="amount">111</td>
+        </tr>
+      
+        <tr>
+          <td class="description"></td>
+          <td class="start">2016-08-05</td>
+          <td class="duration">00:45:23</td>
+          <td class="amount">111</td>
+        </tr>
+        
+    </table>
+  </section>
+  <footer class="invoice__footer" class="clearfix">
+    <p class="invoice__date editable" contenteditable>04/05/2016</p>
+  </footer>
+</article>
 
 
 
