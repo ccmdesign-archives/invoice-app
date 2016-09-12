@@ -14,7 +14,7 @@
 </header>
 <div class="controls">
   <a class="controls__button" href="#" title="Download PDF"><i>file_download</i></a>
-  <a class="controls__button" href="#" title="Save Draft"><i>save</i></a>
+  {# <a class="controls__button" href="#" title="Save Draft"><i>save</i></a> #}
   <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a>
 </div>
 {% endblock %}
@@ -23,7 +23,7 @@
 {# Setting the Companies in this invoice #}
 {% set company = companies[1] %}
 {% set client = clients[1] %}
-{% set invoice = invoices[0] %}
+{% set invoice = invoices[2] %}
 
 {% endblock %}
 
@@ -38,19 +38,21 @@
     <div class="client-info">
       <div class="row large-collapse">
         <div class="large-12 column">
+          <i class="invoice__button invoice__button--small material-icons" contenteditable="false">add</i>
           <h2>To <span class="editable" contenteditable>{{client.name}}</span></h2>
+
         </div>
         <div class="large-6 column">
           {% if client.vendor_number %}<p class="editable" contenteditable>{{client.vendor_number}}</p>{% endif %}
           {% if client.contact %}<p class="editable" contenteditable>{{client.contact}}</p>{% endif %}
           {% if client.email %}<p class="editable" contenteditable>{{client.email}}</p>{% endif %}
           {% if client.phone %}<p class="editable" contenteditable>{{client.phone}}</p>{% endif %}
-          {% if client.fax %}<p class="editable" contenteditable>{{client.fax}}</p>{% endif %}    
         </div>
         <div class="large-6 column">
+          {% if client.address %}
           <h4>Address</h4>
-          {% if client.address %}<p class="editable" contenteditable>{{client.address}}</p>{% endif %}
-          {% if client.city or client.state or client.country %}<p><span class="editable" contenteditable>{{client.city}}</span>, <span class="editable" contenteditable>{{client.state}}</span>, <span class="editable" contenteditable>{{client.country}}</span></p>{% endif %}    
+          <p class="editable" contenteditable>{{client.address | safe}}</p>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -63,10 +65,9 @@
           {% if company.email %}<p class="editable" contenteditable>{{company.email}}</p>{% endif %}
           {% if company.phone %}<p class="editable" contenteditable>{{company.phone}}</p>{% endif %}
           
-          {% if company.address or company.city or company.state or company.country %}
+          {% if company.address %}
             <h4 class="spaced">Address</h4>      
-            {% if company.address %}<p class="editable" contenteditable>{{company.address}}</p>{% endif %}
-            {% if company.city or company.state or company.country %}<p><span class="editable" contenteditable>{{company.city}}</span>, <span class="editable" contenteditable>{{company.state}}</span>, <span class="editable" contenteditable>{{company.country}}</span></p>{% endif %}
+            <p class="editable" contenteditable>{{company.address | safe}}</p>
           {% endif %}  
           
           <div class="company-info__extra">

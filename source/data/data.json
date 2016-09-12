@@ -6,11 +6,7 @@
     "contact": "Contact Person Name",
     "email": "Contact Email",
     "phone": "Phone",
-    "fax": "Fax",
-    "address": "Company Address",
-    "city": "City",
-    "state": "State",
-    "country": "Country",
+    "address": "Company Address, City, State, Country",
     "currency": "USD",
     "gov_registries": [
       {
@@ -26,11 +22,7 @@
     "contact": "Claudio Mendonca",
     "email": "claudio@ccmdesign.ca",
     "phone": "1 514 781 9801",
-    "fax": "",
-    "address": "App 2, 4418, Avenue de l'Hotel de Ville",
-    "city": "Montreal",
-    "state": "Quebec",
-    "country": "Canada",
+    "address": "4418, Avenue de l'Hotel de Ville, App 2 <br>Montreal, Quebec, Canada",
     "currency": "USD",
     "gov_registries": [
       {
@@ -60,26 +52,15 @@
     "contact": "Client Contact Name",
     "email": "client email",
     "phone": "client phone",
-    "fax": "client fax",
-    "address": "client address",
-    "city": "client city",
-    "state": "client state",
-    "country": "client country",
-    "zip": "client postal code"
+    "address": "Client Address<br>City, State, Country, ZIP Code"
   },
   {
     "name": "GovLab",
     "vendor_number": "",
-    "currency": "USD",
     "contact": "Lauren Yu",
     "email": "lauren@thgovlab.org",
     "phone": "1 (646) 997-3150 ",
-    "fax": "",
-    "address": "2 MetroTech Center, 9th Floor",
-    "city": "Brooklyn",
-    "state": "NY",
-    "country": "USA",
-    "zip": "11201"
+    "address": "2 MetroTech Center, 9th Floor <br>Brooklyn, NY, USA, 11201"
   },{
     "name": "Open North",
     "currency": "CAD",
@@ -88,24 +69,14 @@
     "contact": "Lauren",
     "email": "email@opennorth.ca",
     "phone": "1-888-750-4980",
-    "fax": "",
-    "address": "5445 avenue de Gaspé, Suite 602",
-    "city": "Montréal",
-    "state": "QC",
-    "country": "Canada",
-    "zip": "H2T 3B2"
+    "address": "5445 avenue de Gaspé, Suite 602 <br>Montréal, QC, Canada, H2T 3B2"
   },{
     "name": "Zero Cool",
     "vendor_number": "",
-    "currency": "USD",
     "contact": "Seena Jon",
     "email": "",
     "phone": "",
-    "fax": "",
-    "address": "",
-    "city": "",
-    "state": "",
-    "country": "USA"
+    "address": "USA"
   },{
     "name": "Fi",
     "vendor_number": "",
@@ -113,11 +84,7 @@
     "contact": "YY",
     "email": "",
     "phone": "",
-    "fax": "",
-    "address": "",
-    "city": "",
-    "state": "",
-    "country": "Brasil"
+    "address": "Brasil"
   }
 ],
 
@@ -132,121 +99,7 @@
     "date": "04/05/2016",
     "custom_signature": false,
     "paid": false,
-    "currency": "USD",
-    "timesheet": [
-      {
-        "User": "Claudioccm",
-        "Email": "claudioccm@gmail.com",
-        "Client": "Bernstein",
-        "Project": "Player Annotation",
-        "Task": "",
-        "Description": "reviewing",
-        "Billable": "Yes",
-        "Start_date": "2016-08-01",
-        "Start_time": "17:40:00",
-        "End_date": "2016-08-01",
-        "End_time": "18:38:00",
-        "Duration": "00:58:00",
-        "Tags": "",
-        "Amount": 999
-      },
-      {
-        "User": "Claudioccm",
-        "Email": "claudioccm@gmail.com",
-        "Client": "Bernstein",
-        "Project": "Player Annotation",
-        "Task": "",
-        "Description": "review",
-        "Billable": "Yes",
-        "Start_date": "2016-08-01",
-        "Start_time": "19:29:47",
-        "End_date": "2016-08-01",
-        "End_time": "19:47:58",
-        "Duration": "00:18:10",
-        "Tags": "",
-        "Amount": 999
-      },
-      {
-        "User": "Claudioccm",
-        "Email": "claudioccm@gmail.com",
-        "Client": "Bernstein",
-        "Project": "Player Annotation",
-        "Task": "",
-        "Description": "documentation",
-        "Billable": "Yes",
-        "Start_date": "2016-08-01",
-        "Start_time": "19:46:00",
-        "End_date": "2016-08-01",
-        "End_time": "20:21:00",
-        "Duration": "00:35:00",
-        "Tags": "",
-        "Amount": 999
-      },
-      {
-        "User": "Claudioccm",
-        "Email": "claudioccm@gmail.com",
-        "Client": "Bernstein",
-        "Project": "Player Annotation",
-        "Task": "",
-        "Description": "specs",
-        "Billable": "Yes",
-        "Start_date": "2016-08-02",
-        "Start_time": "14:27:00",
-        "End_date": "2016-08-02",
-        "End_time": "14:42:00",
-        "Duration": "00:15:00",
-        "Tags": "",
-        "Amount": 999
-      },
-      {
-        "User": "Jujupma",
-        "Email": "jujupma@gmail.com",
-        "Client": "Bernstein",
-        "Project": "Cybersecurity Infographic",
-        "Task": "",
-        "Description": "",
-        "Billable": "Yes",
-        "Start_date": "2016-08-02",
-        "Start_time": "15:23:00",
-        "End_date": "2016-08-02",
-        "End_time": "17:53:00",
-        "Duration": "02:30:00",
-        "Tags": "",
-        "Amount": 999
-      },
-      {
-        "User": "Claudioccm",
-        "Email": "claudioccm@gmail.com",
-        "Client": "Bernstein",
-        "Project": "Cybersecurity Infographic",
-        "Task": "",
-        "Description": "design",
-        "Billable": "Yes",
-        "Start_date": "2016-08-04",
-        "Start_time": "11:05:55",
-        "End_date": "2016-08-04",
-        "End_time": "14:48:24",
-        "Duration": "03:42:28",
-        "Tags": "",
-        "Amount": 111
-      },
-      {
-        "User": "Claudioccm",
-        "Email": "claudioccm@gmail.com",
-        "Client": "Bernstein",
-        "Project": "Cybersecurity Infographic",
-        "Task": "",
-        "Description": "",
-        "Billable": "Yes",
-        "Start_date": "2016-08-05",
-        "Start_time": "16:33:46",
-        "End_date": "2016-08-05",
-        "End_time": "17:19:10",
-        "Duration": "00:45:23",
-        "Tags": "",
-        "Amount": 111
-      }
-    ]
+    "currency": "USD"
   },
   {
     "number": false,
