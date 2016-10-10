@@ -1,0 +1,16 @@
+<table class="invoice__total">
+  <tbody>
+    {% for i in services %}
+      {% if i.tax %}
+        <tr>
+          <td>{{i.name}}</td><td>{{invoice.amount * i.tax | round(2) }}</td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+
+    <tr class="invoice__grand-total">
+      <td>Total</td>
+      <td class="invoice__amount" >{{ invoice.currency }} {{invoice.total}}</td>
+    </tr>
+  </tbody>
+</table>

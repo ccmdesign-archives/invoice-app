@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block content %}
+
+<section class="main-list wrapper">
+  <div class="controls controls--with-header">
+    <form method="post" action="{{ url_for('create_invoice') }}"><button type="submit" class="controls__button" title="New Invoice"><i>description</i></button></form>
+    <a href="./invoice.html" class="controls__button" title="New Client"><i>person_add</i></a>
+    <a href="./clients.html" class="controls__button" title="Client List"><i>people</i></a>
+  </div>
+
+  {% set invoices = g.user.open_invoices %}
+
+  <table class="list list--opened">
+    <thead>
+      <th></th>
+      <th>#</th>
+      <th>Date</th>
+      <th>Client</th>
+      <th>Title</th>
+      <th class="amount">Amount</th>
+      <th></th>
+    </thead>
+    <tbody>
+      {% for invoice in g.user.invoices %}
+        {% if not invoice.paid %}
+          {% include 'home_table_row.html' %}
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h1 class="divider">Paid Invoices</h1>
+  <table class="list list--archived">
+    <thead>
+      <th></th>
+      <th>#</th>
+      <th>Date</th>
+      <th>Client</th>
+      <th>Title</th>
+      <th class="amount">Amount</th>
+      <th></th>
+    </thead>
+    <tbody>
+      {% for invoice in g.user.invoices %}
+        {% if invoice.paid %}
+          {% include 'home_table_row.html' %}
+        {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+
+
+{% endblock %}

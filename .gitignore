@@ -1,4 +1,5 @@
-/public
-/.publish
-/node_modules
 .DS_Store
+*.pyc
+invoice-app-master/
+migrations/*
+static/.webassets-cache/

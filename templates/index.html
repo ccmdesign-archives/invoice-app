@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block body_class %}guest-home-page{% endblock %}
+{% block header %}{% endblock %}
+{% block data %}{% endblock %}
+{% block content %}
+
+
+<header class="header-section">
+  <nav class="top-nav"><a class="button button--naked" href="{{url_for('github_login')}}">Login</a></nav>
+  <h1>Invoice App</h1>
+  <a href="./new-invoice.html" class="header-section__main-button button button--colored">Create Invoice</a>
+</header>
+<section class="page-section">
+  <div class="row">
+    <div class="large-6 column">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius, unde ratione sit sequi quasi mollitia et rerum. Similique tenetur laborum ab id ut, quisquam! Assumenda pariatur culpa eum deserunt ad.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius, unde ratione sit sequi quasi mollitia et rerum. Similique tenetur laborum ab id ut, quisquam! Assumenda pariatur culpa eum deserunt ad.</p>
+    </div>
+    <div class="large-6 column">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam molestias optio quam cupiditate qui voluptates natus, alias aliquid quod laudantium, vitae corporis. Voluptate repudiandae soluta, nulla officiis maiores quae molestiae?</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam molestias optio quam cupiditate qui voluptates natus, alias aliquid quod laudantium, vitae corporis. Voluptate repudiandae soluta, nulla officiis maiores quae molestiae?</p>
+    </div>
+  </div>
+</section>
+<section class="page-section page-section--dark">
+  <div class="row">
+    <div class="large-12 column">
+      <h1>What is this about?</h1>
+    </div>
+    <div class="large-6 column">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius, unde ratione sit sequi quasi mollitia et rerum. Similique tenetur laborum ab id ut, quisquam! Assumenda pariatur culpa eum deserunt ad.</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius, unde ratione sit sequi quasi mollitia et rerum. Similique tenetur laborum ab id ut, quisquam! Assumenda pariatur culpa eum deserunt ad.</p>
+    </div>
+    <div class="large-6 column">
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam molestias optio quam cupiditate qui voluptates natus, alias aliquid quod laudantium, vitae corporis. Voluptate repudiandae soluta, nulla officiis maiores quae molestiae?</p>
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Laboriosam molestias optio quam cupiditate qui voluptates natus, alias aliquid quod laudantium, vitae corporis. Voluptate repudiandae soluta, nulla officiis maiores quae molestiae?</p>
+    </div>
+  </div>
+</section>
+
+
+
+
+{% endblock %}

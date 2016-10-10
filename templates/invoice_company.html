@@ -1,0 +1,29 @@
+<div class="row large-collapse">
+  <form id="company-form" method="post" action="{{ url_for('edit_invoice_company', invoice_id=invoice.id) }}">
+    <input type="hidden" name="id" value="{{ company.id }}"/>
+
+    <div class="large-12 column"><h2>From <input type="text" class="name" name="name" placeholder="Company Name" value="{{ company.name }}"/></h2></div>
+
+    <div class="large-6 column">
+      <input type="text" name="contact" placeholder="Contact Person Name" value="{{ company.contact }}"/>
+      <input type="text" name="email" placeholder="Contact Email" value="{{ company.email }}"/>
+      <input type="text" name="phone" placeholder="Contact Phone" value="{{ company.phone }}"/>
+
+      <h4 class="spaced">Address</h4>
+      <input type="text" name="address" placeholder="Company Address, City, State, Country" value="{{ company.address }}"/>
+    </div>
+
+    <div class="large-6 column">
+      <div class="company-info__extra">
+        <h4>Banking Information</h4>
+        <input type="text" name="banking_info" placeholder="Banking Information for Deposit" value="{{ company.banking_info }}"/>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="large-6 column">
+  <div class="tax-info">
+    {% include 'invoice_tax.html' %}
+  </div>
+</div>

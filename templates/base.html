@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>{% block title %}Invoice App - Interface 0.1{% endblock %}</title>
+
+        <script src="https://use.typekit.net/ioh1apd.js"></script>
+        <script>try{Typekit.load({ async: true });}catch(e){}</script>
+        <link href="https://fonts.googleapis.com/css?family=Quicksand|Roboto+Condensed" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        {% assets "scss_all" %}
+        <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+        {% endassets %}
+    </head>
+
+    <body class="{% block body_class %}{% endblock %}">
+        {% block header %}
+        <header class="homepage-header">
+          <h1 class="homepage-header__logo"><a href="{{ url_for('home') }}">Invoice App</a></h1>
+
+          <div class="homepage-header__dashboard">
+            <div class="widget">
+              <h2 class="widget__primary-value paid">{{ g.user.paid_invoices }}</h2>
+              <p class="widget__text">Received</p>
+              {# <p class="widget__secondary-value">$ 999,000<span>.00</span></p> #}
+              {# <p class="widget__control">This Month</p> #}
+            </div>
+            <div class="widget">
+              <h2 class="widget__primary-value open">{{ g.user.open_invoices }}</h2>
+              <p class="widget__text">Pending</p>
+              {# <p class="widget__secondary-value">$ 1200<span>,00</span></p> #}
+              {# <p class="widget__control">This Month</p> #}
+            </div>
+          </div>
+          <div class="homepage-header__extra">
+            <a href="#" class="logged-in">{{ g.user.name }}</a>
+            <a href="{{ url_for('logout') }}" class="logout">Logout</a>
+          </div>
+
+        </header>
+        {% endblock %}
+
+        {% block data %}{% endblock %}
+
+
+        {% block content %}{% endblock %}
+
+        <div id="overlay" class="js-overlay"></div>
+        <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+        <script src="{{ url_for('.static', filename='js/scripts.js') }}"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js"></script>
+    </body>
+</html>

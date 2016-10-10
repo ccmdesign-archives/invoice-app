@@ -1,0 +1,23 @@
+<div class="row large-collapse">
+  <form id="client-form" method="post" action="{{ url_for('edit_invoice_client', invoice_id=invoice.id) }}">
+    <input type="hidden" name="id" value="{{ client.id }}"/>
+
+    <div class="large-12 column">
+      {#<i class="invoice__button invoice__button--small material-icons" contenteditable="false">add</i>#}
+
+      <h2>To <input type="text" class="name" name="name" placeholder="Client Name" value="{{ client.name }}"/></h2>
+    </div>
+
+    <div class="large-6 column">
+      <input type="text" name="vendor_number" placeholder="Your vendor # with that client" value="{{ client.vendor_number }}"/>
+      <input type="text" name="contact" placeholder="Client Contact Name" value="{{ client.contact }}"/>
+      <input type="text" name="email" placeholder="Client Email" value="{{ client.email }}"/>
+      <input type="text" name="phone" placeholder="Client Phone" value="{{ client.phone }}"/>
+    </div>
+
+    <div class="large-6 column">
+      <h4>Address</h4>
+      <input type="text" name="address" placeholder="Client Address\nCity, State, Country, ZIP Code" value="{{ client.phone }}"/>
+    </div>
+  </form>
+</div>
