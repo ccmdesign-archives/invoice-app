@@ -36,7 +36,7 @@ class Client(db.Model):
     vendor_number = db.Column(db.String(64), default='')
 
     user_id = db.Column(db.String(USER_ID_SIZE), db.ForeignKey('user.id'))
-    invoices = db.relationship('Invoice')
+    invoices = db.relationship('Invoice', backref='client_obj')
 
 
 class Company(db.Model):

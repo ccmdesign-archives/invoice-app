@@ -1,10 +1,10 @@
 $(function() {
-    $('.client-info').on('blur', 'input', function() {
+    $('.client-info').on('change', 'input', function() {
         function valid_response(data, state, xhr) {
             $('.client-info').html(data);
         }
 
-        if ($('#client-form .name').val()) {
+        if (!$('.autocomplete-suggestions').is(':visible') && $('#client-form .name').val()) {
             var $form = $('#client-form'),
                 $resp = null;
 
@@ -20,14 +20,14 @@ $(function() {
         }
     });
 
-    $('.company-info').on('blur', '#company-form input', function() {
+    $('.company-info').on('change', '#company-form input', function() {
         function valid_response(data, state, xhr) {
             $('.company-info').html(data);
 
             $('.invoice__branding h2').text($('#company-form h2 input').val());
         }
 
-        if ($('#company-form .name').val()) {
+        if (!$('.autocomplete-suggestions').is(':visible') && $('#company-autocomplete').val()) {
             var $form = $('#company-form'),
                 $resp = null;
 
@@ -148,4 +148,36 @@ $(function() {
                 console.log('Server error.');
         });
     });
+
+    var opts1 = {
+        serviceUrl: $('#company-autocomplete').data('url'),
+        dataType: 'json',
+        paramName: 'q',
+        deferRequestBy: 500,
+        nocache: true,
+        minChars: 3,
+        triggerSelectOnValidInput: false,
+        onSelect: function(item) {
+            $('.company-info').html(item.data);
+            $('#company-autocomplete').autocomplete(opts1);
+        }
+    };
+
+    $('#company-autocomplete').autocomplete(opts1);
+
+    var opts2 = {
+        serviceUrl: $('#client-autocomplete').data('url'),
+        dataType: 'json',
+        paramName: 'q',
+        deferRequestBy: 500,
+        nocache: true,
+        minChars: 3,
+        triggerSelectOnValidInput: false,
+        onSelect: function(item) {
+            $('.client-info').html(item.data);
+            $('#client-autocomplete').autocomplete(opts1);
+        }
+    };
+
+    $('#client-autocomplete').autocomplete(opts2);
 });

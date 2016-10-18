@@ -5,7 +5,7 @@
 <div class="controls">
   <a class="controls__button" href="#" title="Download PDF"><i>file_download</i></a>
   {# <a class="controls__button" href="#" title="Save Draft"><i>save</i></a> #}
-  <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a>
+  {# <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a> #}
 </div>
 
 <article class="invoice" data-invoice-id="{{ invoice.id }}"  data-url="{{ url_for('edit_invoice', invoice_id=invoice.id) }}">
@@ -39,46 +39,47 @@
 </article>
 
 {% if invoice.timesheet %}
-{# =========================== #}
-<div class="page-break"></div>
-{# =========================== #}
+  {# =========================== #}
+  <div class="page-break"></div>
+  {# =========================== #}
 
-<article class="invoice">
-  <div class="invoice__branding">
-    {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% else %} <h2>{{company.name}}</h2>{% endif %}
-    <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
-  </div>
-  <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
-  <section class="invoice__summary">
+  <article class="invoice">
+    <div class="invoice__branding">
+      {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% else %} <h2>{{company.name}}</h2>{% endif %}
+      <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
+    </div>
+    <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+    <section class="invoice__summary">
 
 
-    <table class="timesheet">
-      <thead>
-        <th class="description">Description</th>
-        <th class="start">Date</th>
-        <th class="duration">Duration</th>
-        <th class="amount">Amount</th>
-      </thead>
-      {% for i in invoice.timesheet %}
-        <tr>
-          <td class="description">{{i.Description}}</td>
-          <td class="start">{{i.Start_date}}</td>
-          <td class="duration">{{i.Duration}}</td>
-          <td class="amount">{{i.Amount}}</td>
-        </tr>
-      {% endfor %}
-    </table>
-  </section>
-  <footer class="invoice__footer" class="clearfix">
-    <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
-  </footer>
-</article>
+      <table class="timesheet">
+        <thead>
+          <th class="description">Description</th>
+          <th class="start">Date</th>
+          <th class="duration">Duration</th>
+          <th class="amount">Amount</th>
+        </thead>
+        {% for i in invoice.timesheet %}
+          <tr>
+            <td class="description">{{i.Description}}</td>
+            <td class="start">{{i.Start_date}}</td>
+            <td class="duration">{{i.Duration}}</td>
+            <td class="amount">{{i.Amount}}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </section>
+    <footer class="invoice__footer" class="clearfix">
+      <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
+    </footer>
+  </article>
+
 {% else %}
-<div class="row">
-  <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
-    <div class="button">Upload Timesheet CSV</div>
+  <div class="row">
+    <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
+      <div class="button">upload Timesheet CSV</div>
+    </div>
   </div>
-</div>
 {% endif %}
 
 

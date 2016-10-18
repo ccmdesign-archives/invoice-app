@@ -18,7 +18,7 @@ from app import app, github, login_manager, db
 from models import Invoice, Client, Company, User, Service, Tax, Timesheet
 
 
-_MAX = 5
+_MAX = 3
 _SLUGY = Slugify(to_lower=True, separator='_')
 _ALLOWED_EXT = ['csv']
 
@@ -86,7 +86,7 @@ def load_user(id):
 def before_request():
     g.user = current_user
 
-    if g.user:
+    if g.user and g.user.is_authenticated:
         g.user.paid_invoices = 0
         g.user.open_invoices = 0
 
@@ -102,6 +102,7 @@ def before_request():
 @login_required
 def ajax_ok():
     return Response('ok')
+
 
 @app.route('/logout')
 def logout():
@@ -120,6 +121,16 @@ def index():
 
     else:
         return render_template('index.html')
+
+
+@app.route('/unlogged_invoice', methods=['GET'])
+def unlogged_invoice():
+    ctx = {}
+
+    ctx['invoice'] = {}
+    ctx['today'] = date.today()
+
+    return render_template('unlogged_invoice.html', **ctx)
 
 
 @app.route('/home', methods=['GET'])
@@ -455,5 +466,73 @@ def upload_timesheet(invoice_id):
                 return redirect(url_for('upload_timesheet', invoice_id=inv.id))
 
         return abort(400)
+
+    return abort(404)
+
+
+@app.route('/get_companies/<invoice_id>', methods=['GET'])
+@login_required
+def get_companies(invoice_id):
+    inv = Invoice.query.get(invoice_id)
+    txt = request.args.get('q').strip()
+
+    if inv:
+        mim = 'application/json'
+        res = {'query': txt, 'suggestions': []}
+        qry = Company.query.filter(
+            Company.user_id == g.user.id,
+            Company.name.ilike('%' + txt + '%')
+        ).limit(_MAX)
+
+        for com in qry.all():
+            ctx = {}
+            dic = {}
+
+            ctx['company'] = com
+            ctx['invoice'] = inv
+
+            if inv.taxes:
+                ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
+
+            else:
+                ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
+
+            dic['value'] = com.name
+            dic['data'] = render_template('invoice_company.html', **ctx)
+
+            res['suggestions'].append(dic)
+
+        return Response(response=dumps(res), status=200, mimetype=mim)
+
+    return abort(404)
+
+
+@app.route('/get_clients/<invoice_id>', methods=['GET'])
+@login_required
+def get_clients(invoice_id):
+    inv = Invoice.query.get(invoice_id)
+    txt = request.args.get('q').strip()
+
+    if inv:
+        mim = 'application/json'
+        res = {'query': txt, 'suggestions': []}
+        qry = Client.query.filter(
+            Client.user_id == g.user.id,
+            Client.name.ilike('%' + txt + '%')
+        ).limit(_MAX)
+
+        for cli in qry.all():
+            ctx = {}
+            dic = {}
+
+            ctx['client'] = cli
+            ctx['invoice'] = inv
+
+            dic['value'] = cli.name
+            dic['data'] = render_template('invoice_client.html', **ctx)
+
+            res['suggestions'].append(dic)
+
+        return Response(response=dumps(res), status=200, mimetype=mim)
 
     return abort(404)

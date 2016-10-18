@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% block body_class %}invoice-page{% endblock %}
+
+{% block content %}
+<div class="controls">
+  <a class="controls__button" href="#" title="Download PDF"><i>file_download</i></a>
+</div>
+
+<article class="invoice">
+  <header class="invoice__header">
+    <div class="invoice__branding">
+      <h2>Company Name</h2>
+      <h1>Invoice <input type="text" class="edit-invoice-input" placeholder="#201601"/></h1>
+    </div>
+    <div class="client-info">
+      <div class="large-12 column">
+        <h2>To <input type="text" class="name" placeholder="Client Name"/></h2>
+      </div>
+
+      <div class="large-6 column">
+        <input type="text" placeholder="Your vendor # with that client"/>
+        <input type="text" placeholder="Client Contact Name"/>
+        <input type="text" placeholder="Client Email"/>
+        <input type="text" placeholder="Client Phone"/>
+      </div>
+
+      <div class="large-6 column">
+        <h4>Address</h4>
+        <input type="text" placeholder="Client Address\nCity, State, Country, ZIP Code"/>
+      </div>
+    </div>
+    <div class="company-info">
+      <div class="large-12 column"><h2>From <input type="text" class="name" placeholder="Company Name"/></h2></div>
+
+      <div class="large-6 column">
+        <input type="text" placeholder="Contact Person Name"/>
+        <input type="text" placeholder="Contact Email"/>
+        <input type="text" placeholder="Contact Phone"/>
+
+        <h4 class="spaced">Address</h4>
+        <input type="text" placeholder="Company Address, City, State, Country"/>
+      </div>
+
+      <div class="large-6 column">
+        <div class="company-info__extra">
+          <h4>Banking Information</h4>
+          <input type="text" placeholder="Banking Information for Deposit"/>
+        </div>
+      </div>
+
+      <div class="large-6 column">
+        <div class="tax-info">
+          <h4 class="spaced">Government Registration</h4>
+          <table>
+            <tr class="invoice__interface">
+              <td>
+                <i class="invoice__button invoice__button--small material-icons add-button">add</i>
+                <input class="name" placeholder="Register"/>
+              </td>
+              <td><input placeholder="Number"/></td>
+              <td><input placeholder="Tax %"/></td></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="invoice__summary">
+    <input type="text" class="edit-invoice-input" placeholder="Services"/>
+    <input type="text" class="edit-invoice-input" placeholder="description"/>
+
+    <div class="service-info">
+    <table class="invoice__total">
+      <tbody>
+        <tr class="invoice__grand-total">
+          <td>Total</td>
+          <td class="invoice__amount" >$ 0.00</td>
+        </tr>
+      </tbody>
+    </table>
+
+    </div>
+  </section>
+  <footer class="invoice__footer clearfix">
+    <p class="invoice__date editable" contenteditable>{{ today }}</p>
+  </footer>
+</article>
+
+{% if invoice.timesheet %}
+{# =========================== #}
+<div class="page-break"></div>
+{# =========================== #}
+
+<article class="invoice">
+  <div class="invoice__branding">
+    <h1>Invoice <span class="editable" contenteditable>#201601</span></h1>
+  </div>
+  <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+  <section class="invoice__summary">
+
+
+    <table class="timesheet">
+      <thead>
+        <th class="description">Description</th>
+        <th class="start">Date</th>
+        <th class="duration">Duration</th>
+        <th class="amount">Amount</th>
+      </thead>
+      {% for i in invoice.timesheet %}
+        <tr>
+          <td class="description">{{i.Description}}</td>
+          <td class="start">{{i.Start_date}}</td>
+          <td class="duration">{{i.Duration}}</td>
+          <td class="amount">{{i.Amount}}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </section>
+  <footer class="invoice__footer" class="clearfix">
+    <p class="invoice__date editable" contenteditable>{{ today }}</p>
+  </footer>
+</article>
+{% else %}
+<div class="row">
+  <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
+    <div class="button">Upload Timesheet CSV</div>
+  </div>
+</div>
+{% endif %}
+
+
+
+{% endblock %}

@@ -5,7 +5,7 @@
     <div class="large-12 column">
       {#<i class="invoice__button invoice__button--small material-icons" contenteditable="false">add</i>#}
 
-      <h2>To <input type="text" class="name" name="name" placeholder="Client Name" value="{{ client.name }}"/></h2>
+      <h2>To <input id="client-autocomplete" type="text" class="name" name="name" placeholder="Client Name" value="{{ client.name }}" data-url="{{ url_for('get_clients', invoice_id=invoice.id) }}" autocomplete="off"/></h2>
     </div>
 
     <div class="large-6 column">

@@ -2,7 +2,7 @@
   <td><i class="material-icons">{% if invoice.paid %}check_box{% else %}check_box_outline_blank{% endif %}</i></td>
   <td><a href="{{ url_for('open_invoice', invoice_id=invoice.id) }}">{{ invoice.tag_number }}</a></td>
   <td>{{invoice.date }}</td>
-  <td>{{invoice.client or "" }}</td>
+  <td>{{invoice.client_obj.name or "" }}</td>
   <td>{{invoice.service_name}}</td>
   <td class="amount">{{ invoice.currency }} {{invoice.total}}</td>
   <td><i class="material-icons">file_download</i></td>
