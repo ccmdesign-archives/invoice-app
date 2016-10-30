@@ -34,6 +34,7 @@ $accent-color: orange;
   &:-ms-input-placeholder { @content }
 }
 
+@import "foundation";
 @import "button";
 @import "form";
 @import "invoice";

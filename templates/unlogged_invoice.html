@@ -13,63 +13,67 @@
       <h1>Invoice <input type="text" class="edit-invoice-input" placeholder="#201601"/></h1>
     </div>
     <div class="client-info">
-      <div class="large-12 column">
-        <h2>To <input type="text" class="name" placeholder="Client Name"/></h2>
-      </div>
+      <div class="row large-collapse">
+        <div class="large-12 column">
+          <h2>To <input type="text" class="name" placeholder="Client Name"/></h2>
+        </div>
 
-      <div class="large-6 column">
-        <input type="text" placeholder="Your vendor # with that client"/>
-        <input type="text" placeholder="Client Contact Name"/>
-        <input type="text" placeholder="Client Email"/>
-        <input type="text" placeholder="Client Phone"/>
-      </div>
+        <div class="large-6 column">
+          <input class="base-field" type="text" placeholder="Your vendor # with that client"/>
+          <input class="base-field" type="text" placeholder="Client Contact Name"/>
+          <input class="base-field" type="text" placeholder="Client Email"/>
+          <input class="base-field" type="text" placeholder="Client Phone"/>
+        </div>
 
-      <div class="large-6 column">
-        <h4>Address</h4>
-        <input type="text" placeholder="Client Address\nCity, State, Country, ZIP Code"/>
+        <div class="large-6 column">
+          <h4>Address</h4>
+          <textarea name="" id="" placeholder="Client Address"></textarea>
+        </div>
       </div>
     </div>
     <div class="company-info">
-      <div class="large-12 column"><h2>From <input type="text" class="name" placeholder="Company Name"/></h2></div>
+      <div class="row large-collapse">
+        <div class="large-12 column"><h2>From <input type="text" class="name" placeholder="Company Name"/></h2></div>
 
-      <div class="large-6 column">
-        <input type="text" placeholder="Contact Person Name"/>
-        <input type="text" placeholder="Contact Email"/>
-        <input type="text" placeholder="Contact Phone"/>
+        <div class="large-6 column">
+          <input class="base-field" type="text" placeholder="Contact Person Name"/>
+          <input class="base-field" type="text" placeholder="Contact Email"/>
+          <input class="base-field" type="text" placeholder="Contact Phone"/>
 
-        <h4 class="spaced">Address</h4>
-        <input type="text" placeholder="Company Address, City, State, Country"/>
-      </div>
-
-      <div class="large-6 column">
-        <div class="company-info__extra">
-          <h4>Banking Information</h4>
-          <input type="text" placeholder="Banking Information for Deposit"/>
+          <h4 class="spaced">Address</h4>
+          <textarea name="" id="" placeholder="Company Address"></textarea>
         </div>
-      </div>
 
-      <div class="large-6 column">
-        <div class="tax-info">
-          <h4 class="spaced">Government Registration</h4>
-          <table>
-            <tr class="invoice__interface">
-              <td>
-                <i class="invoice__button invoice__button--small material-icons add-button">add</i>
-                <input class="name" placeholder="Register"/>
-              </td>
-              <td><input placeholder="Number"/></td>
-              <td><input placeholder="Tax %"/></td></td>
-            </tr>
-          </table>
+        <div class="large-6 column">
+          <div class="company-info__extra">
+            <h4>Banking Information</h4>
+            <textarea class="bank-info" name="" id="" placeholder="Banking Information for Deposit"></textarea>
+          </div>
+        </div>
+
+        <div class="large-6 column">
+          <div class="tax-info">
+            <h4 class="spaced">Government Registration</h4>
+            <table>
+              <tr class="invoice__interface">
+                <td>
+                  <i class="invoice__button invoice__button--small material-icons add-button">add</i>
+                  <input class="name base-field small" placeholder="Register"/>
+                </td>
+                <td><input class="base-field small" placeholder="Number"/></td>
+                <td><input class="base-field small" placeholder="Tax %"/></td></td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     </div>
   </header>
 
   <section class="invoice__summary">
-    <input type="text" class="edit-invoice-input" placeholder="Services"/>
-    <input type="text" class="edit-invoice-input" placeholder="description"/>
-
+    <input type="text" class="invoice__title edit-invoice-input" placeholder="Services"/>
+    <textarea class="invoice__description edit-invoice-input" placeholder="Description"/></textarea>
+    
     <div class="service-info">
     <table class="invoice__total">
       <tbody>
@@ -83,7 +87,7 @@
     </div>
   </section>
   <footer class="invoice__footer clearfix">
-    <p class="invoice__date editable" contenteditable>{{ today }}</p>
+    <p class="invoice__date editable" contenteditable>{{ today.strftime('%Y/%m/%d') }}</p>
   </footer>
 </article>
 

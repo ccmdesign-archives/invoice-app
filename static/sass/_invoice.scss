@@ -5,7 +5,14 @@
   flex-flow: column;
   position: relative;
 
-  .editable  {
+  input,
+  textarea {
+    display: block;
+    width: 100%;
+  }
+
+  input,
+  textarea  {
     &:hover { background-color: rgba(black, .1); }
     &:focus {
       -webkit-appearance: none;
@@ -27,19 +34,24 @@
       flex: 1;
       text-align: right;
 
-      span {
+      input[type="text"] {
         font-size: 20px;
         display: inline-block;
-        margin-left: 20px;
+        margin: 5px 0 0 20px;
         color: rgba(black, .5);
+        text-align: right;
+        width: 100px;
+        float: right;
+
+        &:hover {
+          border-bottom: 1px solid rgba(black, .1);
+        }
       }
     }
   }
 
   &__header,
-  &__summary {
-     flex: 1;
-  }
+  &__summary { flex: 1; }
 
   &__title {
     font-weight: bold;
@@ -50,9 +62,7 @@
     padding: 10px 0;
     margin-top: 40px;
 
-    input {
-      color: currentColor;
-    }
+    input { color: currentColor; }
   }
 
   .company-info,
@@ -84,11 +94,31 @@
       }
     }
 
-    p {
-      margin: 0;
+    p,
+    .base-field,
+    textarea {
+      margin: 5px 0;
       padding: 0 5px;
       font-size: 11pt;
       line-height: 1.3;
+      display: block;
+      width: 100%;
+      border: 0;
+    }
+
+    textarea {
+      border: 0;
+      padding: 5px;
+      height: 80px;
+      border-radius: 0;      
+      min-height: 80px;
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+    }
+
+    .bank-info {
+      height: 160px;
     }
 
     &__extra {
@@ -117,7 +147,7 @@
 
     &--small {
       left: 25px;
-      margin-top: -3px !important;
+      margin-top: 0;
       padding: 3px !important;
       font-size: 16px !important;
     }
@@ -181,7 +211,15 @@
   &__timesheet-title { text-align: center; }
 }
 
-
+textarea {
+  border: 0;
+  padding: 5px;
+  border-radius: 0;      
+  min-height: 60px;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+}
 
 
 
