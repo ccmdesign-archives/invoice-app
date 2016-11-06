@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
 # Python Core.
+from csv import reader
 from json import dumps, loads
 from datetime import date
 
 # Python Libs.
-from flask import g, session
+from flask import g, session, flash
 from flask import abort, render_template, request, Response, url_for, redirect
-from flask import flash
-from flask_login import login_user, logout_user, current_user, login_required
 from slugify import Slugify
+from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.sql.expression import func
+from flask_weasyprint import HTML, render_pdf
 
 # Invoice.
 from app import app, github, login_manager, db
@@ -194,7 +195,6 @@ def create_invoice():
 
 
 @app.route('/invoice/<invoice_id>', methods=['GET'])
-@login_required
 def open_invoice(invoice_id):
     inv = Invoice.query.get(invoice_id)
 
@@ -206,6 +206,7 @@ def open_invoice(invoice_id):
         ctx['invoice'] = inv
         ctx['company'] = Company.query.get(inv.company) if inv.company else {}
         ctx['services'] = Service.query.filter(Service.invoice == inv.id)
+        ctx['timesheets'] = Timesheet.query.filter(Timesheet.invoice == inv.id)
 
         if inv.taxes:
             ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
@@ -430,40 +431,43 @@ def edit_invoice_tax(invoice_id):
     return abort(404)
 
 
-@app.route('/edit_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
+@app.route('/upload_timesheet/<invoice_id>', methods=['GET', 'POST'])
 @login_required
 def upload_timesheet(invoice_id):
     def allowed_file(file):
         return '.' in file and file.rsplit('.', 1)[1] in _ALLOWED_EXT
 
-    inv = Invoice.query.get(invoice_id)
+    i = Invoice.query.get(invoice_id)
 
-    if inv:
+    if i:
         if request.method == 'GET':
-            ctx = {}
+            c = {}
 
-            ctx['invoice'] = inv
-            ctx['timesheets'] = Tax.query.filter(Timesheet.invoice == inv.id)
+            c['invoice'] = i
+            c['company'] = Company.query.get(i.company) if i.company else {}
+            c['timesheets'] = Timesheet.query.filter(Timesheet.invoice == i.id)
 
-            return render_template('invoice_timesheet.html', **ctx)
+            return render_template('invoice_timesheet.html', **c)
 
         elif request.method == 'POST' and 'file' in request.files:
             file = request.files['file']
             name = secure_filename(file.filename).strip() if file else ''
 
             if name and allowed_file(name):
-                for i in file:
+                for row in reader(file):
                     tms = Timesheet(invoice=invoice_id)
 
-                    tms.amount = i['amount']
-                    tms.duration = i['duration']
-                    tms.description = i['description']
+                    tms.amount = int(row[0])
+                    tms.duration = int(row[1])
+                    tms.description = row[2]
+
+                    i.total += tms.amount
 
                     db.session.add(tms)
 
                 db.session.commit()
 
-                return redirect(url_for('upload_timesheet', invoice_id=inv.id))
+                return redirect(url_for('upload_timesheet', invoice_id=i.id))
 
         return abort(400)
 
@@ -536,3 +540,28 @@ def get_clients(invoice_id):
         return Response(response=dumps(res), status=200, mimetype=mim)
 
     return abort(404)
+
+
+@app.route('/download_invoice/<invoice_id>', methods=['GET'])
+@login_required
+def download_invoice(invoice_id):
+    inv = Invoice.query.get(invoice_id)
+
+    if inv:
+        ctx = {}
+
+        ctx['taxes'] = {}
+        ctx['client'] = Client.query.get(inv.client) if inv.client else {}
+        ctx['invoice'] = inv
+        ctx['company'] = Company.query.get(inv.company) if inv.company else {}
+        ctx['services'] = Service.query.filter(Service.invoice == inv.id)
+        ctx['timesheets'] = Timesheet.query.filter(Timesheet.invoice == inv.id)
+
+        if inv.taxes:
+            ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
+
+        elif inv.company:
+            ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
+
+        # return render_pdf(url_for('open_invoice', invoice_id=inv.id))
+        return render_pdf(HTML(string=render_template('print.html', **ctx)))

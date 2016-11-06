@@ -1,0 +1,52 @@
+{% if timesheets.count() %}
+  {# =========================== #}
+  <div class="page-break"></div>
+  {# =========================== #}
+
+  <article class="invoice">
+    <div class="invoice__branding">
+      {% if company %}
+        {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
+        <h2>{{company.name}}</h2>
+      {% endif %}
+      <h1>Invoice <input type="text" class="edit-invoice-input" name="tag_number" placeholder="#{{ invoice.tag_number }}" value="{{ invoice.tag_number }}"/></h1>
+    </div>
+    <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+    <section class="invoice__summary">
+
+
+      <table class="timesheet">
+        <thead>
+          <th class="description">Description</th>
+          <th class="start">Date</th>
+          <th class="duration">Duration</th>
+          <th class="amount">Amount</th>
+        </thead>
+
+        <tbody>
+          {% for i in timesheets %}
+            <tr>
+              <td class="description">{{i.description}}</td>
+              <td class="start">{{i.date}}</td>
+              <td class="duration">{{i.duration}}</td>
+              <td class="amount">{{i.amount}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    <footer class="invoice__footer clearfix">
+      <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
+    </footer>
+  </article>
+
+{% else %}
+  <div class="row">
+    <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
+      <form id="upload-timesheet" action="{{ url_for('upload_timesheet', invoice_id=invoice.id) }}" enctype="multipart/form-data" method="post">
+        <input type="file" name="file">
+        <button class="button" type="submit">upload Timesheet CSV</button>
+      </form>
+    </div>
+  </div>
+{% endif %}

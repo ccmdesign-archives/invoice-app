@@ -36,50 +36,8 @@
   </footer>
 </article>
 
-{% if invoice.timesheet %}
-  {# =========================== #}
-  <div class="page-break"></div>
-  {# =========================== #}
-
-  <article class="invoice">
-    <div class="invoice__branding">
-      {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% else %} <h2>{{company.name}}</h2>{% endif %}
-      <h1>Invoice <span class="editable" contenteditable>#201604</span></h1>
-    </div>
-    <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
-    <section class="invoice__summary">
-
-
-      <table class="timesheet">
-        <thead>
-          <th class="description">Description</th>
-          <th class="start">Date</th>
-          <th class="duration">Duration</th>
-          <th class="amount">Amount</th>
-        </thead>
-        {% for i in invoice.timesheet %}
-          <tr>
-            <td class="description">{{i.Description}}</td>
-            <td class="start">{{i.Start_date}}</td>
-            <td class="duration">{{i.Duration}}</td>
-            <td class="amount">{{i.Amount}}</td>
-          </tr>
-        {% endfor %}
-      </table>
-    </section>
-    <footer class="invoice__footer" class="clearfix">
-      <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
-    </footer>
-  </article>
-
-{% else %}
-  <div class="row">
-    <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
-      <div class="button">upload Timesheet CSV</div>
-    </div>
-  </div>
-{% endif %}
-
-
+<div class="timesheet-info">
+  {% include 'invoice_timesheet.html' %}
+</div>
 
 {% endblock %}

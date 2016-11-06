@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}Invoice App - Interface 0.1{% endblock %}</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Quicksand|Roboto+Condensed" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    {% assets "scss_all" %}
+      <link rel=stylesheet type=text/css href="{{ ASSET_URL }}">
+    {% endassets %}
+  </head>
+
+  <body class="invoice-page">
+    <article class="invoice" data-invoice-id="{{ invoice.id }}"  data-url="{{ url_for('edit_invoice', invoice_id=invoice.id) }}">
+      <header class="invoice__header">
+        <div class="invoice__branding">
+          {% if company %}
+            {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
+            <h2>{{company.name}}</h2>
+          {% endif %}
+          <h1>Invoice <input type="text" class="edit-invoice-input" name="tag_number" placeholder="#{{ invoice.tag_number }}" value="{{ invoice.tag_number }}"/></h1>
+        </div>
+        <div class="client-info">
+          <div class="row large-collapse">
+            <form id="client-form" method="post" action="{{ url_for('edit_invoice_client', invoice_id=invoice.id) }}">
+              <input type="hidden" name="id" value="{{ client.id }}"/>
+
+              <div class="large-12 column">
+                {#<i class="invoice__button invoice__button--small material-icons" contenteditable="false">add</i>#}
+
+                <h2>To <input id="client-autocomplete" type="text" class="name" name="name" placeholder="Client Name" value="{{ client.name }}" data-url="{{ url_for('get_clients', invoice_id=invoice.id) }}" autocomplete="off"/></h2>
+              </div>
+
+              <div class="large-6 column">
+                <input type="text" name="vendor_number" placeholder="Your vendor # with that client" value="{{ client.vendor_number }}"/>
+                <input type="text" name="contact" placeholder="Client Contact Name" value="{{ client.contact }}"/>
+                <input type="text" name="email" placeholder="Client Email" value="{{ client.email }}"/>
+                <input type="text" name="phone" placeholder="Client Phone" value="{{ client.phone }}"/>
+              </div>
+
+              <div class="large-6 column">
+                <h4>Address</h4>
+                <input type="text" name="address" placeholder="Client Address\nCity, State, Country, ZIP Code" value="{{ client.phone }}"/>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="company-info">
+          <div class="row large-collapse">
+            <form id="company-form" method="post" action="{{ url_for('edit_invoice_company', invoice_id=invoice.id) }}">
+              <input type="hidden" name="id" value="{{ company.id }}"/>
+
+              <div class="large-12 column"><h2>From <input id="company-autocomplete" type="text" class="name" name="name" placeholder="Company Name" value="{{ company.name }}" data-url="{{ url_for('get_companies', invoice_id=invoice.id) }}" autocomplete="off"/></h2></div>
+
+              <div class="large-6 column">
+                <input type="text" name="contact" placeholder="Contact Person Name" value="{{ company.contact }}"/>
+                <input type="text" name="email" placeholder="Contact Email" value="{{ company.email }}"/>
+                <input type="text" name="phone" placeholder="Contact Phone" value="{{ company.phone }}"/>
+
+                <h4 class="spaced">Address</h4>
+                <input type="text" name="address" placeholder="Company Address, City, State, Country" value="{{ company.address }}"/>
+              </div>
+
+              <div class="large-6 column">
+                <div class="company-info__extra">
+                  <h4>Banking Information</h4>
+                  <input type="text" name="banking_info" placeholder="Banking Information for Deposit" value="{{ company.banking_info }}"/>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="large-6 column">
+            <div class="tax-info">
+              <h4 class="spaced">Government Registration</h4>
+                <table>
+                {% for i in taxes %}
+                  <tr class="edit-tax" data-url="{{ url_for('edit_invoice_tax', invoice_id=invoice.id) }}">
+                    <td>
+                      <input type="hidden" class="name" name="id" value="{{ i.id }}"/>
+                      <input name="name" placeholder="Register" value="{{ i.name }}"/>
+                    </td>
+                    <td><input name="number" placeholder="Number" value="{{ i.number }}"/></td>
+                    <td><input name="tax" placeholder="Tax %" value="{{ i.tax }}"/></td></td>
+                  </tr>
+                {% endfor %}
+
+                <tr class="invoice__interface" id="create-tax" data-url="{{ url_for('create_invoice_tax', invoice_id=invoice.id) }}">
+                  <td><i class="invoice__button invoice__button--small material-icons add-button">add</i><input class="name" name="name" placeholder="Register"/></td>
+                  <td><input name="number" placeholder="Number"/></td>
+                  <td><input name="tax" placeholder="Tax %"/></td></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="invoice__summary">
+        <input type="text" class="edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service_name }}"/>
+        <input type="text" class="edit-invoice-input" name="service_description" placeholder="description" value="{{ invoice.service_description }}"/>
+
+        <div class="service-info">
+          <table class="invoice__total">
+            <tbody>
+              {% for i in services %}
+                {% if i.tax %}
+                  <tr>
+                    <td>{{i.name}}</td><td>{{invoice.amount * i.tax | round(2) }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+
+              <tr class="invoice__grand-total">
+                <td>Total</td>
+                <td class="invoice__amount" >{{ invoice.currency }} {{invoice.total}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <footer class="invoice__footer clearfix">
+        <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
+      </footer>
+    </article>
+
+    {% if timesheets.count() %}
+      <div class="timesheet-info">
+        <article class="invoice">
+          <div class="invoice__branding">
+            {% if company %}
+              {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
+              <h2>{{company.name}}</h2>
+            {% endif %}
+            <h1>Invoice <input type="text" class="edit-invoice-input" name="tag_number" placeholder="#{{ invoice.tag_number }}" value="{{ invoice.tag_number }}"/></h1>
+          </div>
+          <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+          <section class="invoice__summary">
+
+
+            <table class="timesheet">
+              <thead>
+                <th class="description">Description</th>
+                <th class="start">Date</th>
+                <th class="duration">Duration</th>
+                <th class="amount">Amount</th>
+              </thead>
+
+              <tbody>
+                {% for i in timesheets %}
+                  <tr>
+                    <td class="description">{{i.description}}</td>
+                    <td class="start">{{i.date}}</td>
+                    <td class="duration">{{i.duration}}</td>
+                    <td class="amount">{{i.amount}}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </section>
+          <footer class="invoice__footer clearfix">
+            <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
+          </footer>
+        </article>
+      </div>
+    {% endif %}
+  </body>
+</html>

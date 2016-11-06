@@ -3,3 +3,4 @@
 invoice-app-master/
 migrations/*
 static/.webassets-cache/
+static/.sass-cache/
