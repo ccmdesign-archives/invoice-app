@@ -2,8 +2,10 @@
 
 # Python Core.
 from csv import reader
+from time import strptime
 from json import dumps, loads
-from datetime import date
+from decimal import Decimal
+from datetime import date, timedelta
 
 # Python Libs.
 from flask import g, session, flash
@@ -454,16 +456,31 @@ def upload_timesheet(invoice_id):
             name = secure_filename(file.filename).strip() if file else ''
 
             if name and allowed_file(name):
-                for row in reader(file):
-                    tms = Timesheet(invoice=invoice_id)
+                for idx, row in enumerate(reader(file)):
+                    if idx > 0 and len(row) == 14:
+                        tms = Timesheet(invoice=invoice_id)
+                        fun = lambda x: int(x) if x.strip() else 0
+                        lst = list(map(fun, row[7].split('-')))
 
-                    tms.amount = int(row[0])
-                    tms.duration = int(row[1])
-                    tms.description = row[2]
+                        if len(lst) == 3 and all(lst):
+                            tms.date = date(*lst)
 
-                    i.total += tms.amount
+                        if row[11].strip():
+                            aux = strptime(row[11], '%H:%M:%S')
+                            kwa = {}
 
-                    db.session.add(tms)
+                            kwa['hours'] = aux.tm_hour
+                            kwa['minutes'] = aux.tm_min
+                            kwa['seconds'] = aux.tm_sec
+
+                            tms.duration = timedelta(**kwa).total_seconds()
+
+                        tms.amount = Decimal(row[13] if row[13] else 0)
+                        tms.description = row[5]
+
+                        i.total += tms.amount
+
+                        db.session.add(tms)
 
                 db.session.commit()
 

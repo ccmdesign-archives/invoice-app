@@ -19,18 +19,29 @@ $(function() {
             $inp.parse({
                 config: {
                     complete: function(results, file) {
-                        results.data.forEach(function (row) {
-                            var html = '<tr>';
+                        var total = 0;
 
-                              html += '<td class="description">' + row[2] + '</td>';
-                              html += '<td class="start">' + '' + '</td>';
-                              html += '<td class="duration">' + row[1] + '</td>';
-                              html += '<td class="amount">' + row[0] + '</td>';
+                        results.data.forEach(function (row, idx) {
+                            if (idx && row.length == 14) {
+                                var html = '<tr>';
 
-                              html += '</tr>';
+                                html += '<td class="description">' + row[5] + '</td>';
+                                html += '<td class="start">' + row[11] + '</td>';
+                                html += '<td class="duration">' + row[1] + '</td>';
+                                html += '<td class="amount">' + row[13] + '</td>';
 
-                              $('.timesheet tbody').append(html);
+                                html += '</tr>';
+                                total += parseFloat(row[13]);
+
+                                $('.timesheet tbody').append(html);
+                            }
                         });
+
+                        if (total) {
+                            $('.invoice__amount').text(total);
+                        }
+
+                        $('.page-break, .invoice').removeClass('hidden');
                     }
                 }
             });

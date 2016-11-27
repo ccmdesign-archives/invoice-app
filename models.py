@@ -9,9 +9,9 @@ USER_ID_SIZE = 32
 
 class Invoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    total = db.Column(db.Integer, default=0)
+    total = db.Column(db.DECIMAL(10, 2), default=0.00)
     tag_number = db.Column(db.String(64), default='', unique=True)
-    currency = db.Column(db.String(64), default='')
+    currency = db.Column(db.String(64), default='$')
     paid = db.Column(db.Boolean, default=False)
     date = db.Column(db.Date, default=date.today())
     service_name = db.Column(db.String(64), default='')
@@ -32,7 +32,7 @@ class Client(db.Model):
     phone = db.Column(db.String(64), default='')
     address = db.Column(db.String(256), default='')
     contact = db.Column(db.String(128), default='')
-    currency = db.Column(db.String(64), default='')
+    currency = db.Column(db.String(64), default='$')
     vendor_number = db.Column(db.String(64), default='')
 
     user_id = db.Column(db.String(USER_ID_SIZE), db.ForeignKey('user.id'))
@@ -46,7 +46,7 @@ class Company(db.Model):
     phone = db.Column(db.String(64), default='')
     address = db.Column(db.String(256), default='')
     contact = db.Column(db.String(128), default='')
-    currency = db.Column(db.String(64), default='')
+    currency = db.Column(db.String(64), default='$')
     banking_info = db.Column(db.String(256), default='')
 
     user_id = db.Column(db.String(USER_ID_SIZE), db.ForeignKey('user.id'))
@@ -104,7 +104,7 @@ class User(db.Model):
 class Timesheet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date, default=date.today())
-    amount = db.Column(db.Integer, default=0)
+    amount = db.Column(db.DECIMAL(10, 2), default=0.00)
     duration = db.Column(db.Integer, default=0)
     description = db.Column(db.String(512), default='')
 

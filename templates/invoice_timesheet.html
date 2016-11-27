@@ -28,8 +28,8 @@
             <tr>
               <td class="description">{{i.description}}</td>
               <td class="start">{{i.date}}</td>
-              <td class="duration">{{i.duration}}</td>
-              <td class="amount">{{i.amount}}</td>
+              <td class="duration">{{format_duration(i.duration)}}</td>
+              <td class="amount">{{format_price(i.amount, invoice.currency)}}</td>
             </tr>
           {% endfor %}
         </tbody>

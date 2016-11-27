@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from time import strftime, gmtime
+
 from flask import Flask
 from flask_oauth import OAuth
 from flask_login import LoginManager
@@ -39,6 +42,22 @@ github = oauth.remote_app(
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+
+####################################
+#        Context Processors
+####################################
+#
+@app.context_processor
+def utility_processor():
+    def format_duration(s):
+        return strftime('%H:%M:%S', gmtime(s))
+
+    def format_price(amount, currency='$'):
+        return '{1} {0:.2f}'.format(amount, currency)
+
+    return dict(format_duration=format_duration, format_price=format_price)
+
 
 import views  # noqa : disable pep8 on this line
 import models  # noqa : disable pep8 on this line

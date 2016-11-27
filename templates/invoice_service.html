@@ -10,7 +10,7 @@
 
     <tr class="invoice__grand-total">
       <td>Total</td>
-      <td class="invoice__amount" >{{ invoice.currency }} {{invoice.total}}</td>
+      <td class="invoice__amount" >{{format_price(invoice.total, invoice.currency)}}</td>
     </tr>
   </tbody>
 </table>
