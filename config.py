@@ -1,13 +1,27 @@
 # -*- coding: utf-8 -*-
 
-GITHUB_CONFIG = {
-    'app_id': '7192886d684f830eb27e',
-    'app_secret': '09a0f1c1360cb96e67bcc50bc924a9c7347fb14d',
+# Python Core.
+from os import getenv
+from os.path import join, dirname, isfile
+
+# Python Libs.
+from dotenv import read_dotenv
+
+
+_ENV_FILE = join(dirname(__file__), '.env')
+
+
+if isfile(_ENV_FILE) and not getenv('DATABASE_URL'):
+    read_dotenv(_ENV_FILE)
+
+GITHUB_AUTH = {
+    'app_id': getenv('GITHUB_APP_ID', ''),
+    'app_secret': getenv('GITHUB_APP_SECRET', ''),
     'scope': ['user:email']
 }
 
-WTF_CSRF_ENABLED = True
-SECRET_KEY = 'invoice-never-guess'
-DEBUG = True
-
-SQLALCHEMY_DATABASE_URI = 'postgresql://guilherme:password@localhost/invoice'
+PORT = int(getenv('APP_PORT', 5000))
+DEBUG = eval(getenv('DEBUG', 'True').title())
+SECRET_KEY = getenv('SECRET_KEY', 'invoice-never-guess')
+WTF_CSRF_ENABLED = eval(getenv('WTF_CSRF_ENABLED', 'True').title())
+SQLALCHEMY_DATABASE_URI = getenv('DATABASE_URL', '')

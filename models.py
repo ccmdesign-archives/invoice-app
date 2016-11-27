@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from app import db
+# Python Core.
 from datetime import date
 
+# Invoice.
+from app import db
 
-USER_ID_SIZE = 32
+
+_USER_ID_SIZE = 32
 
 
 class Invoice(db.Model):
@@ -17,7 +20,7 @@ class Invoice(db.Model):
     service_name = db.Column(db.String(64), default='')
     service_description = db.Column(db.String(512), default='')
 
-    user_id = db.Column(db.String(USER_ID_SIZE), db.ForeignKey('user.id'))
+    user_id = db.Column(db.String(_USER_ID_SIZE), db.ForeignKey('user.id'))
     client = db.Column(db.Integer, db.ForeignKey('client.id'), default=None)
     company = db.Column(db.Integer, db.ForeignKey('company.id'), default=None)
     taxes = db.relationship('Tax')
@@ -35,7 +38,7 @@ class Client(db.Model):
     currency = db.Column(db.String(64), default='$')
     vendor_number = db.Column(db.String(64), default='')
 
-    user_id = db.Column(db.String(USER_ID_SIZE), db.ForeignKey('user.id'))
+    user_id = db.Column(db.String(_USER_ID_SIZE), db.ForeignKey('user.id'))
     invoices = db.relationship('Invoice', backref='client_obj')
 
 
@@ -49,7 +52,7 @@ class Company(db.Model):
     currency = db.Column(db.String(64), default='$')
     banking_info = db.Column(db.String(256), default='')
 
-    user_id = db.Column(db.String(USER_ID_SIZE), db.ForeignKey('user.id'))
+    user_id = db.Column(db.String(_USER_ID_SIZE), db.ForeignKey('user.id'))
     taxes = db.relationship('Tax')
     invoices = db.relationship('Invoice')
 
@@ -73,7 +76,7 @@ class Service(db.Model):
 
 
 class User(db.Model):
-    id = db.Column(db.String(USER_ID_SIZE), primary_key=True)
+    id = db.Column(db.String(_USER_ID_SIZE), primary_key=True)
     name = db.Column(db.String(128), default='')
     email = db.Column(db.String(128), unique=True)
     gh_login = db.Column(db.String(128), unique=True)

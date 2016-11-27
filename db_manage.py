@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
+# Python Libs.
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
+# Invoice.
 from app import app, db
+
+
 app.config.from_object('config')
 
 migrate = Migrate(app, db)

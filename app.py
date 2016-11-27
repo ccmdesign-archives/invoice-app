@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
 
+# Python Core.
 from time import strftime, gmtime
 
+# Python Libs.
 from flask import Flask
 from flask_oauth import OAuth
 from flask_login import LoginManager
 from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
-from config import GITHUB_CONFIG
+
+
+_SASS_INPUT = 'sass/custom-styles.scss'
+_SASS_OUTPUT = 'css/styles.css'
+
 
 app = Flask(__name__)
 app.config.from_object('config')
+
 db = SQLAlchemy(app)
 
 assets = Environment(app)
 assets.url = app.static_url_path
-scss = Bundle('sass/custom-styles.scss', filters='pyscss', output='css/styles.css')
+scss = Bundle(_SASS_INPUT, filters='pyscss', output=_SASS_OUTPUT)
 assets.register('scss_all', scss)
 
 ####################################
@@ -30,9 +37,9 @@ github = oauth.remote_app(
     access_token_method='POST',
     access_token_url='https://github.com/login/oauth/access_token',
     authorize_url='https://github.com/login/oauth/authorize',
-    consumer_key=GITHUB_CONFIG['app_id'],
-    consumer_secret=GITHUB_CONFIG['app_secret'],
-    request_token_params={'scope': GITHUB_CONFIG['scope']}
+    consumer_key=app.config['GITHUB_AUTH']['app_id'],
+    consumer_secret=app.config['GITHUB_AUTH']['app_secret'],
+    request_token_params={'scope': app.config['GITHUB_AUTH']['scope']}
 )
 
 ####################################
@@ -59,5 +66,12 @@ def utility_processor():
     return dict(format_duration=format_duration, format_price=format_price)
 
 
-import views  # noqa : disable pep8 on this line
-import models  # noqa : disable pep8 on this line
+from views import *  # noqa : disable pep8 on this line
+from models import *  # noqa : disable pep8 on this line
+
+
+if __name__ == '__main__':
+    port = app.config['PORT']
+    debug = app.config['DEBUG']
+
+    app.run(debug=debug, port=port, threaded=True, use_reloader=True)
