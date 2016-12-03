@@ -11,8 +11,9 @@ from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 
 
-_SASS_INPUT = 'sass/custom-styles.scss'
-_SASS_OUTPUT = 'css/styles.css'
+_SASS_IN = 'sass/custom-styles.scss'
+_CSS_OUT = '/sass/**/*.scss'
+_SASS_DEP = 'css/styles.css'
 
 
 app = Flask(__name__)
@@ -22,7 +23,7 @@ db = SQLAlchemy(app)
 
 assets = Environment(app)
 assets.url = app.static_url_path
-scss = Bundle(_SASS_INPUT, filters='pyscss', output=_SASS_OUTPUT)
+scss = Bundle(_SASS_IN, filters='pyscss', depends=(_SASS_DEP), output=_CSS_OUT)
 assets.register('scss_all', scss)
 
 ####################################

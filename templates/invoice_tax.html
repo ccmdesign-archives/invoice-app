@@ -1,19 +1,19 @@
 <h4 class="spaced">Government Registration</h4>
-  <table>
+<table>
   {% for i in taxes %}
-    <tr class="edit-tax" data-url="{{ url_for('edit_invoice_tax', invoice_id=invoice.id) }}">
+    <tr class="edit-tax invoice__interface" data-url="{{ url_for('edit_invoice_tax', invoice_id=invoice.id) }}">
       <td>
-        <input type="hidden" class="name" name="id" value="{{ i.id }}"/>
-        <input name="name" placeholder="Register" value="{{ i.name }}"/>
+        <input type="hidden" name="id" value="{{ i.id }}"/>
+        <input class="name base-field small" name="name" placeholder="Register" value="{{ i.name }}"/>
       </td>
-      <td><input name="number" placeholder="Number" value="{{ i.number }}"/></td>
-      <td><input name="tax" placeholder="Tax %" value="{{ i.tax }}"/></td></td>
+      <td><input class="base-field small" name="number" placeholder="Number" value="{{ i.number }}"/></td>
+      <td><input class="base-field small" name="tax" placeholder="Tax %" value="{{ i.tax }}"/></td></td>
     </tr>
   {% endfor %}
 
   <tr class="invoice__interface" id="create-tax" data-url="{{ url_for('create_invoice_tax', invoice_id=invoice.id) }}">
-    <td><i class="invoice__button invoice__button--small material-icons add-button">add</i><input class="name" name="name" placeholder="Register"/></td>
-    <td><input name="number" placeholder="Number"/></td>
-    <td><input name="tax" placeholder="Tax %"/></td></td>
+    <td><i class="invoice__button invoice__button--small material-icons add-button">add</i><input class="name base-field small" name="name" placeholder="Register"/></td>
+    <td><input class="base-field small" name="number" placeholder="Number"/></td>
+    <td><input class="base-field small" name="tax" placeholder="Tax %"/></td></td>
   </tr>
 </table>

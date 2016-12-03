@@ -1,26 +1,26 @@
-<div class="row large-collapse">
-  <form id="company-form" method="post" action="{{ url_for('edit_invoice_company', invoice_id=invoice.id) }}">
+<form id="company-form" method="post" action="{{ url_for('edit_invoice_company', invoice_id=invoice.id) }}">
+  <div class="row large-collapse">
     <input type="hidden" name="id" value="{{ company.id }}"/>
 
     <div class="large-12 column"><h2>From <input id="company-autocomplete" type="text" class="name" name="name" placeholder="Company Name" value="{{ company.name }}" data-url="{{ url_for('get_companies', invoice_id=invoice.id) }}" autocomplete="off"/></h2></div>
 
     <div class="large-6 column">
-      <input type="text" name="contact" placeholder="Contact Person Name" value="{{ company.contact }}"/>
-      <input type="text" name="email" placeholder="Contact Email" value="{{ company.email }}"/>
-      <input type="text" name="phone" placeholder="Contact Phone" value="{{ company.phone }}"/>
+      <input type="text" class="base-field" name="contact" placeholder="Contact Person Name" value="{{ company.contact }}"/>
+      <input type="text" class="base-field" name="email" placeholder="Contact Email" value="{{ company.email }}"/>
+      <input type="text" class="base-field" name="phone" placeholder="Contact Phone" value="{{ company.phone }}"/>
 
       <h4 class="spaced">Address</h4>
-      <input type="text" name="address" placeholder="Company Address, City, State, Country" value="{{ company.address }}"/>
+      <textarea name="address" placeholder="Company Address, City, State, Country">{{ company.address }}</textarea>
     </div>
 
     <div class="large-6 column">
       <div class="company-info__extra">
         <h4>Banking Information</h4>
-        <input type="text" name="banking_info" placeholder="Banking Information for Deposit" value="{{ company.banking_info }}"/>
+        <textarea class="bank-info" name="banking_info" placeholder="Banking Information for Deposit">{{ company.banking_info }}</textarea>
       </div>
     </div>
-  </form>
-</div>
+  </div>
+</form>
 
 <div class="large-6 column">
   <div class="tax-info">

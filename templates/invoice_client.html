@@ -6,18 +6,17 @@
 
       <h2>To <input id="client-autocomplete" type="text" class="name" name="name" placeholder="Client Name" value="{{ client.name }}" data-url="{{ url_for('get_clients', invoice_id=invoice.id) }}" autocomplete="off"/></h2>
     </div>
-  </div>
-  <div class="row large-collapse">
+
     <div class="large-6 column">
-      <input type="text" name="vendor_number" placeholder="Your vendor # with that client" value="{{ client.vendor_number }}"/>
-      <input type="text" name="contact" placeholder="Client Contact Name" value="{{ client.contact }}"/>
-      <input type="text" name="email" placeholder="Client Email" value="{{ client.email }}"/>
-      <input type="text" name="phone" placeholder="Client Phone" value="{{ client.phone }}"/>
+      <input type="text" class="base-field" name="vendor_number" placeholder="Your vendor # with that client" value="{{ client.vendor_number }}"/>
+      <input type="text" class="base-field" name="contact" placeholder="Client Contact Name" value="{{ client.contact }}"/>
+      <input type="text" class="base-field" name="email" placeholder="Client Email" value="{{ client.email }}"/>
+      <input type="text" class="base-field" name="phone" placeholder="Client Phone" value="{{ client.phone }}"/>
     </div>
 
     <div class="large-6 column">
       <h4>Address</h4>
-      <input type="text" name="address" placeholder="Client Address\nCity, State, Country, ZIP Code" value="{{ client.phone }}"/>
+      <textarea name="address" placeholder="Client Address\nCity, State, Country, ZIP Code">{{ client.phone }}</textarea>
     </div>
   </div>
 </form>

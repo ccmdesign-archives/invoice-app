@@ -19,13 +19,16 @@
     </div>
     <div class="client-info">
       {% include 'invoice_client.html' %}
+    </div>
+
+    <div class="company-info">
       {% include 'invoice_company.html' %}
     </div>
   </header>
 
   <section class="invoice__summary">
-    <input type="text" class="edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service_name }}"/>
-    <input type="text" class="edit-invoice-input" name="service_description" placeholder="description" value="{{ invoice.service_description }}"/>
+    <input type="text" class="invoice__title edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service_name }}"/>
+    <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="description">{{ invoice.service_description }}</textarea>
 
     <div class="service-info">
         {% include 'invoice_service.html' %}

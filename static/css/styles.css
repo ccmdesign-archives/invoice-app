@@ -2245,7 +2245,7 @@ a {
           color: white; }
 
 .controls {
-  position: fixed;
+  position: absolute;
   left: 35px;
   top: 140px; }
   .controls__button {
