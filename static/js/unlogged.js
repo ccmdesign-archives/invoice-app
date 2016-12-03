@@ -56,12 +56,17 @@ function export1() {
         var pdf = new jsPDF('p', 'cm', [29, 21]);
 
         pdf.addHTML($('.invoice').eq(0)[0], 0, 0, function () {
-            pdf.addPage();
-            pdf.setPage(2);
+            if ($('.timesheet').length) {
+                pdf.addPage();
+                pdf.setPage(2);
 
-            pdf.addHTML($('.invoice').eq(1)[0], 0, 0, function () {
+                pdf.addHTML($('.invoice').eq(1)[0], 0, 0, function () {
+                    pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
+                });
+
+            } else {
                 pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
-            });
+            }
         });
     });
 }
@@ -74,15 +79,20 @@ function export2() {
             onrendered: function (canvas) {
                 pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 21, 29);
 
-                html2canvas($('.invoice').eq(1)[0], {
-                    onrendered: function (canvas) {
-                        pdf.addPage();
-                        pdf.setPage(2);
+                if ($('.timesheet').length) {
+                    html2canvas($('.invoice').eq(1)[0], {
+                        onrendered: function (canvas) {
+                            pdf.addPage();
+                            pdf.setPage(2);
 
-                        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 21, 29);
-                        pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
-                    }
-                });
+                            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 21, 29);
+                            pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
+                        }
+                    });
+
+                } else {
+                    pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
+                }
             }
         });
     });
@@ -94,7 +104,9 @@ function export3() {
 
         pdf.addImage(img, 0, 0, img.width, img.height);
 
-        elem2page($('.invoice').eq(1)[0], page2);
+        if ($('.timesheet').length) {
+            elem2page($('.invoice').eq(1)[0], page2);
+        }
     }
 
     function page2(img) {
