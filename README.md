@@ -10,14 +10,14 @@ $ cp env-sample .env
 
 **First time use:**
 
-```python
+```bash
 $ python db_manage.py db init
 ```
 this will create the migration folder with all the information.
 
 **Next time uses:**
 
-```python
+```bash
 $ python db_manage.py db migrate
 $ python db_manage.py db upgrade
 ```
@@ -25,6 +25,6 @@ The first command compares the models.py with the version on the database and wr
 
 ### Running
 
-```python
+```bash
 $ python app.py
 ```

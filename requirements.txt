@@ -11,3 +11,4 @@ django-dotenv==1.4.1
 awesome-slugify==1.6.5
 html5lib==1.0b8
 gunicorn==19.6.0
+cssmin==0.2.0
