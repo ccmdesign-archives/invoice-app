@@ -1,30 +1,56 @@
-### Config
+# Invoice App
 
-Copy env-sample to .env and set the variables
+## Development environment (macOS Sierra)
 
-```bash
-$ cp env-sample .env
+1. Download and install the [PostgresSQL App](http://postgresapp.com/).
+
+2. Create and activate a virtualenv.
+```
+virtualenv invoice
+```
+```
+source invoice/bin/activate
 ```
 
-### Database Migration
-
-**First time use:**
-
-```bash
-$ python db_manage.py db init
+3. Update the `PATH` variable (Add this line to the `activate` script):
 ```
-this will create the migration folder with all the information.
-
-**Next time uses:**
-
-```bash
-$ python db_manage.py db migrate
-$ python db_manage.py db upgrade
+export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
 ```
-The first command compares the models.py with the version on the database and write down the migration rule. The second command upgrade the migration to the DB.
 
-### Running
+4. Clone the repo:
+```
+git clone https://github.com/ccmdesign/invoice-app.git
+```
 
-```bash
-$ python app.py
+5. Go to the project's folder:
+```
+cd invoice-app
+```
+
+6. Copy env-sample to .env and set the variables:
+```
+cp env-sample .env
+```
+
+**The next commands assume that your virtualenv is activated.**
+
+7. Install the dependencies:
+```
+pip install -r requirements.txt
+```
+
+9. Setup the database:
+```
+python db_manage.py db init
+```
+```
+python db_manage.py db migrate
+```
+```
+python db_manage.py db upgrade
+```
+
+10. Run the local server:
+```
+python app.py
 ```

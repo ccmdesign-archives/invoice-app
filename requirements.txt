@@ -6,7 +6,6 @@ Flask-OAuth==0.12
 Flask-Assets==0.12
 Flask-Migrate==2.0.1
 Flask-SQLAlchemy==2.1
-Flask-WeasyPrint==0.5
 django-dotenv==1.4.1
 awesome-slugify==1.6.5
 html5lib==1.0b8
