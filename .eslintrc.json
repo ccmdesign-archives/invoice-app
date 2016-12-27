@@ -1,0 +1,10 @@
+// The list of all Eslint"s rules can be found here:
+//    http://eslint.org/docs/rules/
+
+{
+    "env": {
+        "browser": true,
+        "jquery": true
+    },
+    "extends": ["eslint:recommended"]
+}
