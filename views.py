@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 
-# Python Core.
+# Python
 from csv import reader
 from time import strptime
 from json import dumps, loads
 from decimal import Decimal
 from datetime import date, timedelta
 
-# Python Libs.
+# Libs
 from flask import g, session, flash
 from flask import abort, render_template, request, Response, url_for, redirect
 from slugify import Slugify
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
-from sqlalchemy.sql.expression import func
 from flask_weasyprint import HTML, render_pdf
+from sqlalchemy.sql.expression import func
 
-# Invoice.
+# Invoice
 from app import app, github, login_manager, db
 from models import Invoice, Client, Company, User, Service, Tax, Timesheet
 
@@ -26,10 +26,9 @@ _SLUGY = Slugify(to_lower=True, separator='_')
 _ALLOWED_EXT = ['csv']
 
 
-####################################
-#       login manager
-####################################
-#
+# Login manager
+# -------------
+
 @app.route('/github_login')
 def github_login():
     url = url_for('github_authorized', _external=True)
@@ -76,10 +75,19 @@ def github_authorized(resp):
         return redirect(url_for('home'))
 
 
-####################################
-#       Invoice
-####################################
-#
+@app.route('/logout')
+def logout():
+    logout_user()
+
+    if 'github_token' in session:
+        session.pop('github_token')
+
+    return redirect(url_for('index'))
+
+
+# Invoice
+# -------
+
 @login_manager.user_loader
 def load_user(id):
     return User.query.get(id)
@@ -107,16 +115,6 @@ def ajax_ok():
     return Response('ok')
 
 
-@app.route('/logout')
-def logout():
-    logout_user()
-
-    if 'github_token' in session:
-        session.pop('github_token')
-
-    return redirect(url_for('index'))
-
-
 @app.route('/')
 def index():
     if g.user is not None and g.user.is_authenticated:
@@ -128,10 +126,7 @@ def index():
 
 @app.route('/unlogged_invoice', methods=['GET'])
 def unlogged_invoice():
-    ctx = {}
-
-    ctx['invoice'] = {}
-    ctx['today'] = date.today()
+    ctx = {'invoice': {}, 'today': date.today()}
 
     return render_template('unlogged_invoice.html', **ctx)
 
@@ -197,6 +192,7 @@ def create_invoice():
 
 
 @app.route('/invoice/<invoice_id>', methods=['GET'])
+@login_required
 def open_invoice(invoice_id):
     inv = Invoice.query.get(invoice_id)
 
@@ -433,8 +429,8 @@ def edit_invoice_tax(invoice_id):
     return abort(404)
 
 
-@app.route('/upload_timesheet/<invoice_id>', methods=['GET', 'POST'])
 @login_required
+@app.route('/upload_timesheet/<invoice_id>', methods=['GET', 'POST'])
 def upload_timesheet(invoice_id):
     def allowed_file(file):
         return '.' in file and file.rsplit('.', 1)[1] in _ALLOWED_EXT
@@ -528,8 +524,8 @@ def get_companies(invoice_id):
     return abort(404)
 
 
-@app.route('/get_clients/<invoice_id>', methods=['GET'])
 @login_required
+@app.route('/get_clients/<invoice_id>', methods=['GET'])
 def get_clients(invoice_id):
     inv = Invoice.query.get(invoice_id)
     txt = request.args.get('q').strip()
@@ -559,8 +555,8 @@ def get_clients(invoice_id):
     return abort(404)
 
 
-@app.route('/download_invoice/<invoice_id>', methods=['GET'])
 @login_required
+@app.route('/download_invoice/<invoice_id>', methods=['GET'])
 def download_invoice(invoice_id):
     inv = Invoice.query.get(invoice_id)
 

@@ -2,8 +2,8 @@
 {% block body_class %}invoice-page{% endblock %}
 
 {% block content %}
-<div class="controls">
-  <a class="controls__button" href="#" title="Download PDF"><i>file_download</i></a>
+<div class="controls invoice__interface">
+  <a class="controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
 </div>
 
 <article class="invoice">
@@ -73,7 +73,7 @@
   <section class="invoice__summary">
     <input type="text" class="invoice__title edit-invoice-input" placeholder="Services"/>
     <textarea class="invoice__description edit-invoice-input" placeholder="Description"/></textarea>
-    
+
     <div class="service-info">
     <table class="invoice__total">
       <tbody>
@@ -91,33 +91,9 @@
   </footer>
 </article>
 
-<div class="page-break hidden"></div>
+<div id="js-dinamic-content"></div>
 
-<article class="invoice hidden">
-  <div class="invoice__branding">
-    <h1>Invoice <span class="editable" contenteditable>#201601</span></h1>
-  </div>
-  <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
-  <section class="invoice__summary">
-
-
-    <table class="timesheet">
-      <thead>
-        <th class="description">Description</th>
-        <th class="start">Date</th>
-        <th class="duration">Duration</th>
-        <th class="amount">Amount</th>
-      </thead>
-
-      <tbody></tbody>
-    </table>
-  </section>
-  <footer class="invoice__footer" class="clearfix">
-    <p class="invoice__date editable" contenteditable>{{ today }}</p>
-  </footer>
-</article>
-
-<div class="row">
+<div class="row invoice__interface">
   <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
     <form id="upload-timesheet" enctype="multipart/form-data">
       <input type="file" name="file">
@@ -125,4 +101,26 @@
     </form>
   </div>
 </div>
+
+<div class="page-break hidden js-page-break"></div>
+<article class="invoice hidden js-invoice">
+  <div class="invoice__branding">
+    <h1>Invoice <span class="editable" contenteditable>#201601</span></h1>
+  </div>
+  <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+  <section class="invoice__summary">
+    <table class="timesheet">
+      <thead>
+        <th class="description">Description</th>
+        <th class="start">Date</th>
+        <th class="duration">Duration</th>
+        <th class="amount">Amount</th>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+  <footer class="invoice__footer" class="clearfix">
+    <p class="invoice__date editable" contenteditable>{{ today }}</p>
+  </footer>
+</article>
 {% endblock %}
