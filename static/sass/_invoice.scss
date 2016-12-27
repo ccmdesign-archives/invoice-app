@@ -294,22 +294,25 @@ textarea {
   }
 }
 
-
+@media print and (color) {
+  * {
+    -webkit-print-color-adjust: exact; 
+    print-color-adjust: exact;
+  }
+}
 
 
 @media print {
-  .page-break    { display:block; page-break-before:always; }
+  .page-break    { display: block; page-break-before:always; }
   .page-break:before { display: none; }
 
   .no-print { display: none !important; }
 
-  .row { display: flex; }
-  .large-6 { flex: 1; }
-  
   @page { margin: 1.5cm; }
 
   .invoice {
     color: black;
+    -webkit-print-color-adjust: exact;
 
     &__button,
     &__interface {
@@ -317,13 +320,13 @@ textarea {
     }
 
     &__total {
-      background-color: transparent;
+      background-color: rgba($main-color, .2) !important;
       color: rgba(black, .6);
-      border: 1px solid rgba(black, .2) !important;
+      border: 1px solid rgba($main-color, .2) !important;
     }
     &__grand-total,
     &__amount {
-      color: black !important;
+      color: $main-color !important;
     }
   }
 }
