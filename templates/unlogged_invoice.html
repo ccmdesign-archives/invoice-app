@@ -2,7 +2,7 @@
 {% block body_class %}invoice-page{% endblock %}
 
 {% block content %}
-<div class="controls invoice__interface">
+<div class="controls invoice__interface no-print">
   <a class="controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
 </div>
 
@@ -13,29 +13,31 @@
       <h1>Invoice <input type="text" class="edit-invoice-input" placeholder="#201601"/></h1>
     </div>
     <div class="client-info">
-      <div class="row large-collapse">
-        <div class="large-12 column">
+      <div class="grid-row">
+        <div class="grid-full">
           <h2>To <input type="text" class="name" placeholder="Client Name"/></h2>
         </div>
-
-        <div class="large-6 column">
+      </div>
+      <div class="grid-row">
+        <div class="grid-half">
           <input class="base-field" type="text" placeholder="Your vendor # with that client"/>
           <input class="base-field" type="text" placeholder="Client Contact Name"/>
           <input class="base-field" type="text" placeholder="Client Email"/>
           <input class="base-field" type="text" placeholder="Client Phone"/>
         </div>
 
-        <div class="large-6 column">
+        <div class="grid-half">
           <h4>Address</h4>
           <textarea name="" id="" placeholder="Client Address"></textarea>
         </div>
       </div>
     </div>
     <div class="company-info">
-      <div class="row large-collapse">
-        <div class="large-12 column"><h2>From <input type="text" class="name" placeholder="Company Name"/></h2></div>
-
-        <div class="large-6 column">
+      <div class="grid-row">
+        <div class="grid-full"><h2>From <input type="text" class="name" placeholder="Company Name"/></h2></div>
+      </div>
+      <div class="grid-row">
+        <div class="grid-half">
           <input class="base-field" type="text" placeholder="Contact Person Name"/>
           <input class="base-field" type="text" placeholder="Contact Email"/>
           <input class="base-field" type="text" placeholder="Contact Phone"/>
@@ -43,15 +45,17 @@
           <h4 class="spaced">Address</h4>
           <textarea name="" id="" placeholder="Company Address"></textarea>
         </div>
-
-        <div class="large-6 column">
+      
+        <div class="grid-half">
           <div class="company-info__extra">
             <h4>Banking Information</h4>
             <textarea class="bank-info" name="" id="" placeholder="Banking Information for Deposit"></textarea>
           </div>
         </div>
+      </div>
 
-        <div class="large-6 column">
+      <div class="grid-row">
+        <div class="grid-half">
           <div class="tax-info">
             <h4 class="spaced">Government Registration</h4>
             <table>
@@ -61,7 +65,7 @@
                   <input class="name base-field small" placeholder="Register"/>
                 </td>
                 <td><input class="base-field small" placeholder="Number"/></td>
-                <td><input class="base-field small" placeholder="Tax %"/></td></td>
+                <td><input class="base-field small" placeholder="Tax %"/></td>
               </tr>
             </table>
           </div>
@@ -91,10 +95,11 @@
   </footer>
 </article>
 
+
 <div id="js-dinamic-content"></div>
 
-<div class="row invoice__interface">
-  <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
+<div class="grid-row invoice__interface">
+  <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
     <form id="upload-timesheet" enctype="multipart/form-data">
       <input type="file" name="file">
       <button class="button" type="submit">upload Timesheet CSV</button>

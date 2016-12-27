@@ -41,8 +41,8 @@
   </article>
 
 {% else %}
-  <div class="row">
-    <div class="column large-12" style="text-align: center; margin-bottom: 40px;">
+  <div class="grid-row">
+    <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
       <form id="upload-timesheet" action="{{ url_for('upload_timesheet', invoice_id=invoice.id) }}" enctype="multipart/form-data" method="post">
         <input type="file" name="file">
         <button class="button" type="submit">upload Timesheet CSV</button>

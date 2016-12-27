@@ -255,6 +255,9 @@ textarea {
   }
 }
 
+.grid-row { display: flex; }
+.grid-full,
+.grid-half { flex: 1; }
 
 
 
@@ -298,10 +301,11 @@ textarea {
   .page-break    { display:block; page-break-before:always; }
   .page-break:before { display: none; }
 
+  .no-print { display: none !important; }
 
-  .small-header { display: none; }
-
-
+  .row { display: flex; }
+  .large-6 { flex: 1; }
+  
   @page { margin: 1.5cm; }
 
   .invoice {
@@ -315,7 +319,7 @@ textarea {
     &__total {
       background-color: transparent;
       color: rgba(black, .6);
-      border: 1px solid black !important;
+      border: 1px solid rgba(black, .2) !important;
     }
     &__grand-total,
     &__amount {

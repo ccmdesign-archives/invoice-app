@@ -16,7 +16,7 @@
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
-        <header class="homepage-header">
+        <header class="homepage-header no-print">
           <h1 class="homepage-header__logo"><a href="{{ url_for('index') }}">Logo</a></h1>
 
           {% if g.user.is_authenticated %}

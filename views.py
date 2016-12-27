@@ -13,7 +13,6 @@ from flask import abort, render_template, request, Response, url_for, redirect
 from slugify import Slugify
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
-from flask_weasyprint import HTML, render_pdf
 from sqlalchemy.sql.expression import func
 
 # Invoice
