@@ -3,11 +3,11 @@ $(function() {
     $('.invoice__branding h2').text($(this).val());
   });
 
-  $('body').on('submit', '#upload-timesheet', function (e) {
+  $('body').on('submit', '#upload-timesheet', function() {
     var $input = $(this).children('input[type=file]');
 
     if ($input[0].files.length) {
-      var onComplete = function(results, file) {
+      var onComplete = function(results) {
         var chunk = 25;  // Number of rows that fit one page
         var total = 0;
         var slice;
@@ -29,7 +29,6 @@ $(function() {
               $tr += '<td class="amount">' + row[13];
 
               total += parseFloat(row[13]);
-              console.log(total)
 
               $page.find('.timesheet tbody').append($tr);
             }
