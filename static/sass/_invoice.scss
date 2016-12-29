@@ -249,8 +249,12 @@ textarea {
     color: white;
   }
   td { text-align: left; }
-
+  
+  .description { width: 45%; }
+  .start { width: 15%; }
+  .duration { width: 15%; }
   .amount {
+    width: 20%;
     text-align: right;
   }
 }
@@ -312,7 +316,6 @@ textarea {
 
   .invoice {
     color: black;
-    -webkit-print-color-adjust: exact;
 
     &__button,
     &__interface {
@@ -329,4 +332,6 @@ textarea {
       color: $main-color !important;
     }
   }
+
+
 }
