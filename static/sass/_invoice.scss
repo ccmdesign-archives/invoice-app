@@ -326,6 +326,11 @@ textarea {
 
 
 @media print {
+  textarea:placeholder-shown,
+  input:placeholder-shown {
+    opacity: 0 !important;
+  }
+
   .page-break    { display: block; page-break-before:always; }
   .page-break:before { display: none; }
 
@@ -335,6 +340,8 @@ textarea {
 
   .invoice {
     color: black;
+    
+    
 
     &__button,
     &__interface {
@@ -342,7 +349,7 @@ textarea {
     }
 
     &__total {
-      background-color: rgba($main-color, .2) !important;
+      // background-color: rgba($main-color, .2) !important;
       color: rgba(black, .6);
       border: 1px solid rgba($main-color, .2) !important;
     }
@@ -352,7 +359,7 @@ textarea {
     }
 
     &__amount__input {
-      background-color: rgba($main-color, .2) !important;
+      // background-color: rgba($main-color, .2) !important;
     }
   }
 
