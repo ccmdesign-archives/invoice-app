@@ -204,6 +204,12 @@
     color: $main-color;
   }
 
+  &__amount__input {
+    background-color: rgba(black, .05);
+    text-align: right;
+    padding: 0 5px;
+  }
+
   &__date {
     float: right;
     text-align: right;
@@ -249,7 +255,7 @@ textarea {
     color: white;
   }
   td { text-align: left; }
-  
+
   .description { width: 45%; }
   .start { width: 15%; }
   .duration { width: 15%; }
@@ -300,7 +306,7 @@ textarea {
 
 @media print and (color) {
   * {
-    -webkit-print-color-adjust: exact; 
+    -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
 }
@@ -331,7 +337,12 @@ textarea {
     &__amount {
       color: $main-color !important;
     }
+
+    &__amount__input {
+      background-color: rgba($main-color, .2) !important;
+    }
   }
+
 
 
 }

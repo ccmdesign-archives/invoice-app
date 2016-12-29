@@ -42,7 +42,7 @@ $(function() {
 
     if ($input[0].files.length) {
       var onComplete = function(results) {
-        var chunk = 25;  // Number of rows that fit one page
+        var chunk = 23;  // Number of rows that fit one page
         var slice;
         var $page;
         var $br;
@@ -99,6 +99,6 @@ $(function() {
 
     total = subTotal * (1 + taxes / 100);
 
-    $('.invoice__amount').text('$ ' + total.toFixed(2));
+    $('.invoice__amount input').val('$ ' + total.toFixed(2));
   }
 });
