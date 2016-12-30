@@ -1,10 +1,11 @@
 <tr  data-url="{{ url_for('toggle_invoice_status', invoice_id=invoice.id) }}">
-  <td><i class="material-icons">{% if invoice.paid %}check_box{% else %}check_box_outline_blank{% endif %}</i></td>
+  <td class="list__action"><i class="material-icons">{% if invoice.paid %}check_box{% else %}check_box_outline_blank{% endif %}</i></td>
   <td><a href="{{ url_for('open_invoice', invoice_id=invoice.id) }}">{{ invoice.tag_number }}</a></td>
-  <td>{{invoice.date }}</td>
+  <td>{{invoice.date.strftime('%Y/%m/%d')}}</td>
   <td>{{invoice.client_obj.name or "" }}</td>
   <td>{{invoice.service_name}}</td>
-  <td class="amount">{{ invoice.currency }} {{invoice.total}}</td>
-  <td><i class="material-icons">file_download</i></td>
+  <td class="list__amount">{{ invoice.currency }} {{invoice.total}}</td>
+  <td class="list__action"><i class="material-icons">file_download</i></td>
+  <td class="list__action list__action--red"><i class="material-icons ">close</i></td>
   {# Use this plugin to download the PDF https://github.com/MrRio/jsPDF / https://parall.ax/products/jspdf# #}
 </tr>

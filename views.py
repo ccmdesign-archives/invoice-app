@@ -577,3 +577,10 @@ def download_invoice(invoice_id):
 
         # return render_pdf(url_for('open_invoice', invoice_id=inv.id))
         return render_pdf(HTML(string=render_template('print.html', **ctx)))
+
+
+# Luke criando Views
+@app.route('/clients')
+def clients():
+  return render_template('clients.html')
+

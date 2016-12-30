@@ -8,20 +8,20 @@
   <div class="controls controls--with-header no-print">
     <form method="post" action="{{ url_for('create_invoice') }}"><button type="submit" class="controls__button" title="New Invoice"><i>description</i></button></form>
     <a href="./invoice" class="controls__button" title="New Client"><i>person_add</i></a>
-    <a href="./clients.html" class="controls__button" title="Client List"><i>people</i></a>
+    <a href="/clients" class="controls__button" title="Client List"><i>people</i></a>
   </div>
 
   {% set invoices = g.user.open_invoices %}
 
   <table class="list list--opened">
     <thead>
-      <th></th>
+      <th class="list__action"></th>
       <th>#</th>
       <th>Date</th>
       <th>Client</th>
       <th>Title</th>
-      <th class="amount">Amount</th>
-      <th></th>
+      <th class="list__amount">Amount</th>
+      <th class="list__action"></th>
     </thead>
     <tbody>
       {% for invoice in g.user.invoices %}
@@ -40,8 +40,8 @@
       <th>Date</th>
       <th>Client</th>
       <th>Title</th>
-      <th class="amount">Amount</th>
-      <th></th>
+      <th class="list__amount">Amount</th>
+      <th class="list__action"></th>
     </thead>
     <tbody>
       {% for invoice in g.user.invoices %}
