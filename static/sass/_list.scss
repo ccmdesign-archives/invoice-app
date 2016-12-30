@@ -1,0 +1,56 @@
+.list {
+   width: 100%;
+
+  a {
+    text-decoration: none;
+    color: $main-color;
+  }
+
+  &--archived {
+    opacity: .5;
+    margin-top: 40px;
+  }
+
+  th {
+    text-align: left;
+    
+  }
+
+  td, th { padding: 15px; }
+
+  td {
+    border-bottom: 1px solid rgba(black, .05);
+  }
+
+  tbody tr:hover {
+    background-color: rgba($main-color, .05);
+    cursor: pointer;
+
+    td { color: $main-color}
+    i {opacity: 1;}
+  }
+
+  thead {
+    color: $main-color;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-bottom: 1px solid $main-color;
+  }
+
+  &__amount { text-align: right !important; }
+  &__align-center {text-align: center !important;}
+  &__action { 
+    width: 40px;
+    i {opacity: .3;}
+  }
+
+  &__status {
+    width: 40px;
+    color: green !important;
+  }
+
+  &__action--red {
+    color: $red !important;
+  }
+
+}

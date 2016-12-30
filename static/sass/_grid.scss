@@ -1,0 +1,5 @@
+.grid-row { display: flex; }
+.grid-full,
+.grid-half { flex: 1; }
+
+.grid-half:not(:first-child) { margin-left: 20px; }

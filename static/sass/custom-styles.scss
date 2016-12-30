@@ -1,5 +1,6 @@
 $main-color: #389482;
 $accent-color: orange;
+$red: red;
 
 .clearfix:after {
    content: " "; /* Older browser do not support empty content */
@@ -36,9 +37,13 @@ $accent-color: orange;
 
 @import "foundation";
 @import "button";
+@import "grid";
 @import "form";
+@import "controls";
+@import "list";
 @import "invoice";
 
 @import "custom";
 @import "guest-homepage";
 @import "homepage";
+@import "new-client";

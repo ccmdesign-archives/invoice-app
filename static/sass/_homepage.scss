@@ -100,7 +100,8 @@
 .flex-wrapper { display: flex; }
 .flex-item {flex: 1;}
 
-.main-list {
+.main-list,
+.client-list {
   padding-top: 40px;
 }
 
@@ -118,49 +119,4 @@
   margin: 0 auto;
 }
 
-.list {
-   width: 100%;
 
-  a {
-    text-decoration: none;
-    color: $main-color;
-  }
-
-  &--archived {
-    opacity: .5;
-    margin-top: 40px;
-  }
-
-  th, td {
-    padding: 15px;
-    text-align: left;
-  }
-
-  td {
-    border-bottom: 1px solid rgba(black, .05);
-  }
-
-  tbody tr:hover {
-    background-color: rgba($main-color, .05);
-    cursor: pointer;
-
-    td { color: rgba(black, .8)}
-  }
-
-  thead {
-    color: $main-color;
-    font-weight: bold;
-    text-transform: uppercase;
-    border-bottom: 1px solid $main-color;
-  }
-
-  .amount { text-align: right; }
-
-  .action { width: 40px; }
-  .status {
-    width: 40px;
-    color: green !important;
-  }
-
-
-}

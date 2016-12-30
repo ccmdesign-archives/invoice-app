@@ -246,9 +246,6 @@ textarea {
   resize: none;
 }
 
-
-
-
 .timesheet {
   table-layout: fixed;
   width: 100%;
@@ -277,11 +274,6 @@ textarea {
     text-align: right;
   }
 }
-
-.grid-row { display: flex; }
-.grid-full,
-.grid-half { flex: 1; }
-
 
 
 @media screen {
