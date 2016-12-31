@@ -354,7 +354,19 @@ textarea {
       // background-color: rgba($main-color, .2) !important;
     }
   }
+}
 
+.autocomplete-suggestions {
+  background-color: white;
+  box-shadow: 0 0 8px rgba(black, .2);
+}
 
+.autocomplete-suggestion {
+  padding: 5px;
 
+  &:hover,
+  &.autocomplete-selected {
+    background-color: rgba($main-color, .1);
+
+  }
 }

@@ -5,10 +5,12 @@
 {% block content %}
 
 <section class="main-list wrapper">
-  <div class="controls controls--with-header no-print">
-    <form method="post" action="{{ url_for('create_invoice') }}"><button type="submit" class="controls__button" title="New Invoice"><i>description</i></button></form>
-    <a href="./invoice" class="controls__button" title="New Client"><i>person_add</i></a>
+  <div class="controls no-print">
+    <form method="post" action="{{ url_for('create_invoice') }}">
+      <button type="submit" class="controls__button" title="New Invoice"><i>description</i></button>
+    </form>
     <a href="/clients" class="controls__button" title="Client List"><i>people</i></a>
+    <a href="#" class="controls__button" title="Company"><i>business</i></a>
   </div>
 
   {% set invoices = g.user.open_invoices %}

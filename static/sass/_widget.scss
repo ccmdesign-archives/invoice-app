@@ -1,0 +1,42 @@
+.widget {
+  text-align: right;
+  padding: 25px 45px 35px 0;
+  background: rgba(white, .05);
+
+  &:nth-child(odd) { background: rgba(black, .02); }
+
+
+  &__primary-value {
+    font-weight: 100;
+    font-size: 50px;
+    color: rgba(black, .3);
+    line-height: 1;
+    margin: 0;
+
+  }
+
+  &__secondary-value {
+    font-weight: bold;
+    font-size: 16px;
+    margin: 0;
+    color: rgba(black, .3);
+
+    span {
+      color: rgba(black, .3);
+      font-size: .8rem;
+    }
+  }
+
+  &__text {
+    margin: 0;
+    color: rgba(black, .3);
+    font-weight: 600;
+  }
+
+  &__control {
+    margin: 15px 0 0;
+    color: rgba(black, .5);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+}

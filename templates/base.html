@@ -16,39 +16,48 @@
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
-        <header class="homepage-header no-print">
-          <h1 class="homepage-header__logo"><a href="{{ url_for('index') }}">Logo</a></h1>
+      <div class="panels">
+        <div class="panels__aside">        
+          <header class="homepage-header no-print">
+            <h1 class="homepage-header__logo"><a href="{{ url_for('index') }}">Invoic.io</a></h1>
 
-          {% if g.user.is_authenticated %}
-            <div class="homepage-header__dashboard">
-              <div class="widget">
-                <h2 class="widget__primary-value paid">{{ g.user.paid_invoices }}</h2>
-                <p class="widget__text">Received</p>
-                {# <p class="widget__secondary-value">$ 999,000<span>.00</span></p> #}
-                {# <p class="widget__control">This Month</p> #}
+            {% if g.user.is_authenticated %}
+              <div class="homepage-header__dashboard">
+                <div class="widget">
+                  <h2 class="widget__primary-value paid">{{ g.user.paid_invoices }}</h2>
+                  <p class="widget__text">Received</p>
+                  <p class="widget__secondary-value">USD 999,000<span>.00</span></p>
+                  <p class="widget__secondary-value">CAD 9,000<span>.00</span></p>
+                  <p class="widget__secondary-value">BRL 12,000<span>.00</span></p>
+                  {# <p class="widget__control">This Month</p> #}
+                </div>
+                <div class="widget">
+                  <h2 class="widget__primary-value open">{{ g.user.open_invoices }}</h2>
+                  <p class="widget__text">Pending</p>
+                  <p class="widget__secondary-value">USD 999,000<span>.00</span></p>
+                  <p class="widget__secondary-value">CAD 9,000<span>.00</span></p>
+                  <p class="widget__secondary-value">BRL 12,000<span>.00</span></p>
+                  {# <p class="widget__control">This Month</p> #}
+                </div>
               </div>
-              <div class="widget">
-                <h2 class="widget__primary-value open">{{ g.user.open_invoices }}</h2>
-                <p class="widget__text">Pending</p>
-                {# <p class="widget__secondary-value">$ 1200<span>,00</span></p> #}
-                {# <p class="widget__control">This Month</p> #}
+
+              <div class="homepage-header__extra">
+                <a href="#" class="logged-in">{{ g.user.name }}</a>
+                <a href="{{ url_for('logout') }}" class="logout">Logout</a>
               </div>
-            </div>
 
-            <div class="homepage-header__extra">
-              <a href="#" class="logged-in">{{ g.user.name }}</a>
-              <a href="{{ url_for('logout') }}" class="logout">Logout</a>
-            </div>
+            {% else %}
+              <div class="homepage-header__extra">
+                <a class="button button--naked" href="{{url_for('github_login')}}">Login</a>
+              </div>
+            {% endif %}
+          </header>
+        </div>  
 
-          {% else %}
-            <div class="homepage-header__extra">
-              <a class="button button--naked" href="{{url_for('github_login')}}">Login</a>
-            </div>
-          {% endif %}
-        </header>
-
-        {% block content %}{% endblock %}
-
+        <div class="panels__main">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
         <div id="overlay" class="js-overlay"></div>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.2.0/list.min.js"></script>
