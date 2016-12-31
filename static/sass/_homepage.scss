@@ -1,14 +1,17 @@
 .panels {
   display: flex;
+  height: 100%;
   
   &__aside {
     width: 210px;
-    height: 100vh;
+    height: 100%;
     flex: 0;
   }
 
   &__main {
     flex: 1;
+    padding-left: 115px;
+    padding-right: 115px;
   }
 }
 
@@ -91,7 +94,5 @@
 .wrapper {
   width: 100%;
   max-width: 860px;
-  padding-left: 115px;
-  padding-right: 115px;
   margin: 0 auto;
 }
