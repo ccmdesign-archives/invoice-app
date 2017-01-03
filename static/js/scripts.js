@@ -36,7 +36,7 @@ $(function () {
     });
 
     // Updates the client's data on each input change
-    $('.client-info').on('change', 'input', function () {
+    $('.client-info').on('change', 'input', function() {
         if (!$('.autocomplete-suggestions').is(':visible') && $('#client-form .name').val()) {
             var $form = $('#client-form'),
                 $resp = null;
@@ -56,20 +56,18 @@ $(function () {
         }
     });
 
-    $('.company-info').on('change', '#company-form input', function () {
-        function valid_response(data, state, xhr) {
-            $('.company-info').html(data);
-
-            $('.invoice__branding h2').text($('#company-form h2 input').val());
-        }
-
+    // Updates the company's data on each input change
+    $('.company-info').on('change', '#company-form input', function() {
         if (!$('.autocomplete-suggestions').is(':visible') && $('#company-autocomplete').val()) {
             var $form = $('#company-form'),
                 $resp = null;
 
             $resp = $.post($form.attr('action'), $form.serialize());
 
-            $resp.done(valid_response).fail(function (data, state, xhr) {
+            $resp.done(function(data) {
+                $('#company-id').val(data.id);
+
+            }).fail(function() {
                 if (xhr == 'BAD REQUEST')
                     console.log('Bad request.');
 

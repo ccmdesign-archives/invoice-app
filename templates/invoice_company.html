@@ -1,6 +1,6 @@
 <form id="company-form" method="post" action="{{ url_for('edit_invoice_company', invoice_id=invoice.id) }}">
   <div class="grid-row">
-    <input type="hidden" name="id" value="{{ company.id }}"/>
+    <input id="#company-id" type="hidden" name="id" value="{{ company.id }}"/>
 
     <div class="grid-full"><h2>From <input id="company-autocomplete" type="text" class="name" name="name" placeholder="Company Name" value="{{ company.name }}" data-url="{{ url_for('get_companies', invoice_id=invoice.id) }}" autocomplete="off"/></h2></div>
   </div>

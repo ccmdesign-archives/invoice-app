@@ -235,8 +235,8 @@ def edit_invoice(invoice_id):
     return abort(404)
 
 
-@app.route('/edit_invoice_client/<invoice_id>', methods=['GET', 'POST'])
 @login_required
+@app.route('/edit_invoice_client/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_client(invoice_id):
     inv = Invoice.query.get(invoice_id)
 
@@ -297,72 +297,72 @@ def edit_invoice_client(invoice_id):
     return abort(400)
 
 
-@app.route('/edit_invoice_company/<invoice_id>', methods=['GET', 'POST'])
 @login_required
+@app.route('/edit_invoice_company/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_company(invoice_id):
     inv = Invoice.query.get(invoice_id)
 
-    if inv:
-        if request.method == 'GET' and inv.company:
-            ctx = {}
+    if not inv:
+        return abort(404)
 
-            ctx['company'] = Company.query.get(inv.company)
-            ctx['invoice'] = inv
+    if request.method == 'GET' and inv.company:
+        ctx = {}
 
-            if inv.taxes:
-                ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
+        ctx['company'] = Company.query.get(inv.company)
+        ctx['invoice'] = inv
 
-            else:
-                ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
+        if inv.taxes:
+            ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
 
-            return render_template('invoice_company.html', **ctx)
+        else:
+            ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
 
-        elif request.method == 'POST':
-            form = request.form
-            new = False
-            com = None
+        return render_template('invoice_company.html', **ctx)
 
-            if not inv.company or not form['id']:
-                com = Company(user_id=g.user.id)
-                new = True
+    elif request.method == 'POST':
+        form = request.form
+        new = False
+        com = None
 
-            elif inv.company != form['id']:
-                com = Company.query.get(form['id'])
+        if not inv.company or not form['id']:
+            com = Company(user_id=g.user.id)
+            new = True
 
-            else:
-                com = Company.query.get(inv.company)
+        elif inv.company != form['id']:
+            com = Company.query.get(form['id'])
 
-            if form['name'] != com.name:
-                com.name = form['name']
+        else:
+            com = Company.query.get(inv.company)
 
-            if form['email'] != com.email:
-                com.email = form['email']
+        if form['name'] != com.name:
+            com.name = form['name']
 
-            if form['phone'] != com.phone:
-                com.phone = form['phone']
+        if form['email'] != com.email:
+            com.email = form['email']
 
-            if form['address'] != com.address:
-                com.address = form['address']
+        if form['phone'] != com.phone:
+            com.phone = form['phone']
 
-            if form['contact'] != com.contact:
-                com.contact = form['contact']
+        if form['address'] != com.address:
+            com.address = form['address']
 
-            if form['banking_info'] != com.banking_info:
-                com.banking_info = form['banking_info']
+        if form['contact'] != com.contact:
+            com.contact = form['contact']
 
-            if new:
-                db.session.add(com)
-                db.session.flush()
+        if form['banking_info'] != com.banking_info:
+            com.banking_info = form['banking_info']
 
-            inv.company = com.id
+        if new:
+            db.session.add(com)
+            db.session.flush()
 
-            db.session.commit()
+        inv.company = com.id
 
-            return redirect(url_for('edit_invoice_company', invoice_id=inv.id))
+        db.session.commit()
 
-        return abort(400)
+        return jsonify(id=com.id)
 
-    return abort(404)
+    return abort(400)
 
 
 @app.route('/create_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
