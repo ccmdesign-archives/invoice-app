@@ -1,46 +1,46 @@
 {% extends 'base.html' %}
+
 {% block body_class %}invoice-page{% endblock %}
 
 {% block content %}
-<div class="controls">
-  <a class="controls__button" href="#" title="Download PDF"><i>file_download</i></a>
-  {# <a class="controls__button" href="#" title="Save Draft"><i>save</i></a> #}
-  {# <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a> #}
-</div>
+  <div class="controls">
+    <a class="controls__button" href="#" title="Download PDF"><i>file_download</i></a>
+    {# <a class="controls__button" href="#" title="Save Draft"><i>save</i></a> #}
+    {# <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a> #}
+  </div>
 
-<article class="invoice" data-invoice-id="{{ invoice.id }}"  data-url="{{ url_for('edit_invoice', invoice_id=invoice.id) }}">
-  <header class="invoice__header">
-    <div class="invoice__branding">
-      {% if company %}
-        {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
-        <h2>{{company.name}}</h2>
-      {% endif %}
-      <h1>Invoice <input type="text" class="edit-invoice-input" name="tag_number" placeholder="#{{ invoice.tag_number }}" value="{{ invoice.tag_number }}"/></h1>
-    </div>
-    <div class="client-info">
-      {% include 'invoice_client.html' %}
-    </div>
+  <article class="invoice" data-invoice-id="{{ invoice.id }}"  data-url="{{ url_for('edit_invoice', invoice_id=invoice.id) }}">
+    <header class="invoice__header">
+      <div class="invoice__branding">
+        {% if company %}
+          {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
+          <h2>{{company.name}}</h2>
+        {% endif %}
+        <h1>Invoice <input type="text" class="edit-invoice-input" name="tag_number" placeholder="#{{ invoice.tag_number }}" value="{{ invoice.tag_number }}"/></h1>
+      </div>
+      <div class="client-info">
+        {% include 'invoice_client.html' %}
+      </div>
 
-    <div class="company-info">
-      {% include 'invoice_company.html' %}
-    </div>
-  </header>
+      <div class="company-info">
+        {% include 'invoice_company.html' %}
+      </div>
+    </header>
 
-  <section class="invoice__summary">
-    <input type="text" class="invoice__title edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service_name }}"/>
-    <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="description">{{ invoice.service_description }}</textarea>
+    <section class="invoice__summary">
+      <input type="text" class="invoice__title edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service_name }}"/>
+      <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="description">{{ invoice.service_description }}</textarea>
 
-    <div class="service-info">
+      <div class="service-info">
         {% include 'invoice_service.html' %}
-    </div>
-  </section>
-  <footer class="invoice__footer clearfix">
-    <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
-  </footer>
-</article>
+      </div>
+    </section>
+    <footer class="invoice__footer clearfix">
+      <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
+    </footer>
+  </article>
 
-<div class="timesheet-info">
-  {% include 'invoice_timesheet.html' %}
-</div>
-
+  <div class="timesheet-info">
+    {% include 'invoice_timesheet.html' %}
+  </div>
 {% endblock %}

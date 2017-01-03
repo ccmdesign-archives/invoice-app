@@ -1,131 +1,131 @@
 {% extends 'base.html' %}
+
 {% block body_class %}invoice-page{% endblock %}
 
 {% block content %}
-<div class="controls invoice__interface no-print">
-  <a class="controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
-</div>
+  <div class="controls invoice__interface no-print">
+    <a class="controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
+  </div>
 
-<article class="invoice">
-  <header class="invoice__header">
+  <article class="invoice">
+    <header class="invoice__header">
+      <div class="invoice__branding">
+        <h2>Company Name</h2>
+        <h1>Invoice <input type="text" class="edit-invoice-input" placeholder="#201601"/></h1>
+      </div>
+      <div class="client-info">
+        <div class="grid-row">
+          <div class="grid-full">
+            <h2>To <input type="text" class="name" placeholder="Client Name"/></h2>
+          </div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-half">
+            <input class="base-field" type="text" placeholder="Your vendor # with that client"/>
+            <input class="base-field" type="text" placeholder="Client Contact Name"/>
+            <input class="base-field" type="text" placeholder="Client Email"/>
+            <input class="base-field" type="text" placeholder="Client Phone"/>
+          </div>
+
+          <div class="grid-half">
+            <h4>Address</h4>
+            <textarea name="" id="" placeholder="Client Address"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="company-info">
+        <div class="grid-row">
+          <div class="grid-full"><h2>From <input type="text" class="name" placeholder="Company Name"/></h2></div>
+        </div>
+        <div class="grid-row">
+          <div class="grid-half">
+            <input class="base-field" type="text" placeholder="Contact Person Name"/>
+            <input class="base-field" type="text" placeholder="Contact Email"/>
+            <input class="base-field" type="text" placeholder="Contact Phone"/>
+
+            <h4 class="spaced">Address</h4>
+            <textarea name="" id="" placeholder="Company Address"></textarea>
+          </div>
+
+          <div class="grid-half">
+            <div class="company-info__extra">
+              <h4>Banking Information</h4>
+              <textarea class="bank-info" name="" id="" placeholder="Banking Information for Deposit"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-row">
+          <div class="grid-half">
+            <div class="tax-info">
+              <h4 class="spaced">Government Registration</h4>
+              <table>
+                <tr class="invoice__interface">
+                  <td>
+                    <i class="invoice__button invoice__button--small material-icons add-button">add</i>
+                    <input class="name base-field small" placeholder="Register"/>
+                  </td>
+                  <td><input class="base-field small" placeholder="Number"/></td>
+                  <td><input class="base-field small js-tax-value" placeholder="Tax %"/></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="invoice__summary">
+      <input type="text" class="invoice__title edit-invoice-input" placeholder="Services"/>
+      <textarea class="invoice__description edit-invoice-input" placeholder="Description"/></textarea>
+
+      <div class="service-info">
+      <table class="invoice__total">
+        <tbody>
+          <tr class="invoice__grand-total">
+            <td class="invoice__total-description">Total</td>
+            <td class="invoice__amount"><input type="text" class="invoice__amount__input" value="$ 0.00"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      </div>
+    </section>
+    <footer class="invoice__footer clearfix">
+      <p class="invoice__date editable" contenteditable>{{ today.strftime('%Y/%m/%d') }}</p>
+    </footer>
+  </article>
+
+  <div id="js-dinamic-content"></div>
+
+  <div class="grid-row invoice__interface">
+    <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
+      <form id="upload-timesheet" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <button class="button" type="submit">upload Timesheet CSV</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="page-break hidden js-page-break"></div>
+  <article class="invoice hidden js-invoice">
     <div class="invoice__branding">
-      <h2>Company Name</h2>
-      <h1>Invoice <input type="text" class="edit-invoice-input" placeholder="#201601"/></h1>
+      <h1>Invoice <span class="editable" contenteditable>#201601</span></h1>
     </div>
-    <div class="client-info">
-      <div class="grid-row">
-        <div class="grid-full">
-          <h2>To <input type="text" class="name" placeholder="Client Name"/></h2>
-        </div>
-      </div>
-      <div class="grid-row">
-        <div class="grid-half">
-          <input class="base-field" type="text" placeholder="Your vendor # with that client"/>
-          <input class="base-field" type="text" placeholder="Client Contact Name"/>
-          <input class="base-field" type="text" placeholder="Client Email"/>
-          <input class="base-field" type="text" placeholder="Client Phone"/>
-        </div>
-
-        <div class="grid-half">
-          <h4>Address</h4>
-          <textarea name="" id="" placeholder="Client Address"></textarea>
-        </div>
-      </div>
-    </div>
-    <div class="company-info">
-      <div class="grid-row">
-        <div class="grid-full"><h2>From <input type="text" class="name" placeholder="Company Name"/></h2></div>
-      </div>
-      <div class="grid-row">
-        <div class="grid-half">
-          <input class="base-field" type="text" placeholder="Contact Person Name"/>
-          <input class="base-field" type="text" placeholder="Contact Email"/>
-          <input class="base-field" type="text" placeholder="Contact Phone"/>
-
-          <h4 class="spaced">Address</h4>
-          <textarea name="" id="" placeholder="Company Address"></textarea>
-        </div>
-
-        <div class="grid-half">
-          <div class="company-info__extra">
-            <h4>Banking Information</h4>
-            <textarea class="bank-info" name="" id="" placeholder="Banking Information for Deposit"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-row">
-        <div class="grid-half">
-          <div class="tax-info">
-            <h4 class="spaced">Government Registration</h4>
-            <table>
-              <tr class="invoice__interface">
-                <td>
-                  <i class="invoice__button invoice__button--small material-icons add-button">add</i>
-                  <input class="name base-field small" placeholder="Register"/>
-                </td>
-                <td><input class="base-field small" placeholder="Number"/></td>
-                <td><input class="base-field small js-tax-value" placeholder="Tax %"/></td>
-              </tr>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <section class="invoice__summary">
-    <input type="text" class="invoice__title edit-invoice-input" placeholder="Services"/>
-    <textarea class="invoice__description edit-invoice-input" placeholder="Description"/></textarea>
-
-    <div class="service-info">
-    <table class="invoice__total">
-      <tbody>
-        <tr class="invoice__grand-total">
-          <td class="invoice__total-description">Total</td>
-          <td class="invoice__amount"><input type="text" class="invoice__amount__input" value="$ 0.00"></td>
-        </tr>
-      </tbody>
-    </table>
-
-    </div>
-  </section>
-  <footer class="invoice__footer clearfix">
-    <p class="invoice__date editable" contenteditable>{{ today.strftime('%Y/%m/%d') }}</p>
-  </footer>
-</article>
-
-
-<div id="js-dinamic-content"></div>
-
-<div class="grid-row invoice__interface">
-  <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
-    <form id="upload-timesheet" enctype="multipart/form-data">
-      <input type="file" name="file">
-      <button class="button" type="submit">upload Timesheet CSV</button>
-    </form>
-  </div>
-</div>
-
-<div class="page-break hidden js-page-break"></div>
-<article class="invoice hidden js-invoice">
-  <div class="invoice__branding">
-    <h1>Invoice <span class="editable" contenteditable>#201601</span></h1>
-  </div>
-  <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
-  <section class="invoice__summary">
-    <table class="timesheet">
-      <thead>
-        <th class="description">Description</th>
-        <th class="start">Date</th>
-        <th class="duration">Duration</th>
-        <th class="amount">Amount</th>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
-  <footer class="invoice__footer" class="clearfix">
-    <p class="invoice__date editable" contenteditable>{{ today }}</p>
-  </footer>
-</article>
+    <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+    <section class="invoice__summary">
+      <table class="timesheet">
+        <thead>
+          <th class="description">Description</th>
+          <th class="start">Date</th>
+          <th class="duration">Duration</th>
+          <th class="amount">Amount</th>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+    <footer class="invoice__footer" class="clearfix">
+      <p class="invoice__date editable" contenteditable>{{ today }}</p>
+    </footer>
+  </article>
 {% endblock %}
