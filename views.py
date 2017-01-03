@@ -256,7 +256,7 @@ def edit_invoice_client(invoice_id):
         new = False
         cli = None
 
-        if not inv.client or not form['id']:
+        if not form['id']:
             cli = Client(user_id=g.user.id)
             new = True
 
@@ -324,7 +324,7 @@ def edit_invoice_company(invoice_id):
         new = False
         com = None
 
-        if not inv.company or not form['id']:
+        if not form['id']:
             com = Company(user_id=g.user.id)
             new = True
 
