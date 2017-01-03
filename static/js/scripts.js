@@ -30,20 +30,23 @@ $(function () {
     $('#company-autocomplete').autocomplete(opts1);
     $('#client-autocomplete').autocomplete(opts2);
 
-    $('.controls__button i').click(function () { export1(); });
+    // Updates the invoice header when client's name is changed
+    $('.company-info h2').on('keyup', '.name', function() {
+        $('.invoice__branding h2').text($(this).val());
+    });
 
+    // Updates the client's data on each input change
     $('.client-info').on('change', 'input', function () {
-        function valid_response(data, state, xhr) {
-            $('.client-info').html(data);
-        }
-
         if (!$('.autocomplete-suggestions').is(':visible') && $('#client-form .name').val()) {
             var $form = $('#client-form'),
                 $resp = null;
 
             $resp = $.post($form.attr('action'), $form.serialize());
 
-            $resp.done(valid_response).fail(function (data, state, xhr) {
+            $resp.done(function(data) {
+                $('#client-id').val(data.id);
+
+            }).fail(function() {
                 if (xhr == 'BAD REQUEST')
                     console.log('Bad request.');
 
@@ -215,90 +218,3 @@ $(function () {
         return false;
     });
 });
-
-function export1() {
-    $('body').animate({ scrollTop: 0 }, 'slow', function () {
-        var pdf = new jsPDF('p', 'cm', [29, 21]);
-
-        pdf.addHTML($('.invoice').eq(0)[0], 0, 0, function () {
-            if ($('.timesheet').length) {
-                pdf.addPage();
-                pdf.setPage(2);
-
-                pdf.addHTML($('.invoice').eq(1)[0], 0, 0, function () {
-                    pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
-                });
-
-            } else {
-                pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
-            }
-        });
-    });
-}
-
-function export2() {
-    $('body').animate({ scrollTop: 0 }, 'slow', function () {
-        var pdf = new jsPDF('p', 'cm', [29, 21]);
-
-        html2canvas($('.invoice').eq(0)[0], {
-            onrendered: function (canvas) {
-                pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 21, 29);
-
-                if ($('.timesheet').length) {
-                    html2canvas($('.invoice').eq(1)[0], {
-                        onrendered: function (canvas) {
-                            pdf.addPage();
-                            pdf.setPage(2);
-
-                            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 21, 29);
-                            pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
-                        }
-                    });
-
-                } else {
-                    pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
-                }
-            }
-        });
-    });
-}
-
-function export3() {
-    function page1(img) {
-        pdf = new jsPDF('p', 'px', [img.height, img.width]);
-
-        pdf.addImage(img, 0, 0, img.width, img.height);
-
-        if ($('.timesheet').length) {
-            elem2page($('.invoice').eq(1)[0], page2);
-        }
-    }
-
-    function page2(img) {
-        pdf.addPage();
-        pdf.setPage(2);
-        pdf.addImage(img, 0, 0, img.width, img.height);
-
-        pdf.save('invoice' + $('.edit-invoice-input').val() + '.pdf');
-    }
-
-    function elem2page(html, callback) {
-        html2canvas(html, {
-            onrendered: function (canvas) {
-                canvas.toBlob(function blobToImg(blob) {
-                    var img = new Image();
-                    var urlCreator = window.URL || window.webkitURL;
-
-                    img.src = urlCreator.createObjectURL(blob);
-                    img.onload = function () { callback(img); };
-                });
-            }
-        });
-    }
-
-    var pdf = null;
-
-    $('body').animate({ scrollTop: 0 }, 'slow', function () {
-        elem2page($('.invoice').eq(0)[0], page1);
-    });
-}

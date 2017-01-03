@@ -8,7 +8,7 @@ from decimal import Decimal
 from datetime import date, timedelta
 
 # Libs
-from flask import g, session, flash
+from flask import g, session, flash, jsonify
 from flask import abort, render_template, request, Response, url_for, redirect
 from slugify import Slugify
 from flask_login import login_user, logout_user, current_user, login_required
@@ -240,61 +240,61 @@ def edit_invoice(invoice_id):
 def edit_invoice_client(invoice_id):
     inv = Invoice.query.get(invoice_id)
 
-    if inv:
-        if request.method == 'GET' and inv.client:
-            ctx = {}
+    if not inv:
+        return abort(404)
 
-            ctx['client'] = Client.query.get(inv.client)
-            ctx['invoice'] = inv
+    if request.method == 'GET' and inv.client:
+        ctx = {}
 
-            return render_template('invoice_client.html', **ctx)
+        ctx['client'] = Client.query.get(inv.client)
+        ctx['invoice'] = inv
 
-        elif request.method == 'POST':
-            form = request.form
-            new = False
-            cli = None
+        return render_template('invoice_client.html', **ctx)
 
-            if not inv.client or not form['id']:
-                cli = Client(user_id=g.user.id)
-                new = True
+    elif request.method == 'POST':
+        form = request.form
+        new = False
+        cli = None
 
-            elif inv.client != form['id']:
-                cli = Client.query.get(form['id'])
+        if not inv.client or not form['id']:
+            cli = Client(user_id=g.user.id)
+            new = True
 
-            else:
-                cli = Client.query.get(inv.client)
+        elif inv.client != form['id']:
+            cli = Client.query.get(form['id'])
 
-            if form['name'] != cli.name:
-                cli.name = form['name']
+        else:
+            cli = Client.query.get(inv.client)
 
-            if form['email'] != cli.email:
-                cli.email = form['email']
+        if form['name'] != cli.name:
+            cli.name = form['name']
 
-            if form['phone'] != cli.phone:
-                cli.phone = form['phone']
+        if form['email'] != cli.email:
+            cli.email = form['email']
 
-            if form['address'] != cli.address:
-                cli.address = form['address']
+        if form['phone'] != cli.phone:
+            cli.phone = form['phone']
 
-            if form['contact'] != cli.contact:
-                cli.contact = form['contact']
+        if form['address'] != cli.address:
+            cli.address = form['address']
 
-            if form['vendor_number'] != cli.vendor_number:
-                cli.vendor_number = form['vendor_number']
+        if form['contact'] != cli.contact:
+            cli.contact = form['contact']
 
-            if new:
-                db.session.add(cli)
-                db.session.flush()
+        if form['vendor_number'] != cli.vendor_number:
+            cli.vendor_number = form['vendor_number']
 
-            inv.client = cli.id
+        if new:
+            db.session.add(cli)
+            db.session.flush()
 
-            db.session.commit()
+        inv.client = cli.id
 
-            return redirect(url_for('edit_invoice_client', invoice_id=inv.id))
+        db.session.commit()
 
-        return abort(400)
+        return jsonify(id=cli.id)
 
-    return abort(404)
+    return abort(400)
 
 
 @app.route('/edit_invoice_company/<invoice_id>', methods=['GET', 'POST'])
