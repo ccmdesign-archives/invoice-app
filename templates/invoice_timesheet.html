@@ -1,7 +1,5 @@
-{% if timesheets.count() %}
-  {# =========================== #}
+{% for chunk in timesheets %}
   <div class="page-break"></div>
-  {# =========================== #}
 
   <article class="invoice">
     <div class="invoice__branding">
@@ -13,8 +11,6 @@
     </div>
     <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
     <section class="invoice__summary">
-
-
       <table class="timesheet">
         <thead>
           <th class="description">Description</th>
@@ -24,7 +20,7 @@
         </thead>
 
         <tbody>
-          {% for i in timesheets %}
+          {% for i in chunk %}
             <tr>
               <td class="description">{{i.description}}</td>
               <td class="start">{{i.date}}</td>
@@ -39,14 +35,13 @@
       <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
     </footer>
   </article>
+{% endfor %}
 
-{% else %}
-  <div class="grid-row">
-    <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
-      <form id="upload-timesheet" action="{{ url_for('upload_timesheet', invoice_id=invoice.id) }}" enctype="multipart/form-data" method="post">
-        <input type="file" name="file">
-        <button class="button" type="submit">upload Timesheet CSV</button>
-      </form>
-    </div>
+<div class="grid-row">
+  <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
+    <form id="upload-timesheet" action="{{ url_for('upload_timesheet', invoice_id=invoice.id) }}" enctype="multipart/form-data" method="post">
+      <input type="file" name="file">
+      <button class="button" type="submit">Upload Timesheet CSV</button>
+    </form>
   </div>
-{% endif %}
+</div>

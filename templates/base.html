@@ -17,7 +17,7 @@
 
     <body class="{% block body_class %}{% endblock %}">
       <div class="panels">
-        <div class="panels__aside">        
+        <div class="panels__aside">
           <header class="homepage-header no-print">
             <h1 class="homepage-header__logo"><a href="{{ url_for('index') }}">Invoic.io</a></h1>
 
@@ -52,7 +52,7 @@
               </div>
             {% endif %}
           </header>
-        </div>  
+        </div>
 
         <div class="panels__main">
           {% block content %}{% endblock %}
@@ -65,8 +65,8 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.debug.js"></script>
 
           {% if g.user.is_authenticated %}
-            <script src="{{ url_for('.static', filename='js/scripts.js') }}"></script>
             <script src="{{ url_for('.static', filename='js/jquery.autocomplete.min.js') }} "></script>
+            <script src="{{ url_for('.static', filename='js/scripts.js') }}"></script>
           {% else %}
             <script src="{{ url_for('.static', filename='js/unlogged.js') }}"></script>
             <script src="{{ url_for('.static', filename='js/papaparse.js') }}"></script>

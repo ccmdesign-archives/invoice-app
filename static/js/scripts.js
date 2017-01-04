@@ -183,25 +183,15 @@ $(function () {
         });
     });
 
-    $('body').on('submit', '#upload-timesheet', function (e) {
-        function valid_response(data, state, xhr) {
-            var total = parseInt($('.invoice__amount').text());
-
-            $form[0].reset();
-
-            $('.timesheet-info').html(data);
-
-            $('.timesheet tbody tr').each(function () {
-                total += parseInt($(this).children().eq(3).text());
-            });
-
-            $('.invoice__amount').text(total);
+    // Updates the invoice content with the data from the uploaded CSV file
+    $('body').on('submit', '#upload-timesheet', function(e) {
+        function valid_response(data) {
+            $('.timesheet-info').html(data.html);
+            $('.invoice__amount').text('$ ' + data.json.total);
         }
 
         var $form = $(this);
         var formData = new FormData(this);
-
-        e.preventDefault();
 
         $.ajax({
             url: $form.attr('action'),

@@ -25,6 +25,10 @@ _SLUGY = Slugify(to_lower=True, separator='_')
 _ALLOWED_EXT = ['csv']
 
 
+def _get_array_chunks(array, size):
+    return (array[pos:pos + size] for pos in xrange(0, len(array), size))
+
+
 # Login manager
 # -------------
 
@@ -196,6 +200,7 @@ def open_invoice(invoice_id):
     inv = Invoice.query.get(invoice_id)
 
     if inv:
+        lst = list(Timesheet.query.filter(Timesheet.invoice == inv.id))
         ctx = {}
 
         ctx['taxes'] = {}
@@ -203,7 +208,7 @@ def open_invoice(invoice_id):
         ctx['invoice'] = inv
         ctx['company'] = Company.query.get(inv.company) if inv.company else {}
         ctx['services'] = Service.query.filter(Service.invoice == inv.id)
-        ctx['timesheets'] = Timesheet.query.filter(Timesheet.invoice == inv.id)
+        ctx['timesheets'] = _get_array_chunks(lst, 20)
 
         if inv.taxes:
             ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
@@ -436,54 +441,60 @@ def upload_timesheet(invoice_id):
 
     i = Invoice.query.get(invoice_id)
 
-    if i:
-        if request.method == 'GET':
-            c = {}
+    if not i:
+        return abort(404)
 
-            c['invoice'] = i
-            c['company'] = Company.query.get(i.company) if i.company else {}
-            c['timesheets'] = Timesheet.query.filter(Timesheet.invoice == i.id)
+    if request.method == 'GET':
+        resp = {'html': '', 'json': {'total': float(i.total)}}
+        lst = list(Timesheet.query.filter(Timesheet.invoice == i.id))
+        c = {}
 
-            return render_template('invoice_timesheet.html', **c)
+        c['invoice'] = i
+        c['company'] = Company.query.get(i.company) if i.company else {}
+        c['timesheets'] = _get_array_chunks(lst, 20)
 
-        elif request.method == 'POST' and 'file' in request.files:
-            file = request.files['file']
-            name = secure_filename(file.filename).strip() if file else ''
+        resp['html'] = render_template('invoice_timesheet.html', **c)
 
-            if name and allowed_file(name):
-                for idx, row in enumerate(reader(file)):
-                    if idx > 0 and len(row) == 14:
-                        tms = Timesheet(invoice=invoice_id)
-                        fun = lambda x: int(x) if x.strip() else 0
-                        lst = list(map(fun, row[7].split('-')))
+        return jsonify(resp)
 
-                        if len(lst) == 3 and all(lst):
-                            tms.date = date(*lst)
+    elif request.method == 'POST' and 'file' in request.files:
+        file = request.files['file']
+        name = secure_filename(file.filename).strip() if file else ''
 
-                        if row[11].strip():
-                            aux = strptime(row[11], '%H:%M:%S')
-                            kwa = {}
+        if name and allowed_file(name):
+            i.total = 0
 
-                            kwa['hours'] = aux.tm_hour
-                            kwa['minutes'] = aux.tm_min
-                            kwa['seconds'] = aux.tm_sec
+            for idx, row in enumerate(reader(file)):
+                if idx > 0 and len(row) == 14:
+                    tms = Timesheet(invoice=invoice_id)
+                    fun = lambda x: int(x) if x.strip() else 0
+                    lst = list(map(fun, row[7].split('-')))
 
-                            tms.duration = timedelta(**kwa).total_seconds()
+                    if len(lst) == 3 and all(lst):
+                        tms.date = date(*lst)
 
-                        tms.amount = Decimal(row[13] if row[13] else 0)
-                        tms.description = row[5]
+                    if row[11].strip():
+                        aux = strptime(row[11], '%H:%M:%S')
+                        kwa = {}
 
-                        i.total += tms.amount
+                        kwa['hours'] = aux.tm_hour
+                        kwa['minutes'] = aux.tm_min
+                        kwa['seconds'] = aux.tm_sec
 
-                        db.session.add(tms)
+                        tms.duration = timedelta(**kwa).total_seconds()
 
-                db.session.commit()
+                    tms.amount = Decimal(row[13] if row[13] else 0)
+                    tms.description = row[5]
 
-                return redirect(url_for('upload_timesheet', invoice_id=i.id))
+                    i.total += tms.amount
 
-        return abort(400)
+                    db.session.add(tms)
 
-    return abort(404)
+            db.session.commit()
+
+            return redirect(url_for('upload_timesheet', invoice_id=i.id))
+
+    return abort(400)
 
 
 @app.route('/get_companies/<invoice_id>', methods=['GET'])
@@ -555,32 +566,6 @@ def get_clients(invoice_id):
 
 
 @login_required
-@app.route('/download_invoice/<invoice_id>', methods=['GET'])
-def download_invoice(invoice_id):
-    inv = Invoice.query.get(invoice_id)
-
-    if inv:
-        ctx = {}
-
-        ctx['taxes'] = {}
-        ctx['client'] = Client.query.get(inv.client) if inv.client else {}
-        ctx['invoice'] = inv
-        ctx['company'] = Company.query.get(inv.company) if inv.company else {}
-        ctx['services'] = Service.query.filter(Service.invoice == inv.id)
-        ctx['timesheets'] = Timesheet.query.filter(Timesheet.invoice == inv.id)
-
-        if inv.taxes:
-            ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
-
-        elif inv.company:
-            ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
-
-        # return render_pdf(url_for('open_invoice', invoice_id=inv.id))
-        return render_pdf(HTML(string=render_template('print.html', **ctx)))
-
-
-# Luke criando Views
-@app.route('/clients')
+@app.route('/clients', methods=['GET'])
 def clients():
-  return render_template('clients.html')
-
+    return render_template('clients.html')
