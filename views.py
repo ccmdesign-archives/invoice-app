@@ -24,6 +24,9 @@ _MAX = 3
 _SLUGY = Slugify(to_lower=True, separator='_')
 _ALLOWED_EXT = ['csv']
 
+# Maximun of CVS rows per page
+_MAX_ROWS_PER_PAGE = 20
+
 
 def _get_array_chunks(array, size):
     return (array[pos:pos + size] for pos in xrange(0, len(array), size))
@@ -194,8 +197,8 @@ def create_invoice():
     return redirect(url_for('open_invoice', invoice_id=inv.id))
 
 
-@app.route('/invoice/<invoice_id>', methods=['GET'])
 @login_required
+@app.route('/invoice/<invoice_id>', methods=['GET'])
 def open_invoice(invoice_id):
     inv = Invoice.query.get(invoice_id)
 
@@ -203,12 +206,11 @@ def open_invoice(invoice_id):
         lst = list(Timesheet.query.filter(Timesheet.invoice == inv.id))
         ctx = {}
 
-        ctx['taxes'] = {}
-        ctx['client'] = Client.query.get(inv.client) if inv.client else {}
         ctx['invoice'] = inv
+        ctx['client'] = Client.query.get(inv.client) if inv.client else {}
         ctx['company'] = Company.query.get(inv.company) if inv.company else {}
         ctx['services'] = Service.query.filter(Service.invoice == inv.id)
-        ctx['timesheets'] = _get_array_chunks(lst, 20)
+        ctx['timesheets'] = _get_array_chunks(lst, _MAX_ROWS_PER_PAGE)
 
         if inv.taxes:
             ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
@@ -305,22 +307,22 @@ def edit_invoice_client(invoice_id):
 @login_required
 @app.route('/edit_invoice_company/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_company(invoice_id):
-    inv = Invoice.query.get(invoice_id)
+    invoice = Invoice.query.get(invoice_id)
 
-    if not inv:
+    if not invoice:
         return abort(404)
 
-    if request.method == 'GET' and inv.company:
+    if request.method == 'GET' and invoice.company:
         ctx = {}
 
-        ctx['company'] = Company.query.get(inv.company)
-        ctx['invoice'] = inv
+        ctx['company'] = Company.query.get(invoice.company)
+        ctx['invoice'] = invoice
 
-        if inv.taxes:
-            ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
+        if invoice.taxes:
+            ctx['taxes'] = Tax.query.filter(Tax.invoice == invoice.id)
 
         else:
-            ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
+            ctx['taxes'] = Tax.query.filter(Tax.company == invoice.company)
 
         return render_template('invoice_company.html', **ctx)
 
@@ -333,11 +335,11 @@ def edit_invoice_company(invoice_id):
             com = Company(user_id=g.user.id)
             new = True
 
-        elif inv.company != form['id']:
+        elif invoice.company != form['id']:
             com = Company.query.get(form['id'])
 
         else:
-            com = Company.query.get(inv.company)
+            com = Company.query.get(invoice.company)
 
         if form['name'] != com.name:
             com.name = form['name']
@@ -361,7 +363,7 @@ def edit_invoice_company(invoice_id):
             db.session.add(com)
             db.session.flush()
 
-        inv.company = com.id
+        invoice.company = com.id
 
         db.session.commit()
 
@@ -451,7 +453,7 @@ def upload_timesheet(invoice_id):
 
         c['invoice'] = i
         c['company'] = Company.query.get(i.company) if i.company else {}
-        c['timesheets'] = _get_array_chunks(lst, 20)
+        c['timesheets'] = _get_array_chunks(lst, _MAX_ROWS_PER_PAGE)
 
         resp['html'] = render_template('invoice_timesheet.html', **c)
 

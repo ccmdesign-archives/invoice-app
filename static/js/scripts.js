@@ -36,7 +36,7 @@ $(function () {
   });
 
   // Updates the client's data on each input change
-  $('.client-info').on('change', 'input', function() {
+  $('.client-info').on('change', 'input, textarea', function() {
     if (!$('.autocomplete-suggestions').is(':visible') && $('#client-form .name').val()) {
       var $form = $('#client-form'),
         $resp = null;
@@ -57,7 +57,7 @@ $(function () {
   });
 
   // Updates the company's data on each input change
-  $('.company-info').on('change', '#company-form input', function() {
+  $('.company-info').on('change', 'input, textarea', function() {
     if (!$('.autocomplete-suggestions').is(':visible') && $('#company-autocomplete').val()) {
       var $form = $('#company-form'),
         $resp = null;
