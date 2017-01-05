@@ -27,6 +27,22 @@ class Invoice(db.Model):
     services = db.relationship('Service')
     timesheets = db.relationship('Timesheet')
 
+    @property
+    def total_with_taxes(self):
+        taxes = []
+        value = 0
+
+        if self.taxes:
+            taxes = list(Tax.query.filter(Tax.invoice == self.id))
+
+        elif self.company:
+            taxes = (Tax.query.filter(Tax.company == self.company))
+
+        for item in taxes:
+            value += float(item.tax)
+
+        return float(self.total) * (1 + value / 100)
+
 
 class Client(db.Model):
     id = db.Column(db.Integer, primary_key=True)

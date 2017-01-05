@@ -1,4 +1,36 @@
 $(function () {
+
+  // Home
+  // ----
+
+  $('body').on('click', '.list td:first-of-type i', function () {
+    function valid_response(data, state, xhr) {
+      $('.list--opened tbody').html(data.open);
+      $('.list--archived tbody').html(data.paid);
+
+      $('.widget__primary-value.open').text(data.open.length);
+      $('.widget__primary-value.paid').text(data.paid.length);
+    }
+
+    var $resp = null,
+        data = {};
+
+    data.paid = $(this).text() == 'check_box_outline_blank' ? true : false;
+
+    $resp = $.post($(this).parents('tr').data('url'), {data: JSON.stringify(data)});
+
+    $resp.done(valid_response).fail(function (data, state, xhr) {
+      if (xhr == 'BAD REQUEST')
+        console.log('Bad request.');
+
+      else
+        console.log('Server error.');
+    });
+  });
+
+  // Invoice
+  // -------
+
   var opts1 = {
     serviceUrl: $('#company-autocomplete').data('url'),
     dataType: 'json',
@@ -38,8 +70,8 @@ $(function () {
   // Updates the client's data on each input change
   $('.client-info').on('change', 'input, textarea', function() {
     if (!$('.autocomplete-suggestions').is(':visible') && $('#client-form .name').val()) {
-      var $form = $('#client-form'),
-        $resp = null;
+      var $form = $('#client-form');
+      var $resp = null;
 
       $resp = $.post($form.attr('action'), $form.serialize());
 
@@ -59,8 +91,8 @@ $(function () {
   // Updates the company's data on each input change
   $('.company-info').on('change', 'input, textarea', function() {
     if (!$('.autocomplete-suggestions').is(':visible') && $('#company-autocomplete').val()) {
-      var $form = $('#company-form'),
-        $resp = null;
+      var $form = $('#company-form');
+      var $resp = null;
 
       $resp = $.post($form.attr('action'), $form.serialize());
 
@@ -77,35 +109,35 @@ $(function () {
     }
   });
 
-  $('.company-info').on('click', '#create-tax .add-button', function () {
-    function valid_response(data, state, xhr) {
-      $('.tax-info').html(data);
-    }
-
+  // Creates a tax
+  $('.company-info').on('click', '#create-tax .add-button', function() {
     if ($('#create-tax .name').val()) {
-      var $objc = $('#create-tax'),
-          $resp = null,
-          data = {};
+      var $objc = $('#create-tax');
+      var $resp = null;
+      var data = {};
 
-      $objc.find('input').each(function () {
-        var $inp = $(this);
-
-        data[$inp.attr('name')] = $inp.val();
+      $objc.find('input').each(function() {
+        data[$(this).attr('name')] = $(this).val();
       });
 
       $resp = $.post($objc.data('url'), {data: JSON.stringify(data)});
 
-      $resp.done(valid_response).fail(function (data, state, xhr) {
-        if (xhr == 'BAD REQUEST')
+      $resp.done(function(data) {
+        $('.tax-info').html(data.html);
+        $('.invoice__amount').text('$ ' + data.json.total);
+
+      }).fail(function () {
+        if (xhr == 'BAD REQUEST') {
           console.log('Bad request.');
 
-        else
+        } else {
           console.log('Server error.');
+        }
       });
     }
   });
 
-  $('.company-info').on('blur', '.edit-tax input', function () {
+  $('.company-info').on('blur', '.edit-tax input', function() {
     function valid_response(data, state, xhr) {
       $('.tax-info').html(data);
     }
@@ -147,31 +179,6 @@ $(function () {
     });
 
     $resp = $.post($('.invoice').data('url'), {data: JSON.stringify(data)});
-
-    $resp.done(valid_response).fail(function (data, state, xhr) {
-      if (xhr == 'BAD REQUEST')
-        console.log('Bad request.');
-
-      else
-        console.log('Server error.');
-    });
-  });
-
-  $('body').on('click', '.list td:first-of-type i', function () {
-    function valid_response(data, state, xhr) {
-      $('.list--opened tbody').html(data.open);
-      $('.list--archived tbody').html(data.paid);
-
-      $('.widget__primary-value.open').text(data.open.length);
-      $('.widget__primary-value.paid').text(data.paid.length);
-    }
-
-    var $resp = null,
-        data = {};
-
-    data.paid = $(this).text() == 'check_box_outline_blank' ? true : false;
-
-    $resp = $.post($(this).parents('tr').data('url'), {data: JSON.stringify(data)});
 
     $resp.done(valid_response).fail(function (data, state, xhr) {
       if (xhr == 'BAD REQUEST')
