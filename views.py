@@ -408,35 +408,39 @@ def create_invoice_tax(invoice_id):
     return abort(400)
 
 
-@app.route('/edit_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
 @login_required
+@app.route('/edit_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_tax(invoice_id):
-    inv = Invoice.query.get(invoice_id)
+    invoice = Invoice.query.get(invoice_id)
 
-    if inv:
-        if request.method == 'GET':
-            ctx = {}
+    if not invoice:
+        return abort(404)
 
-            ctx['invoice'] = inv
-            ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
+    if request.method == 'GET':
+        resp = {'html': '', 'json': {}}
+        ctx = {}
 
-            return render_template('invoice_tax.html', **ctx)
+        ctx['invoice'] = invoice
+        ctx['taxes'] = Tax.query.filter(Tax.invoice == invoice.id)
 
-        elif request.method == 'POST':
-            form = loads(request.form['data'])
-            tax = Tax.query.get(form['id'])
+        resp['html'] = render_template('invoice_tax.html', **ctx)
+        resp['json'] = {'total': '{0:.2f}'.format(invoice.total_with_taxes)}
 
-            tax.tax = form['tax']
-            tax.name = form['name']
-            tax.number = form['number']
+        return jsonify(resp)
 
-            db.session.commit()
+    elif request.method == 'POST':
+        form = loads(request.form['data'])
+        tax = Tax.query.get(form['id'])
 
-            return redirect(url_for('edit_invoice_tax', invoice_id=inv.id))
+        tax.tax = form['tax']
+        tax.name = form['name']
+        tax.number = form['number']
 
-        return abort(400)
+        db.session.commit()
 
-    return abort(404)
+        return redirect(url_for('edit_invoice_tax', invoice_id=invoice.id))
+
+    return abort(400)
 
 
 @login_required

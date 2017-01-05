@@ -4,7 +4,7 @@ $(function () {
   // ----
 
   $('body').on('click', '.list td:first-of-type i', function () {
-    function valid_response(data, state, xhr) {
+    function valid_response(data) {
       $('.list--opened tbody').html(data.open);
       $('.list--archived tbody').html(data.paid);
 
@@ -78,7 +78,7 @@ $(function () {
       $resp.done(function(data) {
         $('#client-id').val(data.id);
 
-      }).fail(function() {
+      }).fail(function(data, state, xhr) {
         if (xhr == 'BAD REQUEST')
           console.log('Bad request.');
 
@@ -99,7 +99,7 @@ $(function () {
       $resp.done(function(data) {
         $('#company-id').val(data.id);
 
-      }).fail(function() {
+      }).fail(function(data, state, xhr) {
         if (xhr == 'BAD REQUEST')
           console.log('Bad request.');
 
@@ -109,7 +109,7 @@ $(function () {
     }
   });
 
-  // Creates a tax
+  // Creates a tax and apdates the invoice price
   $('.company-info').on('click', '#create-tax .add-button', function() {
     if ($('#create-tax .name').val()) {
       var $objc = $('#create-tax');
@@ -126,7 +126,7 @@ $(function () {
         $('.tax-info').html(data.html);
         $('.invoice__amount').text('$ ' + data.json.total);
 
-      }).fail(function () {
+      }).fail(function(data, state, xhr) {
         if (xhr == 'BAD REQUEST') {
           console.log('Bad request.');
 
@@ -137,16 +137,13 @@ $(function () {
     }
   });
 
+  // Updates invoice price when a tax is changed
   $('.company-info').on('blur', '.edit-tax input', function() {
-    function valid_response(data, state, xhr) {
-      $('.tax-info').html(data);
-    }
-
     var $tr = $(this).parents('tr');
 
     if ($tr.find('.name').val()) {
-      var $resp = null,
-          data = {};
+      var $resp = null;
+      var data = {};
 
       $tr.find('input').each(function () {
         var $inp = $(this);
@@ -156,23 +153,26 @@ $(function () {
 
       $resp = $.post($tr.data('url'), {data: JSON.stringify(data)});
 
-      $resp.done(valid_response).fail(function (data, state, xhr) {
-        if (xhr == 'BAD REQUEST')
+      $resp.done(function(data) {
+        $('.tax-info').html(data.html);
+        $('.invoice__amount').text('$ ' + data.json.total);
+
+      }).fail(function (data, state, xhr) {
+        if (xhr == 'BAD REQUEST') {
           console.log('Bad request.');
 
-        else
+        } else {
           console.log('Server error.');
+        }
       });
     }
   });
 
-  $('body').on('blur', '.edit-invoice-input', function () {
-    function valid_response(data, state, xhr) {}
-
+  $('body').on('blur', '.edit-invoice-input', function() {
     var $resp = null,
         data = {};
 
-    $('.edit-invoice-input').each(function () {
+    $('.edit-invoice-input').each(function() {
       var $inp = $(this);
 
       data[$inp.attr('name')] = $inp.val();
@@ -180,7 +180,7 @@ $(function () {
 
     $resp = $.post($('.invoice').data('url'), {data: JSON.stringify(data)});
 
-    $resp.done(valid_response).fail(function (data, state, xhr) {
+    $resp.fail(function (data, state, xhr) {
       if (xhr == 'BAD REQUEST')
         console.log('Bad request.');
 
@@ -190,7 +190,7 @@ $(function () {
   });
 
   // Updates the invoice content with the data from the uploaded CSV file
-  $('body').on('submit', '#upload-timesheet', function(e) {
+  $('body').on('submit', '#upload-timesheet', function() {
     function valid_response(data) {
       $('.timesheet-info').html(data.html);
       $('.invoice__amount').text('$ ' + data.json.total);
