@@ -192,6 +192,11 @@ $(function () {
     });
   });
 
+  // Deletes an invoice
+  $('body').on('click', '.delete-invoice', function() {
+
+  });
+
   // Updates the invoice content with the data from the uploaded CSV file
   $('body').on('submit', '#upload-timesheet', function() {
     function valid_response(data) {

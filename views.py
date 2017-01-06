@@ -10,7 +10,6 @@ from datetime import date, timedelta
 # Libs
 from flask import g, session, flash, jsonify
 from flask import abort, render_template, request, Response, url_for, redirect
-from slugify import Slugify
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy.sql.expression import func
@@ -21,7 +20,8 @@ from models import Invoice, Client, Company, User, Service, Tax, Timesheet
 
 
 _MAX = 3
-_SLUGY = Slugify(to_lower=True, separator='_')
+
+# Allowed extensions
 _ALLOWED_EXT = ['csv']
 
 # Maximun of CSV rows per page
@@ -144,36 +144,31 @@ def home():
 @login_required
 @app.route('/toggle_invoice_status/<invoice_id>', methods=['GET', 'POST'])
 def toggle_invoice_status(invoice_id):
-    inv = Invoice.query.get(invoice_id)
+    inv = Invoice.query.get_or_404(invoice_id)
 
-    if inv:
-        if request.method == 'GET':
-            fun = lambda x: render_template('home_table_row.html', invoice=x)
-            dic = {'paid': [], 'open': []}
-            mim = 'application/json'
+    if request.method == 'GET':
+        fun = lambda x: render_template('home_table_row.html', invoice=x)
+        dic = {'paid': [], 'open': []}
+        mim = 'application/json'
 
-            for invoice in g.user.invoices:
-                if invoice.paid:
-                    dic['paid'].append(fun(invoice).strip())
+        for invoice in g.user.invoices:
+            if invoice.paid:
+                dic['paid'].append(fun(invoice).strip())
 
-                else:
-                    dic['open'].append(fun(invoice).strip())
+            else:
+                dic['open'].append(fun(invoice).strip())
 
-            return Response(response=dumps(dic), status=200, mimetype=mim)
+        return Response(response=dumps(dic), status=200, mimetype=mim)
 
-        elif request.method == 'POST':
-            url = url_for('toggle_invoice_status', invoice_id=inv.id)
-            form = loads(request.form['data'])
+    elif request.method == 'POST':
+        url = url_for('toggle_invoice_status', invoice_id=inv.id)
+        form = loads(request.form['data'])
 
-            inv.paid = form['paid']
+        inv.paid = form['paid']
 
-            db.session.commit()
+        db.session.commit()
 
-            return redirect(url)
-
-        return abort(400)
-
-    return abort(404)
+        return redirect(url)
 
 
 @login_required
@@ -196,12 +191,20 @@ def create_invoice():
 
 
 @login_required
+@app.route('/delete_invoice/<invoice_id>', methods=['POST'])
+def delete_invoice(invoice_id):
+    invoice = Invoice.query.get_or_404(invoice_id)
+
+    db.session.delete(invoice)
+    db.session.commit()
+
+    return redirect(url_for('home'))
+
+
+@login_required
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def open_invoice(invoice_id):
-    invoice = Invoice.query.get(invoice_id)
-
-    if not invoice:
-        return abort(404)
+    invoice = Invoice.query.get_or_404(invoice_id)
 
     lst = list(Timesheet.query.filter(Timesheet.invoice == invoice.id))
     ctx = {}
@@ -224,10 +227,7 @@ def open_invoice(invoice_id):
 @login_required
 @app.route('/edit_invoice/<invoice_id>', methods=['POST'])
 def edit_invoice(invoice_id):
-    invoice = Invoice.query.get(invoice_id)
-
-    if not invoice:
-        return abort(404)
+    invoice = Invoice.query.get_or_404(invoice_id)
 
     form = loads(request.form['data'])
 
@@ -243,10 +243,7 @@ def edit_invoice(invoice_id):
 @login_required
 @app.route('/edit_invoice_client/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_client(invoice_id):
-    inv = Invoice.query.get(invoice_id)
-
-    if not inv:
-        return abort(404)
+    inv = Invoice.query.get_or_404(invoice_id)
 
     if request.method == 'GET' and inv.client:
         ctx = {}
@@ -305,10 +302,7 @@ def edit_invoice_client(invoice_id):
 @login_required
 @app.route('/edit_invoice_company/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_company(invoice_id):
-    invoice = Invoice.query.get(invoice_id)
-
-    if not invoice:
-        return abort(404)
+    invoice = Invoice.query.get_or_404(invoice_id)
 
     if request.method == 'GET' and invoice.company:
         ctx = {}
@@ -373,10 +367,7 @@ def edit_invoice_company(invoice_id):
 @login_required
 @app.route('/create_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
 def create_invoice_tax(invoice_id):
-    invoice = Invoice.query.get(invoice_id)
-
-    if not invoice:
-        return abort(404)
+    invoice = Invoice.query.get_or_404(invoice_id)
 
     if request.method == 'GET':
         resp = {'html': '', 'json': {}}
@@ -403,16 +394,11 @@ def create_invoice_tax(invoice_id):
 
         return redirect(url_for('create_invoice_tax', invoice_id=invoice.id))
 
-    return abort(400)
-
 
 @login_required
 @app.route('/edit_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_tax(invoice_id):
-    invoice = Invoice.query.get(invoice_id)
-
-    if not invoice:
-        return abort(404)
+    invoice = Invoice.query.get_or_404(invoice_id)
 
     if request.method == 'GET':
         resp = {'html': '', 'json': {}}
@@ -438,8 +424,6 @@ def edit_invoice_tax(invoice_id):
 
         return redirect(url_for('edit_invoice_tax', invoice_id=invoice.id))
 
-    return abort(400)
-
 
 @login_required
 @app.route('/upload_timesheet/<invoice_id>', methods=['GET', 'POST'])
@@ -447,10 +431,7 @@ def upload_timesheet(invoice_id):
     def allowed_file(file):
         return '.' in file and file.rsplit('.', 1)[1] in _ALLOWED_EXT
 
-    invoice = Invoice.query.get(invoice_id)
-
-    if not invoice:
-        return abort(404)
+    invoice = Invoice.query.get_or_404(invoice_id)
 
     if request.method == 'GET':
         resp = {'html': '', 'json': {}}
@@ -510,69 +491,63 @@ def upload_timesheet(invoice_id):
 @app.route('/get_companies/<invoice_id>', methods=['GET'])
 @login_required
 def get_companies(invoice_id):
-    inv = Invoice.query.get(invoice_id)
+    inv = Invoice.query.get_or_404(invoice_id)
     txt = request.args.get('q').strip()
 
-    if inv:
-        mim = 'application/json'
-        res = {'query': txt, 'suggestions': []}
-        qry = Company.query.filter(
-            Company.user_id == g.user.id,
-            Company.name.ilike('%' + txt + '%')
-        ).limit(_MAX)
+    mim = 'application/json'
+    res = {'query': txt, 'suggestions': []}
+    qry = Company.query.filter(
+        Company.user_id == g.user.id,
+        Company.name.ilike('%' + txt + '%')
+    ).limit(_MAX)
 
-        for com in qry.all():
-            ctx = {}
-            dic = {}
+    for com in qry.all():
+        ctx = {}
+        dic = {}
 
-            ctx['company'] = com
-            ctx['invoice'] = inv
+        ctx['company'] = com
+        ctx['invoice'] = inv
 
-            if inv.taxes:
-                ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
+        if inv.taxes:
+            ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
 
-            else:
-                ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
+        else:
+            ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
 
-            dic['value'] = com.name
-            dic['data'] = render_template('invoice_company.html', **ctx)
+        dic['value'] = com.name
+        dic['data'] = render_template('invoice_company.html', **ctx)
 
-            res['suggestions'].append(dic)
+        res['suggestions'].append(dic)
 
-        return Response(response=dumps(res), status=200, mimetype=mim)
-
-    return abort(404)
+    return Response(response=dumps(res), status=200, mimetype=mim)
 
 
 @login_required
 @app.route('/get_clients/<invoice_id>', methods=['GET'])
 def get_clients(invoice_id):
-    inv = Invoice.query.get(invoice_id)
+    inv = Invoice.query.get_or_404(invoice_id)
     txt = request.args.get('q').strip()
 
-    if inv:
-        mim = 'application/json'
-        res = {'query': txt, 'suggestions': []}
-        qry = Client.query.filter(
-            Client.user_id == g.user.id,
-            Client.name.ilike('%' + txt + '%')
-        ).limit(_MAX)
+    mim = 'application/json'
+    res = {'query': txt, 'suggestions': []}
+    qry = Client.query.filter(
+        Client.user_id == g.user.id,
+        Client.name.ilike('%' + txt + '%')
+    ).limit(_MAX)
 
-        for cli in qry.all():
-            ctx = {}
-            dic = {}
+    for cli in qry.all():
+        ctx = {}
+        dic = {}
 
-            ctx['client'] = cli
-            ctx['invoice'] = inv
+        ctx['client'] = cli
+        ctx['invoice'] = inv
 
-            dic['value'] = cli.name
-            dic['data'] = render_template('invoice_client.html', **ctx)
+        dic['value'] = cli.name
+        dic['data'] = render_template('invoice_client.html', **ctx)
 
-            res['suggestions'].append(dic)
+        res['suggestions'].append(dic)
 
-        return Response(response=dumps(res), status=200, mimetype=mim)
-
-    return abort(404)
+    return Response(response=dumps(res), status=200, mimetype=mim)
 
 
 @login_required
