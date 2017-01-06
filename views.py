@@ -554,3 +554,14 @@ def get_clients(invoice_id):
 @app.route('/clients', methods=['GET'])
 def clients():
     return render_template('clients.html')
+
+
+@login_required
+@app.route('/delete_client/<client_id>', methods=['POST'])
+def delete_client(client_id):
+    client = Client.query.get_or_404(client_id)
+
+    db.session.delete(client)
+    db.session.commit()
+
+    return redirect(url_for('clients'))

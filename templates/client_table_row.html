@@ -4,5 +4,9 @@
   <td class="list__align-center">2</td>
   <td class="list__amount">9999</td>
   <td class="list__action"><i class="material-icons">edit</i></td>
-  <td class="list__action list__action--red"><i class="material-icons">close</i></td>
+  <td class="list__action list__action--red">
+    <form action="{{ url_for('delete_client', client_id=client.id) }}" method="post" onclick="submit()">
+      <i class="material-icons">close</i>
+    </form>
+  </td>
 </tr>
