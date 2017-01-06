@@ -168,14 +168,17 @@ $(function () {
     }
   });
 
+  // Updates invoice data: number, services and descrption
   $('body').on('blur', '.edit-invoice-input', function() {
-    var $resp = null,
-        data = {};
+    var $resp = null;
+    var data = {};
 
     $('.edit-invoice-input').each(function() {
-      var $inp = $(this);
+      data[$(this).attr('name')] = $(this).val();
 
-      data[$inp.attr('name')] = $inp.val();
+      if ($(this).hasClass('js-invoice-number')) {
+        $('.js-invoice-number').val($(this).val());
+      }
     });
 
     $resp = $.post($('.invoice').data('url'), {data: JSON.stringify(data)});

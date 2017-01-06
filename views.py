@@ -24,8 +24,12 @@ _MAX = 3
 _SLUGY = Slugify(to_lower=True, separator='_')
 _ALLOWED_EXT = ['csv']
 
-# Maximun of CVS rows per page
+# Maximun of CSV rows per page
 _MAX_ROWS_PER_PAGE = 20
+
+
+def _ajax_ok():
+    return 'ok'
 
 
 def _get_array_chunks(array, size):
@@ -91,13 +95,13 @@ def logout():
     return redirect(url_for('index'))
 
 
-# Invoice
-# -------
-
 @login_manager.user_loader
 def load_user(id):
     return User.query.get(id)
 
+
+# Invoice
+# -------
 
 @app.before_request
 def before_request():
@@ -113,12 +117,6 @@ def before_request():
 
             else:
                 g.user.open_invoices += 1
-
-
-@app.route('/ajax_ok/')
-@login_required
-def ajax_ok():
-    return Response('ok')
 
 
 @app.route('/')
@@ -143,8 +141,8 @@ def home():
     return render_template('home.html')
 
 
-@app.route('/toggle_invoice_status/<invoice_id>', methods=['GET', 'POST'])
 @login_required
+@app.route('/toggle_invoice_status/<invoice_id>', methods=['GET', 'POST'])
 def toggle_invoice_status(invoice_id):
     inv = Invoice.query.get(invoice_id)
 
@@ -178,8 +176,8 @@ def toggle_invoice_status(invoice_id):
     return abort(404)
 
 
-@app.route('/invoice', methods=['POST'])
 @login_required
+@app.route('/invoice', methods=['POST'])
 def create_invoice():
     inv = Invoice(user_id=g.user.id)
     com = g.user.companies[0] if g.user.companies else {}
@@ -200,46 +198,46 @@ def create_invoice():
 @login_required
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def open_invoice(invoice_id):
-    inv = Invoice.query.get(invoice_id)
+    invoice = Invoice.query.get(invoice_id)
 
-    if inv:
-        lst = list(Timesheet.query.filter(Timesheet.invoice == inv.id))
-        ctx = {}
+    if not invoice:
+        return abort(404)
 
-        ctx['invoice'] = inv
-        ctx['client'] = Client.query.get(inv.client) if inv.client else {}
-        ctx['company'] = Company.query.get(inv.company) if inv.company else {}
-        ctx['services'] = Service.query.filter(Service.invoice == inv.id)
-        ctx['timesheets'] = _get_array_chunks(lst, _MAX_ROWS_PER_PAGE)
+    lst = list(Timesheet.query.filter(Timesheet.invoice == invoice.id))
+    ctx = {}
 
-        if inv.taxes:
-            ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
+    ctx['invoice'] = invoice
+    ctx['client'] = Client.query.get(invoice.client) if invoice.client else {}
+    ctx['company'] = Company.query.get(invoice.company) if invoice.company else {}
+    ctx['services'] = Service.query.filter(Service.invoice == invoice.id)
+    ctx['timesheets'] = _get_array_chunks(lst, _MAX_ROWS_PER_PAGE)
 
-        elif inv.company:
-            ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
+    if invoice.taxes:
+        ctx['taxes'] = Tax.query.filter(Tax.invoice == invoice.id)
 
-        return render_template('invoice.html', **ctx)
+    elif invoice.company:
+        ctx['taxes'] = Tax.query.filter(Tax.company == invoice.company)
 
-    return abort(404)
+    return render_template('invoice.html', **ctx)
 
 
-@app.route('/edit_invoice/<invoice_id>', methods=['POST'])
 @login_required
+@app.route('/edit_invoice/<invoice_id>', methods=['POST'])
 def edit_invoice(invoice_id):
-    inv = Invoice.query.get(invoice_id)
+    invoice = Invoice.query.get(invoice_id)
 
-    if inv and request.method == 'POST':
-        form = loads(request.form['data'])
+    if not invoice:
+        return abort(404)
 
-        inv.tag_number = form['tag_number']
-        inv.service_name = form['service_name']
-        inv.service_description = form['service_description']
+    form = loads(request.form['data'])
 
-        db.session.commit()
+    invoice.tag_number = form['tag_number']
+    invoice.service_name = form['service_name']
+    invoice.service_description = form['service_description']
 
-        return redirect(url_for('ajax_ok'))
+    db.session.commit()
 
-    return abort(404)
+    return _ajax_ok()
 
 
 @login_required
@@ -449,22 +447,22 @@ def upload_timesheet(invoice_id):
     def allowed_file(file):
         return '.' in file and file.rsplit('.', 1)[1] in _ALLOWED_EXT
 
-    i = Invoice.query.get(invoice_id)
+    invoice = Invoice.query.get(invoice_id)
 
-    if not i:
+    if not invoice:
         return abort(404)
 
     if request.method == 'GET':
         resp = {'html': '', 'json': {}}
-        lst = list(Timesheet.query.filter(Timesheet.invoice == i.id))
+        lst = list(Timesheet.query.filter(Timesheet.invoice == invoice.id))
         c = {}
 
-        c['invoice'] = i
-        c['company'] = Company.query.get(i.company) if i.company else {}
+        c['invoice'] = invoice
+        c['company'] = Company.query.get(invoice.company) if invoice.company else {}
         c['timesheets'] = _get_array_chunks(lst, _MAX_ROWS_PER_PAGE)
 
         resp['html'] = render_template('invoice_timesheet.html', **c)
-        resp['json']['total'] = "{0:.2f}".format(i.total_with_taxes)
+        resp['json']['total'] = "{0:.2f}".format(invoice.total_with_taxes)
 
         return jsonify(resp)
 
@@ -473,7 +471,8 @@ def upload_timesheet(invoice_id):
         name = secure_filename(file.filename).strip() if file else ''
 
         if name and allowed_file(name):
-            i.total = 0
+            Timesheet.query.filter(Timesheet.invoice == invoice.id).delete()
+            invoice.total = 0
 
             for idx, row in enumerate(reader(file)):
                 if idx > 0 and len(row) == 14:
@@ -497,13 +496,13 @@ def upload_timesheet(invoice_id):
                     tms.amount = Decimal(row[13] if row[13] else 0)
                     tms.description = row[5]
 
-                    i.total += tms.amount
+                    invoice.total += tms.amount
 
                     db.session.add(tms)
 
             db.session.commit()
 
-            return redirect(url_for('upload_timesheet', invoice_id=i.id))
+            return redirect(url_for('upload_timesheet', invoice_id=invoice.id))
 
     return abort(400)
 
