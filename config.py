@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Python Core.
+# Python
 from os import getenv
 from os.path import join, dirname, isfile
 
-# Python Libs.
+# Python libs
 from dotenv import read_dotenv
 
 

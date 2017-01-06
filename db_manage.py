@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# Python Libs.
+# Python
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 
-# Invoice.
+# Invoice
 from app import app, db
 
 

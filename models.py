@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Python Core.
+# Python
 from datetime import date
 
-# Invoice.
+# Invoice
 from app import db
 
 

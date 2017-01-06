@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Python Core.
+# Python
 from time import strftime, gmtime
 
-# Python Libs.
+# Python libs
 from flask import Flask
 from flask_oauth import OAuth
 from flask_login import LoginManager
