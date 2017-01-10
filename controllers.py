@@ -110,13 +110,20 @@ def before_request():
     if g.user and g.user.is_authenticated:
         g.user.paid_invoices = 0
         g.user.open_invoices = 0
+        paid_value = 0
+        open_value = 0
 
         for invoice in g.user.invoices:
             if invoice.paid:
                 g.user.paid_invoices += 1
+                paid_value += invoice.total_with_taxes
 
             else:
                 g.user.open_invoices += 1
+                open_value += invoice.total_with_taxes
+
+        g.user.paid_invoices_value = '{0:.2f}'.format(paid_value)
+        g.user.open_invoices_value = '{0:.2f}'.format(open_value)
 
 
 @app.route('/')
