@@ -5,11 +5,11 @@
   <td>{{invoice.client_obj.name or "" }}</td>
   <td>{{invoice.service_name}}</td>
   <td class="list__amount">{{ invoice.currency }} {{invoice.total}}</td>
-  <td class="list__action"><i class="material-icons">file_download</i></td>
+  <!--<td class="list__action"><i class="material-icons">file_download</i></td>-->
   <td class="list__action list__action--red">
     <form action="{{ url_for('delete_invoice', invoice_id=invoice.id) }}" method="post" onclick="submit()">
       <i class="material-icons ">close</i>
     </form>
   </td>
-  {# Use this plugin to download the PDF https://github.com/MrRio/jsPDF / https://parall.ax/products/jspdf# #}
+  <!--Use this plugin to download the PDF https://github.com/MrRio/jsPDF / https://parall.ax/products/jspdf#-->
 </tr>

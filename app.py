@@ -73,7 +73,7 @@ def utility_processor():
     return dict(format_duration=format_duration, format_price=format_price)
 
 
-from views import *  # noqa : disable pep8 on this line
+from controllers import *  # noqa : disable pep8 on this line
 from models import *  # noqa : disable pep8 on this line
 
 
