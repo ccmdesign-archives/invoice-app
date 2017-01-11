@@ -11,7 +11,8 @@
     <header class="invoice__header">
       <div class="invoice__branding">
         <h2>Company Name</h2>
-        <h1>Invoice <input type="text" class="edit-invoice-input js-invoice-number" placeholder="#201601"/></h1>
+        <!--<h1>Invoice <input type="text" class="edit-invoice-input js-invoice-number" placeholder="#201601"/></h1>-->
+        <h1>Invoice <span class="editable js-invoice-number" contenteditable>#201601</span></h1>
       </div>
       <div class="client-info">
         <div class="grid-row">
@@ -60,7 +61,7 @@
             <div class="tax-info">
               <h4 class="spaced">Government Registration</h4>
               <table>
-                <tr class="invoice__interface">
+                <tr>
                   <td>
                     <i class="invoice__button invoice__button--small material-icons add-button">add</i>
                     <input class="name base-field small" placeholder="Register"/>

@@ -14,12 +14,12 @@
   input,
   textarea  {
     border: 1px solid transparent;
-    
-    &:hover { 
-      // background-color: rgba(black, .1); 
+
+    &:hover {
+      // background-color: rgba(black, .1);
       border: 1px solid rgba(black, .1);
     }
-    
+
     &:focus {
       border: 1px solid rgba(black, .1);
       -webkit-appearance: none;
@@ -332,8 +332,8 @@ textarea {
 
   .invoice {
     color: black;
-    
-    
+
+
 
     &__button,
     &__interface {

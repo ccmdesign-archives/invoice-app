@@ -9,7 +9,7 @@ $(function() {
 
   // Updates invoice number
   $('body').on('blur', '.js-invoice-number', function() {
-    $('.js-invoice-number').text($(this).val());
+    $('.js-invoice-number').text($(this).text());
   });
 
   // Adds a new tax entry and updates the total price
@@ -52,13 +52,13 @@ $(function() {
         var $page;
         var $br;
 
-        for (var i = 0; i < results.data.length; i += chunk) {
+        for (var i = 1; i < results.data.length; i += chunk) {
           slice = results.data.slice(i, i + chunk);
           $page = $('.js-invoice.hidden').clone();
           $br = $('.js-page-break.hidden').clone();
 
-          slice.forEach(function(row, index) {
-            if (index && row.length === 14) {
+          slice.forEach(function(row) {
+            if (row.length === 14) {
               var $tr = '<tr>';
 
               $tr += '<td class="description">' + row[5];

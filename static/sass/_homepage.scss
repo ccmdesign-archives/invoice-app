@@ -1,7 +1,7 @@
 .panels {
   display: flex;
   height: 100%;
-  
+
   &__aside {
     width: 210px;
     height: 100%;
@@ -95,4 +95,14 @@
   width: 100%;
   max-width: 860px;
   margin: 0 auto;
+}
+
+
+@media print {
+  .panels {
+    &__main {
+      padding-left: 25px;
+      padding-right: 25px;
+    }
+  }
 }
