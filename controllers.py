@@ -19,7 +19,8 @@ from app import app, github, login_manager, db
 from models import Invoice, Client, Company, User, Service, Tax, Timesheet
 
 
-_MAX = 3
+# Maximun number of suggestions returned by the autocomplete
+_MAX_SUGGESTIONS = 5
 
 # Allowed extensions
 _ALLOWED_EXT = ['csv']
@@ -506,7 +507,7 @@ def get_companies(invoice_id):
     qry = Company.query.filter(
         Company.user_id == g.user.id,
         Company.name.ilike('%' + txt + '%')
-    ).limit(_MAX)
+    ).limit(_MAX_SUGGESTIONS)
 
     for com in qry.all():
         ctx = {}
@@ -540,7 +541,7 @@ def get_clients(invoice_id):
     qry = Client.query.filter(
         Client.user_id == g.user.id,
         Client.name.ilike('%' + txt + '%')
-    ).limit(_MAX)
+    ).limit(_MAX_SUGGESTIONS)
 
     for cli in qry.all():
         ctx = {}

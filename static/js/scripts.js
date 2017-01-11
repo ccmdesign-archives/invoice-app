@@ -35,9 +35,9 @@ $(function () {
     serviceUrl: $('#company-autocomplete').data('url'),
     dataType: 'json',
     paramName: 'q',
-    deferRequestBy: 500,
+    deferRequestBy: 100,
     nocache: true,
-    minChars: 3,
+    minChars: 0,
     triggerSelectOnValidInput: false,
     onSelect: function (item) {
       $('.company-info').html(item.data);
@@ -49,9 +49,9 @@ $(function () {
     serviceUrl: $('#client-autocomplete').data('url'),
     dataType: 'json',
     paramName: 'q',
-    deferRequestBy: 500,
+    deferRequestBy: 100,
     nocache: true,
-    minChars: 3,
+    minChars: 0,
     triggerSelectOnValidInput: false,
     onSelect: function (item) {
       $('.client-info').html(item.data);
