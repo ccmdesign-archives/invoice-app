@@ -7,6 +7,11 @@ $(function() {
     $('.invoice__branding h2').text($(this).val());
   });
 
+  // Updates invoice number
+  $('body').on('blur', '.js-invoice-number', function() {
+    $('.js-invoice-number').text($(this).val());
+  });
+
   // Adds a new tax entry and updates the total price
   $('.tax-info .add-button').click(function() {
     var $row = $(this).closest('tr');
