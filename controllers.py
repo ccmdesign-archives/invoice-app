@@ -133,14 +133,9 @@ def index():
         return redirect(url_for('home'))
 
     else:
-        return render_template('index.html')
+        ctx = {'invoice': {}, 'today': date.today()}
 
-
-@app.route('/unlogged_invoice', methods=['GET'])
-def unlogged_invoice():
-    ctx = {'invoice': {}, 'today': date.today()}
-
-    return render_template('unlogged_invoice.html', **ctx)
+        return render_template('unlogged_invoice.html', **ctx)
 
 
 @app.route('/home', methods=['GET'])
