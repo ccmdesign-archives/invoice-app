@@ -565,6 +565,26 @@ def clients():
 
 
 @login_required
+@app.route('/create_client', methods=['POST'])
+def create_client():
+    form = request.form
+    client = Client(user_id=g.user.id)
+
+    client.name = form['client_name']
+    client.email = form['email']
+    client.phone = form['phone']
+    client.address = form['address']
+    client.contact = form['contact_name']
+    client.vendor_number = form['vendor_number']
+
+    db.session.add(client)
+    db.session.flush()
+    db.session.commit()
+
+    return redirect(url_for('clients'))
+
+
+@login_required
 @app.route('/delete_client/<client_id>', methods=['POST'])
 def delete_client(client_id):
     client = Client.query.get_or_404(client_id)

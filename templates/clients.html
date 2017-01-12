@@ -3,51 +3,49 @@
 {% block body_class %}client-list-page{% endblock %}
 
 {% block content %}
+  <div class="wrapper">
+    <div class="controls controls--with-header no-print">
+      <form method="post" action="{{ url_for('create_invoice') }}"><button type="submit" class="controls__button" title="New Invoice"><i>description</i></button></form>
+      <!--<a href="./invoice" class="controls__button" title="New Client"><i>person_add</i></a>-->
+      <a href="{{ url_for('clients') }}" class="controls__button" title="Client List"><i>people</i></a>
+    </div>
 
-<div class="wrapper">
-  <div class="controls controls--with-header no-print">
-    <form method="post" action="{{ url_for('create_invoice') }}"><button type="submit" class="controls__button" title="New Invoice"><i>description</i></button></form>
-    <!--<a href="./invoice" class="controls__button" title="New Client"><i>person_add</i></a>-->
-    <a href="/clients" class="controls__button" title="Client List"><i>people</i></a>
+    <div class="new-client">
+      <form action="{{ url_for('create_client') }}" method="post" class="form">
+        <div class="grid-row">
+          <div class="grid-half">
+            <h2>New Client</h2>
+            <input type="text" name="client_name" placeholder="Client Name" class="base-field">
+            <input type="text" name="contact_name" placeholder="Contact Person" class="base-field">
+            <input type="text" name="email" placeholder="Contact Email" class="base-field">
+            <input type="text" name="phone" placeholder="Contact Phone" class="base-field">
+          </div>
+          <div class="grid-half">
+            <div class="checkbox align-with-title"><input id="apply-taxes-to-client" type="checkbox"><label for="apply-taxes-to-client">Apply Sales Taxes</label></div>
+            <input type="text" name="vendor_number" placeholder="Your vendor number with this client" class="base-field">
+            <input type="text" name="currency" placeholder="Currency" class="base-field">
+            <textarea class="base-field-textarea" name="address" placeholder="Client Address"></textarea>
+            <button class="button" type="submit">Add client</button>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 
-  <div class="new-client">
-
-    <form action="" class="form">
-      <div class="grid-row">
-        <div class="grid-half">
-          <h2>New Client</h2>
-          <input type="text" placeholder="Client Name" class="base-field">
-          <input type="text" placeholder="Contact Person" class="base-field">
-          <input type="text" placeholder="Contact Email" class="base-field">
-          <input type="text" placeholder="Contact Phone" class="base-field">
-        </div>
-        <div class="grid-half">
-          <div class="checkbox align-with-title"><input id="apply-taxes-to-client" type="checkbox"><label for="apply-taxes-to-client">Apply Sales Taxes</label></div>
-          <input type="text" placeholder="Your vendor number with this client" class="base-field">
-          <input type="text" placeholder="Currency" class="base-field">
-
-          <textarea class="base-field-textarea" placeholder="Client Address"></textarea>
-        </div>
-      </div>
-    </form>
-  </div>
-</div>
-
-<section class="client-list wrapper">
-  <table class="list list--opened">
-    <thead>
-      <th></th>
-      <th>Name</th>
-      <th class="list__align-center">Pending</th>
-      <th class="list__amount">Amount</th>
-      <th></th>
-    </thead>
-    <tbody>
-      {% for client in g.user.clients %}
-        {% include 'client_table_row.html' %}
-      {% endfor %}
-    </tbody>
-  </table>
-</section>
+  <section class="client-list wrapper">
+    <table class="list list--opened">
+      <thead>
+        <th></th>
+        <th>Name</th>
+        <th class="list__align-center">Pending</th>
+        <th class="list__amount">Amount</th>
+        <th></th>
+      </thead>
+      <tbody>
+        {% for client in g.user.clients %}
+          {% include 'client_table_row.html' %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
 {% endblock %}
