@@ -37,7 +37,7 @@
   </article>
 {% endfor %}
 
-<div class="grid-row">
+<div class="grid-row no-print">
   <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
     <form id="upload-timesheet" action="{{ url_for('upload_timesheet', invoice_id=invoice.id) }}" enctype="multipart/form-data" method="post">
       <input type="file" name="file">
