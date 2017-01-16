@@ -7,7 +7,6 @@ from time import strftime, gmtime
 from flask import Flask
 from flask_oauth import OAuth
 from flask_login import LoginManager
-from flask_assets import Environment, Bundle
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -17,25 +16,9 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 
-####################################
-#        SASS Manager
-####################################
-#
-assets = Environment(app)
-assets.url = app.static_url_path
-scss = Bundle(
-    'sass/custom-styles.scss',
-    filters=('pyscss', 'cssmin'),
-    depends=('sass/*.scss'),
-    output='css/styles.css'
-)
+# Github login
+# ------------
 
-assets.register('scss_all', scss)
-
-####################################
-#        Github login
-####################################
-#
 oauth = OAuth()
 github = oauth.remote_app(
     'github',
@@ -49,19 +32,17 @@ github = oauth.remote_app(
     request_token_params={'scope': app.config['GITHUB_AUTH']['scope']}
 )
 
-####################################
-#        login manager
-####################################
-#
+# Login manager
+# -------------
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 
-####################################
-#        Context Processors
-####################################
-#
+# Context Processors
+# ------------------
+
 @app.context_processor
 def utility_processor():
     def format_duration(s):

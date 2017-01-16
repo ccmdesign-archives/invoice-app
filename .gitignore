@@ -6,4 +6,5 @@ migrations/*
 static/.webassets-cache/
 static/.sass-cache/
 static/css/
-/venv
+venv/
+node_modules/
