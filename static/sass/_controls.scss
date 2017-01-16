@@ -1,8 +1,8 @@
 .controls {
   position: fixed;
   z-index: 100;
-  left: 230px;
-  top: 130px;
+  right: 30px;
+  top: 70px;
 
   &__button {
     box-shadow: 1px 1px 4px rgba(black, .1);
@@ -11,7 +11,7 @@
     border-radius: 50%;
     cursor: pointer;
     margin-top: 0;
-    position: static;
+    position: relative;
     display: block;
     margin-bottom: 10px;
     font-size: 28px;
@@ -28,23 +28,23 @@
       @extend .u-transition;
     }
 
-    &:after {
+    &:before {
       content: attr(title);
       position: absolute;
       color: $main-color;
       font-size: 1rem;
-      text-align: left;
+      text-align: right;
       word-wrap: nowrap;
       width: 150px;
       padding: 15px 15px;
       opacity: 0;
-      margin-left: -50px;
+      left: -100px;
       @extend .u-transition;
     }
 
-    &:hover:after {
+    &:hover:before {
       opacity: 1;
-      margin-left: 0;
+      left: -150px;
       @extend .u-transition;
     }
   }
