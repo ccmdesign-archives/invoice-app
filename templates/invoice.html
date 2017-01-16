@@ -3,8 +3,8 @@
 {% block body_class %}invoice-page{% endblock %}
 
 {% block content %}
-  <div class="controls no-print">
-    <a class="controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
+  <div class="main-controls no-print">
+    <a class="main-controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
     {# <a class="controls__button" href="#" title="Save Draft"><i>save</i></a> #}
     {# <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a> #}
   </div>
@@ -19,10 +19,16 @@
         <h1>Invoice <input type="text" class="edit-invoice-input js-invoice-number" name="tag_number" placeholder="#{{ invoice.tag_number }}" value="{{ invoice.tag_number }}"/></h1>
       </div>
       <div class="client-info">
+        <div class="contextual-controls no-print">
+          <span class="contextual-controls__button" title="Add Client"><i class="material-icons">add</i></span>
+        </div>
         {% include 'invoice_client.html' %}
       </div>
 
       <div class="company-info">
+        <div class="contextual-controls no-print">
+          <span class="contextual-controls__button" title="Edit Company"><i class="material-icons">edit</i></span>
+        </div>
         {% include 'invoice_company.html' %}
       </div>
     </header>

@@ -1,52 +1,84 @@
-.controls {
+.u-control-button {
+  box-shadow: 1px 1px 4px rgba(black, .1);
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: 0;
+  position: relative;
+  display: block;
+  margin-bottom: 10px;
+  font-size: 28px;
+  @extend .u-transition;
+
+  > i {
+    padding: 10px;
+    @extend .u-material-icons;
+  }
+
+  &:hover {
+    color: rgba(black, .4);
+    @extend .u-transition;
+  }
+
+  &:before {
+    content: attr(title);
+    position: absolute;
+    color: $main-color;
+    font-size: 1rem;
+    text-align: right;
+    word-wrap: nowrap;
+    width: 200px;
+    padding: 10px;
+    opacity: 0;
+    left: -100px;
+    @extend .u-transition;
+  }
+
+  &:hover:before {
+    opacity: 1;
+    left: -200px;
+    @extend .u-transition;
+  }
+}
+
+.main-controls {
   position: fixed;
   z-index: 100;
   right: 30px;
   top: 70px;
 
   &__button {
-    box-shadow: 1px 1px 4px rgba(black, .1);
+    @extend .u-control-button;
     background-color: $accent-color;
     color: rgba(white, .7);
-    border-radius: 50%;
-    cursor: pointer;
-    margin-top: 0;
-    position: relative;
-    display: block;
-    margin-bottom: 10px;
-    font-size: 28px;
-    @extend .u-transition;
+    > i { padding: 15px; }
 
-    > i {
-      padding: 15px;
-      @extend .u-material-icons;
-    }
+    &:hover { background-color: $main-color; }
+    &:before { padding: 15px; }
+  }
+}
 
-    &:hover {
-      background-color: $main-color;
-      color: rgba(black, .4);
-      @extend .u-transition;
-    }
+.contextual-controls {
+  left: -20px; 
+  position: absolute;
+  opacity: 0;
+  @extend .u-transition;
 
-    &:before {
-      content: attr(title);
-      position: absolute;
-      color: $main-color;
-      font-size: 1rem;
-      text-align: right;
-      word-wrap: nowrap;
-      width: 150px;
-      padding: 15px 15px;
-      opacity: 0;
-      left: -100px;
-      @extend .u-transition;
-    }
+  .invoice:hover & {
+    opacity: 1;
+    @extend .u-transition;    
+  }
 
-    &:hover:before {
-      opacity: 1;
-      left: -150px;
-      @extend .u-transition;
-    }
+  &__button {
+    @extend .u-control-button;
+    font-size: 16px;
+    border: 1px solid $accent-color;
+    color: $accent-color;
+    background-color: white;
+
+    &:hover { background-color: $accent-color; }
+    &:before { padding: 6px 13px; }
+    
+    > i { padding: 6px; }
   }
 }
 
