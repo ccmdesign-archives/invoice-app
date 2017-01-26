@@ -237,6 +237,7 @@ def edit_invoice(invoice_id):
     invoice.tag_number = form['tag_number']
     invoice.service_name = form['service_name']
     invoice.service_description = form['service_description']
+    invoice.total = float(form['total'].replace('$', '').strip())
 
     db.session.commit()
 

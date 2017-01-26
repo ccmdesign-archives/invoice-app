@@ -155,7 +155,7 @@ $(function () {
 
       $resp.done(function(data) {
         $('.tax-info').html(data.html);
-        $('.invoice__amount').text('$ ' + data.json.total);
+        $('.invoice__amount__input').val('$ ' + data.json.total);
 
       }).fail(function (data, state, xhr) {
         if (xhr == 'BAD REQUEST') {
@@ -197,7 +197,7 @@ $(function () {
   $('body').on('submit', '#upload-timesheet', function() {
     function valid_response(data) {
       $('.timesheet-info').html(data.html);
-      $('.invoice__amount').text('$ ' + data.json.total);
+      $('.invoice__amount__input').val('$ ' + data.json.total);
     }
 
     var $form = $(this);
