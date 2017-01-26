@@ -109,12 +109,14 @@ $(function () {
     }
   });
 
-  // Creates a tax and apdates the invoice price
-  $('.company-info').on('click', '#create-tax .add-button', function() {
+  // Creates a tax and updates the invoice price
+  $('.company-info').on('click', '.contextual-controls .add-button', function() {
     if ($('#create-tax .name').val()) {
       var $objc = $('#create-tax');
       var $resp = null;
       var data = {};
+
+      debugger;
 
       $objc.find('input').each(function() {
         data[$(this).attr('name')] = $(this).val();
@@ -124,7 +126,7 @@ $(function () {
 
       $resp.done(function(data) {
         $('.tax-info').html(data.html);
-        $('.invoice__amount').text('$ ' + data.json.total);
+        $('.invoice__amount__input').val('$ ' + data.json.total);
 
       }).fail(function(data, state, xhr) {
         if (xhr == 'BAD REQUEST') {
