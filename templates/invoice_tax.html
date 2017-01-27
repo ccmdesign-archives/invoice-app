@@ -11,13 +11,13 @@
         <input class="name base-field small" name="name" placeholder="Register" value="{{ i.name }}"/>
       </td>
       <td><input class="base-field small" name="number" placeholder="Number" value="{{ i.number }}"/></td>
-      <td><input class="base-field small" name="tax" placeholder="Tax %" value="{{ i.tax }}"/></td></td>
+      <td><input class="base-field small" name="tax" placeholder="Tax % (0.XX)" value="{{ i.tax }}"/></td></td>
     </tr>
   {% endfor %}
 
   <tr id="create-tax" data-url="{{ url_for('create_invoice_tax', invoice_id=invoice.id) }}">
     <td><input class="name base-field small" name="name" placeholder="Register"/></td>
     <td><input class="base-field small" name="number" placeholder="Number"/></td>
-    <td><input class="base-field small" name="tax" placeholder="Tax %"/></td></td>
+    <td><input class="base-field small" name="tax" placeholder="Tax % (0.XX)"/></td></td>
   </tr>
 </table>

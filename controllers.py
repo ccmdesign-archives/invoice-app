@@ -589,3 +589,9 @@ def delete_client(client_id):
     db.session.commit()
 
     return redirect(url_for('clients'))
+
+
+# LUKE CRIANDO VIEWS DE NOVO !!!
+@app.route('/company', methods=['GET'])
+def company():
+    return render_template('company.html')

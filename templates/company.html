@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block body_class %}company-page{% endblock %}
+
+{% block content %}
+  <div class="wrapper">
+    <div class="main-controls no-print">
+      <form method="post" action="{{ url_for('create_invoice') }}"><button type="submit" class="main-controls__button" title="New Invoice"><i>description</i></button></form>
+      <!--<a href="./invoice" class="controls__button" title="New Client"><i>person_add</i></a>-->
+      <a href="{{ url_for('clients') }}" class="main-controls__button" title="Client List"><i>people</i></a>
+    </div>
+
+    <div class="new-company">
+      <form action="{{ url_for('create_client') }}" method="post" class="form">
+        <div class="grid-row">
+          <div class="grid-half">
+            <h2>Company Information</h2>
+            <input type="text" name="client_name" placeholder="Company Name" class="base-field">
+            <input type="text" name="contact_name" placeholder="Contact Person" class="base-field">
+            <input type="text" name="email" placeholder="Contact Email" class="base-field">
+            <input type="text" name="phone" placeholder="Contact Phone" class="base-field">
+            <textarea class="base-field-textarea" name="address" placeholder="Company Address"></textarea>
+            <textarea class="base-field-textarea" name="address" placeholder="Banking Information"></textarea>
+            <button class="button" type="submit">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
