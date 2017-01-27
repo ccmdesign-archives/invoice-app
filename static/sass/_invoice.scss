@@ -197,7 +197,7 @@
 
   &__description {
     padding: 15px 0;
-    height: 180px;
+    height: 160px;
   }
 
   &__grand-total {
@@ -205,6 +205,10 @@
     font-size: 20px;
     color: $main-color;
     background-color: rgba($main-color, .05);
+
+    > td:first-child {
+      padding-left: 10px;
+    }
   }
 
   &__amount {
@@ -212,6 +216,7 @@
     margin: -10px -10px -10px 0;
     color: $main-color;
     padding: 0;
+    cursor: text;
   }
 
   &__total-description {
@@ -222,12 +227,13 @@
     text-align: right;
     background-color: transparent;
     padding: 5px 15px;
+    cursor: text;
   }
 
   &__date {
     float: right;
     text-align: right;
-    margin-top: 40px;
+    margin-top: 30px;
     padding-top: 5px;
     border-top: 1px solid rgba(black, .2);
     width: 200px;
@@ -344,7 +350,9 @@ textarea {
     &__total {
       // background-color: rgba($main-color, .2) !important;
       color: rgba(black, .6);
-      border: 1px solid rgba($main-color, .2) !important;
+      padding-left: 20px;
+
+      // border: 1px solid rgba($main-color, .2) !important;
     }
     &__grand-total,
     &__amount {
@@ -354,6 +362,8 @@ textarea {
     &__amount__input {
       // background-color: rgba($main-color, .2) !important;
     }
+
+    &__grand-total td {padding-left: 10px;}
   }
 }
 
