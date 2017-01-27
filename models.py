@@ -13,7 +13,7 @@ _USER_ID_SIZE = 32
 class Invoice(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     total = db.Column(db.DECIMAL(10, 2), default=0.00)
-    tag_number = db.Column(db.String(64), default='', unique=True)
+    tag_number = db.Column(db.String(64), default='')
     currency = db.Column(db.String(64), default='$')
     paid = db.Column(db.Boolean, default=False)
     date = db.Column(db.Date, default=date.today())

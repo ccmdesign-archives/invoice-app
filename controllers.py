@@ -241,7 +241,7 @@ def edit_invoice(invoice_id):
 
     db.session.commit()
 
-    return _ajax_ok()
+    return jsonify(total='{0:.2f}'.format(invoice.total_with_taxes))
 
 
 @login_required

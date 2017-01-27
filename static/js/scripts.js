@@ -170,7 +170,7 @@ $(function () {
     }
   });
 
-  // Updates invoice data: number, services and descrption
+  // Updates invoice data: number, price, services and descrption
   $('body').on('blur', '.edit-invoice-input', function() {
     var $resp = null;
     var data = {};
@@ -185,7 +185,10 @@ $(function () {
 
     $resp = $.post($('.invoice').data('url'), {data: JSON.stringify(data)});
 
-    $resp.fail(function (data, state, xhr) {
+    $resp.done(function(data) {
+      $('.invoice__amount__input').val('$ ' + data.total);
+
+    }).fail(function (data, state, xhr) {
       if (xhr == 'BAD REQUEST')
         console.log('Bad request.');
 
