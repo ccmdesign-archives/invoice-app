@@ -245,8 +245,8 @@ def edit_invoice(invoice_id):
 
 
 @login_required
-@app.route('/edit_invoice_client/<invoice_id>', methods=['GET', 'POST'])
-def edit_invoice_client(invoice_id):
+@app.route('/set_invoice_client/<invoice_id>', methods=['GET', 'POST'])
+def set_invoice_client(invoice_id):
     invoice = Invoice.query.get_or_404(invoice_id)
 
     if request.method == 'GET' and invoice.client:
@@ -561,7 +561,34 @@ def delete_client(client_id):
     return redirect(url_for('clients'))
 
 
-# LUKE CRIANDO VIEWS DE NOVO !!!
-@app.route('/company', methods=['GET'])
+@login_required
+@app.route('/company', methods=['GET', 'POST'])
 def company():
-    return render_template('company.html')
+    if request.method == 'GET':
+        ctx = {'company': Company.query.filter_by(user_id=g.user.id).first()}
+
+        return render_template('company.html', **ctx)
+
+    else:
+        company = Company.query.filter_by(user_id=g.user.id).first()
+        form = request.form
+        new = False
+
+        if not company:
+            company = Company(user_id=g.user.id)
+            new = True
+
+        company.name = form['company_name']
+        company.email = form['email']
+        company.phone = form['phone']
+        company.address = form['address']
+        company.contact = form['contact_name']
+        company.banking_info = form['banking']
+
+        if new:
+            db.session.add(company)
+            db.session.flush()
+
+        db.session.commit()
+
+        return redirect(url_for('company'))

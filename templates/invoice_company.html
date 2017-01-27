@@ -1,3 +1,7 @@
+<div class="contextual-controls no-print">
+  <a href="{{ url_for('company') }}" target="_blank" class="contextual-controls__button" title="Edit Company"><i class="material-icons">edit</i></a>
+</div>
+
 <form id="company-form" method="post" action="{{ url_for('edit_invoice_company', invoice_id=invoice.id) }}">
   <div class="grid-row">
     <input id="#company-id" type="hidden" name="id" value="{{ company.id }}"/>
@@ -6,18 +10,18 @@
   </div>
   <div class="grid-row">
     <div class="grid-half">
-      <input type="text" class="base-field" name="contact" placeholder="Contact Person Name" value="{{ company.contact }}"/>
-      <input type="text" class="base-field" name="email" placeholder="Contact Email" value="{{ company.email }}"/>
-      <input type="text" class="base-field" name="phone" placeholder="Contact Phone" value="{{ company.phone }}"/>
+      <input type="text" readonly class="base-field" name="contact" placeholder="Contact Person Name" value="{{ company.contact }}"/>
+      <input type="text" readonly class="base-field" name="email" placeholder="Contact Email" value="{{ company.email }}"/>
+      <input type="text" readonly class="base-field" name="phone" placeholder="Contact Phone" value="{{ company.phone }}"/>
 
       <h4 class="spaced">Address</h4>
-      <textarea name="address" placeholder="Company Address, City, State, Country">{{ company.address }}</textarea>
+      <textarea readonly name="address" placeholder="Company Address, City, State, Country">{{ company.address }}</textarea>
     </div>
 
     <div class="grid-half">
       <div class="company-info__extra">
         <h4>Banking Information</h4>
-        <textarea class="bank-info" name="banking_info" placeholder="Banking Information for Deposit">{{ company.banking_info }}</textarea>
+        <textarea readonly class="bank-info" name="banking_info" placeholder="Banking Information for Deposit">{{ company.banking_info }}</textarea>
       </div>
     </div>
   </div>

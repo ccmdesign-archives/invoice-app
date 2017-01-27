@@ -6,24 +6,23 @@
   <div class="wrapper">
     <div class="main-controls no-print">
       <form method="post" action="{{ url_for('create_invoice') }}"><button type="submit" class="main-controls__button" title="New Invoice"><i>description</i></button></form>
-      <!--<a href="./invoice" class="controls__button" title="New Client"><i>person_add</i></a>-->
       <a href="{{ url_for('clients') }}" class="main-controls__button" title="Client List"><i>people</i></a>
     </div>
 
     <div class="new-company">
-      <form action="{{ url_for('create_client') }}" method="post" class="form">
+      <form method="post" class="form">
         <h2>Company Information</h2>
-        <input type="text" name="client_name" placeholder="Company Name" class="base-field">
-        <input type="text" name="contact_name" placeholder="Contact Person" class="base-field">
-        <input type="text" name="email" placeholder="Contact Email" class="base-field">
-        <input type="text" name="phone" placeholder="Contact Phone" class="base-field">
-        <textarea class="base-field-textarea" name="address" placeholder="Company Address"></textarea>
-        <textarea class="base-field-textarea" name="address" placeholder="Banking Information"></textarea>
+        <input type="text" name="company_name" placeholder="Company Name" class="base-field" value="{{ company.name }}">
+        <input type="text" name="contact_name" placeholder="Contact Person" class="base-field" value="{{ company.contact }}">
+        <input type="text" name="email" placeholder="Contact Email" class="base-field" value="{{ company.email }}">
+        <input type="text" name="phone" placeholder="Contact Phone" class="base-field" value="{{ company.phone }}">
+        <textarea class="base-field-textarea" name="address" placeholder="Company Address" value="{{ company.address }}">{{ company.address }}</textarea>
+        <textarea class="base-field-textarea" name="banking" placeholder="Banking Information" value="{{ company.banking_info }}">{{ company.banking_info }}</textarea>
 
-        <div class="add-gov-registry">
+        <!--<div class="add-gov-registry">
           <h3>Add Government Registries and Trade Taxes</h3>
           <div class="contextual-controls">
-            <span class="add-button contextual-controls__button invoice__button" title="Add Registration"><i class=" material-icons">add</i></span>  
+            <span class="add-button contextual-controls__button invoice__button" title="Add Registration"><i class=" material-icons">add</i></span>
           </div>
           <table class="table-list-add">
             <tr class="edit-tax">
@@ -35,16 +34,16 @@
               <td><input class="base-field small" name="tax" placeholder="Tax % (i.e. 0.12)" value=""/></td></td>
             </tr>
 
-            {# <tr id="create-tax">
+            <tr id="create-tax">
               <td><input class="name base-field small" name="name" placeholder="Register"/></td>
               <td><input class="base-field small" name="number" placeholder="Number"/></td>
               <td><input class="base-field small" name="tax" placeholder="Tax % (i.e. 0.12)"/></td></td>
-            </tr> #}
+            </tr>
           </table>
-        </div>
+        </div>-->
         <button class="button" type="submit">Save</button>
       </form>
     </div>
-    
+
   </div>
 {% endblock %}

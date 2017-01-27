@@ -2,7 +2,7 @@
   <a href="{{ url_for('clients') }}" target="_blank" class="contextual-controls__button" title="Add Client"><i class="material-icons">add</i></a>
 </div>
 
-<form id="client-form" method="post" action="{{ url_for('edit_invoice_client', invoice_id=invoice.id) }}">
+<form id="client-form" method="post" action="{{ url_for('set_invoice_client', invoice_id=invoice.id) }}">
   <input id="client-id" type="hidden" name="id" value="{{ client.id }}"/>
   <div class="grid-row">
     <div class="grid-full">
