@@ -12,19 +12,39 @@
 
     <div class="new-company">
       <form action="{{ url_for('create_client') }}" method="post" class="form">
-        <div class="grid-row">
-          <div class="grid-half">
-            <h2>Company Information</h2>
-            <input type="text" name="client_name" placeholder="Company Name" class="base-field">
-            <input type="text" name="contact_name" placeholder="Contact Person" class="base-field">
-            <input type="text" name="email" placeholder="Contact Email" class="base-field">
-            <input type="text" name="phone" placeholder="Contact Phone" class="base-field">
-            <textarea class="base-field-textarea" name="address" placeholder="Company Address"></textarea>
-            <textarea class="base-field-textarea" name="address" placeholder="Banking Information"></textarea>
-            <button class="button" type="submit">Save</button>
+        <h2>Company Information</h2>
+        <input type="text" name="client_name" placeholder="Company Name" class="base-field">
+        <input type="text" name="contact_name" placeholder="Contact Person" class="base-field">
+        <input type="text" name="email" placeholder="Contact Email" class="base-field">
+        <input type="text" name="phone" placeholder="Contact Phone" class="base-field">
+        <textarea class="base-field-textarea" name="address" placeholder="Company Address"></textarea>
+        <textarea class="base-field-textarea" name="address" placeholder="Banking Information"></textarea>
+
+        <div class="add-gov-registry">
+          <h3>Add Government Registries and Trade Taxes</h3>
+          <div class="contextual-controls">
+            <span class="add-button contextual-controls__button invoice__button" title="Add Registration"><i class=" material-icons">add</i></span>  
           </div>
+          <table class="table-list-add">
+            <tr class="edit-tax">
+              <td>
+                <input type="hidden" name="id" value=""/>
+                <input class="name base-field small" name="name" placeholder="Register" value=""/>
+              </td>
+              <td><input class="base-field small" name="number" placeholder="Number" value=""/></td>
+              <td><input class="base-field small" name="tax" placeholder="Tax % (i.e. 0.12)" value=""/></td></td>
+            </tr>
+
+            {# <tr id="create-tax">
+              <td><input class="name base-field small" name="name" placeholder="Register"/></td>
+              <td><input class="base-field small" name="number" placeholder="Number"/></td>
+              <td><input class="base-field small" name="tax" placeholder="Tax % (i.e. 0.12)"/></td></td>
+            </tr> #}
+          </table>
         </div>
+        <button class="button" type="submit">Save</button>
       </form>
     </div>
+    
   </div>
 {% endblock %}

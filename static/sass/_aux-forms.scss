@@ -2,7 +2,7 @@
   padding-top: 40px;
 
   .align-with-title {
-    margin-top:22px;
+    margin-top: 22px;
   }
 
   .base-field-textarea {
@@ -14,11 +14,11 @@
   }
 }
 
-
 .new-company {
   padding-top: 18px;
   max-width: 600px;
   margin: 0 auto;
+  position: relative;
 
   .base-field-textarea {
     height: 154px;
@@ -26,5 +26,35 @@
 
   .button {
     float: right;
+  }
+}
+
+
+.add-gov-registry { display: none; }
+
+.form {
+  h3 {
+    text-transform: uppercase;
+    font-weight: 300;
+  }
+
+  .contextual-controls {
+    opacity: 1;
+    left: -50px;
+  }
+
+  .table-list-add {
+    width: 100%;
+    margin-bottom: 20px;
+    tr {
+      border-bottom: 1px solid rgba(black, .1);
+    }
+    td {
+      input { 
+        border: 0;
+        cursor: text;
+      }
+
+    }
   }
 }
