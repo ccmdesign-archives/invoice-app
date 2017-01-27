@@ -36,14 +36,14 @@
 
     <section class="invoice__summary">
       <input type="text" class="invoice__title edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service_name }}"/>
-      <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="description">{{ invoice.service_description }}</textarea>
+      <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="Description">{{ invoice.service_description }}</textarea>
 
       <div class="service-info">
         {% include 'invoice_service.html' %}
       </div>
     </section>
     <footer class="invoice__footer clearfix">
-      <p class="invoice__date editable" contenteditable>{{invoice.date}}</p>
+      <p class="invoice__date editable" contenteditable>{{invoice.date.strftime('%Y/%m/%d')}}</p>
     </footer>
   </article>
 
