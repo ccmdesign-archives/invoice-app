@@ -1,3 +1,7 @@
+<div class="contextual-controls no-print">
+  <a href="{{ url_for('clients') }}" target="_blank" class="contextual-controls__button" title="Add Client"><i class="material-icons">add</i></a>
+</div>
+
 <form id="client-form" method="post" action="{{ url_for('edit_invoice_client', invoice_id=invoice.id) }}">
   <input id="client-id" type="hidden" name="id" value="{{ client.id }}"/>
   <div class="grid-row">
@@ -7,15 +11,15 @@
   </div>
   <div class="grid-row">
     <div class="grid-half">
-      <input type="text" class="base-field" name="vendor_number" placeholder="Your vendor # with that client" value="{{ client.vendor_number }}"/>
-      <input type="text" class="base-field" name="contact" placeholder="Client Contact Name" value="{{ client.contact }}"/>
-      <input type="text" class="base-field" name="email" placeholder="Client Email" value="{{ client.email }}"/>
-      <input type="text" class="base-field" name="phone" placeholder="Client Phone" value="{{ client.phone }}"/>
+      <input type="text" readonly class="base-field" name="vendor_number" placeholder="Your vendor # with that client" value="{{ client.vendor_number }}"/>
+      <input type="text" readonly class="base-field" name="contact" placeholder="Client Contact Name" value="{{ client.contact }}"/>
+      <input type="text" readonly class="base-field" name="email" placeholder="Client Email" value="{{ client.email }}"/>
+      <input type="text" readonly class="base-field" name="phone" placeholder="Client Phone" value="{{ client.phone }}"/>
     </div>
 
     <div class="grid-half">
       <h4>Address</h4>
-      <textarea name="address" placeholder="Client Address, City, State, Country, ZIP Code">{{ client.address }}</textarea>
+      <textarea readonly name="address" placeholder="Client Address, City, State, Country, ZIP Code">{{ client.address }}</textarea>
     </div>
   </div>
 </form>

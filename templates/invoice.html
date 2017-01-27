@@ -20,9 +20,6 @@
         <h1>Invoice <input type="text" class="edit-invoice-input js-invoice-number" name="tag_number" placeholder="#{{ invoice.tag_number }}" value="{{ invoice.tag_number }}"/></h1>
       </div>
       <div class="client-info">
-        <div class="contextual-controls no-print">
-          <span class="contextual-controls__button" title="Add Client"><i class="material-icons">add</i></span>
-        </div>
         {% include 'invoice_client.html' %}
       </div>
 

@@ -247,58 +247,27 @@ def edit_invoice(invoice_id):
 @login_required
 @app.route('/edit_invoice_client/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_client(invoice_id):
-    inv = Invoice.query.get_or_404(invoice_id)
+    invoice = Invoice.query.get_or_404(invoice_id)
 
-    if request.method == 'GET' and inv.client:
+    if request.method == 'GET' and invoice.client:
         ctx = {}
 
-        ctx['client'] = Client.query.get(inv.client)
-        ctx['invoice'] = inv
+        ctx['client'] = Client.query.get(invoice.client)
+        ctx['invoice'] = invoice
 
         return render_template('invoice_client.html', **ctx)
 
     elif request.method == 'POST':
         form = request.form
-        new = False
-        cli = None
 
         if not form['id']:
-            cli = Client(user_id=g.user.id)
-            new = True
+            return abort(400)
 
-        elif inv.client != form['id']:
-            cli = Client.query.get(form['id'])
-
-        else:
-            cli = Client.query.get(inv.client)
-
-        if form['name'] != cli.name:
-            cli.name = form['name']
-
-        if form['email'] != cli.email:
-            cli.email = form['email']
-
-        if form['phone'] != cli.phone:
-            cli.phone = form['phone']
-
-        if form['address'] != cli.address:
-            cli.address = form['address']
-
-        if form['contact'] != cli.contact:
-            cli.contact = form['contact']
-
-        if form['vendor_number'] != cli.vendor_number:
-            cli.vendor_number = form['vendor_number']
-
-        if new:
-            db.session.add(cli)
-            db.session.flush()
-
-        inv.client = cli.id
+        invoice.client = form['id']
 
         db.session.commit()
 
-        return jsonify(id=cli.id)
+        return 'ok'
 
     return abort(400)
 
@@ -546,6 +515,7 @@ def get_clients(invoice_id):
         ctx['client'] = cli
         ctx['invoice'] = inv
 
+        dic['id'] = cli.id
         dic['value'] = cli.name
         dic['data'] = render_template('invoice_client.html', **ctx)
 

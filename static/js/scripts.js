@@ -56,6 +56,7 @@ $(function () {
     onSelect: function (item) {
       $('.client-info').html(item.data);
       $('#client-autocomplete').autocomplete(opts1);
+      $.post($('#client-form').attr('action'), {'id': item.id});
     }
   };
 
@@ -65,27 +66,6 @@ $(function () {
   // Updates the invoice header when client's name is changed
   $('.company-info h2').on('keyup', '.name', function() {
     $('.invoice__branding h2').text($(this).val());
-  });
-
-  // Updates the client's data on each input change
-  $('.client-info').on('change', 'input, textarea', function() {
-    if (!$('.autocomplete-suggestions').is(':visible') && $('#client-form .name').val()) {
-      var $form = $('#client-form');
-      var $resp = null;
-
-      $resp = $.post($form.attr('action'), $form.serialize());
-
-      $resp.done(function(data) {
-        $('#client-id').val(data.id);
-
-      }).fail(function(data, state, xhr) {
-        if (xhr == 'BAD REQUEST')
-          console.log('Bad request.');
-
-        else
-          console.log('Server error.');
-      });
-    }
   });
 
   // Updates the company's data on each input change
@@ -115,8 +95,6 @@ $(function () {
       var $objc = $('#create-tax');
       var $resp = null;
       var data = {};
-
-      debugger;
 
       $objc.find('input').each(function() {
         data[$(this).attr('name')] = $(this).val();
