@@ -3,8 +3,8 @@
 {% block body_class %}invoice-page{% endblock %}
 
 {% block content %}
-  <div class="controls invoice__interface no-print">
-    <a class="controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
+  <div class="main-controls no-print">
+    <a class="main-controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
   </div>
 
   <article class="invoice">
@@ -12,7 +12,7 @@
       <div class="invoice__branding">
         <h2>Company Name</h2>
         <!--<h1>Invoice <input type="text" class="edit-invoice-input js-invoice-number" placeholder="#201601"/></h1>-->
-        <h1>Invoice <span class="editable js-invoice-number" contenteditable>#201601</span></h1>
+        <h1>Invoice <span class="editable js-invoice-number" contenteditable>#001</span></h1>
       </div>
       <div class="client-info">
         <div class="grid-row">
@@ -56,7 +56,7 @@
           </div>
         </div>
 
-        <div class="grid-row">
+        {# <div class="grid-row">
           <div class="grid-half">
             <div class="tax-info">
               <h4 class="spaced">Government Registration</h4>
@@ -72,7 +72,7 @@
               </table>
             </div>
           </div>
-        </div>
+        </div> #}
       </div>
     </header>
 
@@ -99,14 +99,14 @@
 
   <div id="js-dinamic-content"></div>
 
-  <div class="grid-row invoice__interface">
+  {# <div class="grid-row invoice__interface">
     <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
       <form id="upload-timesheet" enctype="multipart/form-data">
         <input type="file" name="file">
         <button class="button" type="submit">upload Timesheet CSV</button>
       </form>
     </div>
-  </div>
+  </div> #}
 
   <div class="page-break hidden js-page-break"></div>
   <article class="invoice hidden js-invoice">
