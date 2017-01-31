@@ -8,3 +8,5 @@ static/.sass-cache/
 static/css/
 venv/
 node_modules/
+deploy.sh
+.rsync_exclude
