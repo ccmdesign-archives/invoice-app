@@ -179,9 +179,12 @@ def toggle_invoice_status(invoice_id):
 def create_invoice():
     inv = Invoice(user_id=g.user.id)
     com = g.user.companies[0] if g.user.companies else {}
-    qry = db.session.query(func.count(Invoice.id)).filter_by(user_id=g.user.id)
+    qry = db.session.query(func.count(Invoice.id)).filter(
+        Invoice.user_id == g.user.id,
+        Invoice.date >= date.today().replace(day=1, month=1)
+    )
 
-    inv.tag_number = '%s%02d' % (date.today().year, qry.scalar())
+    inv.tag_number = '%s%03d' % (date.today().year, qry.scalar() + 1)
 
     if com:
         inv.company = com.id
@@ -234,7 +237,6 @@ def edit_invoice(invoice_id):
 
     form = loads(request.form['data'])
 
-    invoice.tag_number = form['tag_number']
     invoice.service_name = form['service_name']
     invoice.service_description = form['service_description']
     invoice.total = float(form['total'].replace('$', '').strip())

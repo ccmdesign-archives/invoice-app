@@ -17,7 +17,7 @@
           {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
           <h2>{{company.name}}</h2>
         {% endif %}
-        <h1>Invoice <input type="text" class="edit-invoice-input js-invoice-number" name="tag_number" placeholder="#{{ invoice.tag_number }}" value="{{ invoice.tag_number }}"/></h1>
+        <h1>Invoice {{ invoice.tag_number }}</h1>
       </div>
       <div class="client-info">
         {% include 'invoice_client.html' %}

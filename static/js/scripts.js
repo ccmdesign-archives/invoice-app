@@ -148,17 +148,13 @@ $(function () {
     }
   });
 
-  // Updates invoice data: number, price, services and descrption
+  // Updates invoice data: price, services and description
   $('body').on('blur', '.edit-invoice-input', function() {
     var $resp = null;
     var data = {};
 
     $('.edit-invoice-input').each(function() {
       data[$(this).attr('name')] = $(this).val();
-
-      if ($(this).hasClass('js-invoice-number')) {
-        $('.js-invoice-number').val($(this).val());
-      }
     });
 
     $resp = $.post($('.invoice').data('url'), {data: JSON.stringify(data)});
