@@ -7,14 +7,15 @@ from time import strftime, gmtime
 from flask import Flask
 from flask_oauth import OAuth
 from flask_login import LoginManager
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
+from flask_pymongo import PyMongo
 
 
 app = Flask(__name__)
 app.config.from_object('config')
 
-db = SQLAlchemy(app)
-
+# db = SQLAlchemy(app)
+mongo = PyMongo(app)
 
 # Github login
 # ------------
@@ -37,7 +38,7 @@ github = oauth.remote_app(
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'index'
 
 
 # Context Processors

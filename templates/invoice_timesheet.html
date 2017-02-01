@@ -23,7 +23,7 @@
           {% for i in chunk %}
             <tr>
               <td class="description">{{i.description}}</td>
-              <td class="start">{{i.date}}</td>
+              <td class="start">{{i.date.strftime('%Y/%m/%d')}}</td>
               <td class="duration">{{format_duration(i.duration)}}</td>
               <td class="amount">{{format_price(i.amount, invoice.currency)}}</td>
             </tr>
@@ -32,14 +32,14 @@
       </table>
     </section>
     <footer class="invoice__footer clearfix">
-      <p class="invoice__date editable" contenteditable>{{invoice.date.strftime('%Y/%m/%d')}}</p>
+      <p class="invoice__date editable" contenteditable>{{invoice.created.strftime('%Y/%m/%d')}}</p>
     </footer>
   </article>
 {% endfor %}
 
 <div class="grid-row no-print">
   <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
-    <form id="upload-timesheet" action="{{ url_for('upload_timesheet', invoice_id=invoice.id) }}" enctype="multipart/form-data" method="post">
+    <form id="upload-timesheet" action="{{ url_for('upload_timesheet', invoice_id=invoice._id) }}" enctype="multipart/form-data" method="post">
       <input type="file" name="file">
       <button class="button" type="submit">Upload Timesheet CSV</button>
     </form>

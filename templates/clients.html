@@ -41,7 +41,7 @@
         <th></th>
       </thead>
       <tbody>
-        {% for client in g.user.clients %}
+        {% for client in clients %}
           {% include 'client_table_row.html' %}
         {% endfor %}
       </tbody>

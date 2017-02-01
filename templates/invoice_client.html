@@ -2,24 +2,24 @@
   <a href="{{ url_for('clients') }}" target="_blank" class="contextual-controls__button" title="Add Client"><i class="material-icons">add</i></a>
 </div>
 
-<form id="client-form" method="post" action="{{ url_for('set_invoice_client', invoice_id=invoice.id) }}">
-  <input id="client-id" type="hidden" name="id" value="{{ client.id }}"/>
+<form id="client-form" method="post" action="{{ url_for('set_invoice_client', invoice_id=invoice._id) }}">
+  <input id="client-id" type="hidden" name="id" value="{{ invoice.client._id }}"/>
   <div class="grid-row">
     <div class="grid-full">
-      <h2>To <input id="client-autocomplete" type="text" class="name" name="name" placeholder="Client Name" value="{{ client.name }}" data-url="{{ url_for('get_clients', invoice_id=invoice.id) }}" autocomplete="off"/></h2>
+      <h2>To <input id="client-autocomplete" type="text" class="name" name="name" placeholder="Client Name" value="{{ invoice.client.name }}" data-url="{{ url_for('get_clients', invoice_id=invoice._id) }}" autocomplete="off"/></h2>
     </div>
   </div>
   <div class="grid-row">
     <div class="grid-half">
-      <input type="text" readonly class="base-field" name="vendor_number" placeholder="Your vendor # with that client" value="{{ client.vendor_number }}"/>
-      <input type="text" readonly class="base-field" name="contact" placeholder="Client Contact Name" value="{{ client.contact }}"/>
-      <input type="text" readonly class="base-field" name="email" placeholder="Client Email" value="{{ client.email }}"/>
-      <input type="text" readonly class="base-field" name="phone" placeholder="Client Phone" value="{{ client.phone }}"/>
+      <input type="text" readonly class="base-field" name="vendor_number" placeholder="Your vendor # with that client" value="{{ invoice.client.vendor_number }}"/>
+      <input type="text" readonly class="base-field" name="contact" placeholder="Client Contact Name" value="{{ invoice.client.contact }}"/>
+      <input type="text" readonly class="base-field" name="email" placeholder="Client Email" value="{{ invoice.client.email }}"/>
+      <input type="text" readonly class="base-field" name="phone" placeholder="Client Phone" value="{{ invoice.client.phone }}"/>
     </div>
 
     <div class="grid-half">
       <h4>Address</h4>
-      <textarea readonly name="address" placeholder="Client Address, City, State, Country, ZIP Code">{{ client.address }}</textarea>
+      <textarea readonly name="address" placeholder="Client Address, City, State, Country, ZIP Code">{{ invoice.client.address }}</textarea>
     </div>
   </div>
 </form>

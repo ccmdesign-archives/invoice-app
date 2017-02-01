@@ -12,8 +12,6 @@
       <a href="/company" class="main-controls__button" title="Company"><i>business</i></a>
     </div>
 
-    {% set invoices = g.user.open_invoices %}
-
     <table class="list list--opened">
       <thead>
         <th class="list__action"></th>
@@ -25,7 +23,7 @@
         <th class="list__action"></th>
       </thead>
       <tbody>
-        {% for invoice in g.user.invoices %}
+        {% for invoice in invoices %}
           {% if not invoice.paid %}
             {% include 'home_table_row.html' %}
           {% endif %}
@@ -45,7 +43,7 @@
         <th class="list__action"></th>
       </thead>
       <tbody>
-        {% for invoice in g.user.invoices %}
+        {% for invoice in invoices %}
           {% if invoice.paid %}
             {% include 'home_table_row.html' %}
           {% endif %}

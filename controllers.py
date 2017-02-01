@@ -4,19 +4,18 @@
 from csv import reader
 from time import strptime
 from json import dumps, loads
-from decimal import Decimal
-from datetime import date, timedelta
+from bson import ObjectId
+from datetime import date, datetime, timedelta
 
 # Libs
 from flask import g, session, flash, jsonify
 from flask import abort, render_template, request, Response, url_for, redirect
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
-from sqlalchemy.sql.expression import func
 
 # Invoice
-from app import app, github, login_manager, db
-from models import Invoice, Client, Company, User, Service, Tax, Timesheet
+from app import app, github, login_manager, mongo
+from models import User
 
 
 # Maximun number of suggestions returned by the autocomplete
@@ -37,13 +36,21 @@ def _get_array_chunks(array, size):
     return (array[pos:pos + size] for pos in xrange(0, len(array), size))
 
 
+def _value_with_taxes(value, taxes):
+    total_taxes = 0
+
+    for tax in taxes:
+        total_taxes += int(tax['value'])
+
+    return float(value) * (1 + total_taxes / 100)
+
+
 # Login manager
 # -------------
 
 @app.route('/github_login')
 def github_login():
     url = url_for('github_authorized', _external=True)
-
     return github.authorize(callback=url)
 
 
@@ -57,32 +64,22 @@ def get_github_token():
 def github_authorized(resp):
     if not resp or 'access_token' not in resp:
         flash('Login error: %s' % resp, 'error')
-
         return redirect(url_for('index'))
 
     else:
         session['github_token'] = (resp['access_token'], '')
         gh_data = github.get('user').data
         ghid = 'gh-%s' % gh_data['id']
-        user = User.query.get(ghid)
+        user = mongo.db.user.find_one({'gh_id': ghid})
 
         if user is None:
-            user = User(id=ghid)
+            user = {'gh_id': ghid}
 
-        # email
-        user.email = gh_data.get('email', '')
-
-        # name
-        user.name = gh_data.get('name', '')
-
-        # gh login
-        user.gh_login = gh_data.get('login', '')
-
-        db.session.add(user)
-        db.session.commit()
-
-        login_user(user, remember=True)
-
+        user['name'] = gh_data.get('name', '')
+        user['email'] = gh_data.get('email', '')
+        user['gh_login'] = gh_data.get('login', '')
+        mongo.db.user.update({'gh_id': ghid}, user, upsert=True)
+        login_user(User(user['gh_id']), remember=True)
         return redirect(url_for('home'))
 
 
@@ -97,12 +94,17 @@ def logout():
 
 
 @login_manager.user_loader
-def load_user(id):
-    return User.query.get(id)
+def load_user(gh_id):
+    user = mongo.db.user.find_one({'gh_id': gh_id})
+
+    if not user:
+        return None
+
+    return User(user['gh_id'])
 
 
-# Invoice
-# -------
+# Invoice controllers
+# -------------------
 
 @app.before_request
 def before_request():
@@ -114,14 +116,14 @@ def before_request():
         paid_value = 0
         open_value = 0
 
-        for invoice in g.user.invoices:
+        for invoice in mongo.db.invoice.find({'user': g.user.gh_id}):
             if invoice.paid:
                 g.user.paid_invoices += 1
-                paid_value += invoice.total_with_taxes
+                # paid_value += invoice.total_with_taxes
 
             else:
                 g.user.open_invoices += 1
-                open_value += invoice.total_with_taxes
+                # open_value += invoice.total_with_taxes
 
         g.user.paid_invoices_value = '{0:.2f}'.format(paid_value)
         g.user.open_invoices_value = '{0:.2f}'.format(open_value)
@@ -131,273 +133,191 @@ def before_request():
 def index():
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('home'))
-
     else:
-        ctx = {'invoice': {}, 'today': date.today()}
-
-        return render_template('unlogged_invoice.html', **ctx)
+        return render_template('unlogged_invoice.html', today=date.today())
 
 
 @app.route('/home', methods=['GET'])
 @login_required
 def home():
-    return render_template('home.html')
+    invoices = list(mongo.db.invoice.find({'user_id': g.user.gh_id}))
+    return render_template('home.html', invoices=invoices)
 
 
 @login_required
 @app.route('/toggle_invoice_status/<invoice_id>', methods=['GET', 'POST'])
 def toggle_invoice_status(invoice_id):
-    inv = Invoice.query.get_or_404(invoice_id)
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
 
-    if request.method == 'GET':
-        fun = lambda x: render_template('home_table_row.html', invoice=x)
-        dic = {'paid': [], 'open': []}
-        mim = 'application/json'
+    if not invoice:
+        return abort(404)
 
-        for invoice in g.user.invoices:
-            if invoice.paid:
-                dic['paid'].append(fun(invoice).strip())
-
-            else:
-                dic['open'].append(fun(invoice).strip())
-
-        return Response(response=dumps(dic), status=200, mimetype=mim)
-
-    elif request.method == 'POST':
-        url = url_for('toggle_invoice_status', invoice_id=inv.id)
+    if request.method == 'POST':
+        url = url_for('toggle_invoice_status', invoice_id=invoice['_id'])
         form = loads(request.form['data'])
-
-        inv.paid = form['paid']
-
-        db.session.commit()
-
+        doc = {'$set': {'paid': form['paid']}}
+        mongo.db.invoice.update({'_id': invoice['_id']}, doc)
         return redirect(url)
+
+    elif request.method == 'GET':
+        dic = {'paid': [], 'open': []}
+
+        for invoice in mongo.db.invoice.find({'user_id': g.user.gh_id}):
+            template = render_template('home_table_row.html', invoice=invoice)
+
+            if invoice['paid']:
+                dic['paid'].append(template.strip())
+            else:
+                dic['open'].append(template.strip())
+
+        return jsonify(**dic)
 
 
 @login_required
 @app.route('/invoice', methods=['POST'])
 def create_invoice():
-    inv = Invoice(user_id=g.user.id)
-    com = g.user.companies[0] if g.user.companies else {}
-    qry = db.session.query(func.count(Invoice.id)).filter(
-        Invoice.user_id == g.user.id,
-        Invoice.date >= date.today().replace(day=1, month=1)
-    )
-
-    inv.tag_number = '%s%03d' % (date.today().year, qry.scalar() + 1)
-
-    if com:
-        inv.company = com.id
-        inv.currency = com.currency
-
-    db.session.add(inv)
-    db.session.commit()
-
-    return redirect(url_for('open_invoice', invoice_id=inv.id))
+    company = mongo.db.company.find_one({'user_id': g.user.gh_id}) or {}
+    invoice = {
+        'user_id': g.user.gh_id,
+        'tag_number': '%s%03d' % (date.today().year, 1),
+        'created': datetime.now(),
+        'company': company,
+        'service': {},
+        'value': 0,
+        'currency': '$',
+        'paid': False,
+        'taxes': [],
+        'client': {},
+        'timesheet': []
+    }
+    invoice['_id'] = mongo.db.invoice.insert(invoice)
+    return redirect(url_for('open_invoice', invoice_id=invoice['_id']))
 
 
 @login_required
 @app.route('/delete_invoice/<invoice_id>', methods=['POST'])
 def delete_invoice(invoice_id):
-    invoice = Invoice.query.get_or_404(invoice_id)
-
-    db.session.delete(invoice)
-    db.session.commit()
-
+    mongo.db.invoice.remove(ObjectId(invoice_id))
     return redirect(url_for('home'))
 
 
 @login_required
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def open_invoice(invoice_id):
-    invoice = Invoice.query.get_or_404(invoice_id)
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
 
-    lst = list(Timesheet.query.filter(Timesheet.invoice == invoice.id))
-    ctx = {}
+    if not invoice:
+        return abort(404)
 
-    ctx['invoice'] = invoice
-    ctx['client'] = Client.query.get(invoice.client) if invoice.client else {}
-    ctx['company'] = Company.query.get(invoice.company) if invoice.company else {}
-    ctx['services'] = Service.query.filter(Service.invoice == invoice.id)
-    ctx['timesheets'] = _get_array_chunks(lst, _MAX_ROWS_PER_PAGE)
+    timesheet = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
 
-    if invoice.taxes:
-        ctx['taxes'] = Tax.query.filter(Tax.invoice == invoice.id)
-
-    elif invoice.company:
-        ctx['taxes'] = Tax.query.filter(Tax.company == invoice.company)
-
-    return render_template('invoice.html', **ctx)
+    return render_template('invoice.html', invoice=invoice, timesheets=timesheet)
 
 
 @login_required
 @app.route('/edit_invoice/<invoice_id>', methods=['POST'])
 def edit_invoice(invoice_id):
-    invoice = Invoice.query.get_or_404(invoice_id)
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
+
+    if not invoice:
+        return abort(404)
 
     form = loads(request.form['data'])
-
-    invoice.service_name = form['service_name']
-    invoice.service_description = form['service_description']
-    invoice.total = float(form['total'].replace('$', '').strip())
-
-    db.session.commit()
-
-    return jsonify(total='{0:.2f}'.format(invoice.total_with_taxes))
+    value = float(form['total'].replace('$', '').strip())
+    total = _value_with_taxes(value, invoice['taxes'])
+    doc = {
+        'value': value,
+        'service': {
+            'name': form['service_name'],
+            'description': form['service_description']
+        }
+    }
+    mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': doc})
+    return jsonify(total='{0:.2f}'.format(total))
 
 
 @login_required
-@app.route('/set_invoice_client/<invoice_id>', methods=['GET', 'POST'])
+@app.route('/set_invoice_client/<invoice_id>', methods=['POST'])
 def set_invoice_client(invoice_id):
-    invoice = Invoice.query.get_or_404(invoice_id)
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
 
-    if request.method == 'GET' and invoice.client:
-        ctx = {}
+    if not invoice:
+        return abort(404)
 
-        ctx['client'] = Client.query.get(invoice.client)
-        ctx['invoice'] = invoice
+    if not request.form['id']:
+        return abort(400)
 
-        return render_template('invoice_client.html', **ctx)
-
-    elif request.method == 'POST':
-        form = request.form
-
-        if not form['id']:
-            return abort(400)
-
-        invoice.client = form['id']
-
-        db.session.commit()
-
-        return 'ok'
-
-    return abort(400)
+    client = mongo.db.iclient.find_one(ObjectId(request.form['id']))
+    mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': {'client': client}})
+    return _ajax_ok()
 
 
 @login_required
-@app.route('/edit_invoice_company/<invoice_id>', methods=['GET', 'POST'])
-def edit_invoice_company(invoice_id):
-    invoice = Invoice.query.get_or_404(invoice_id)
+@app.route('/set_invoice_company/<invoice_id>', methods=['POST'])
+def set_invoice_company(invoice_id):
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
 
-    if request.method == 'GET' and invoice.company:
-        ctx = {}
+    if not invoice:
+        return abort(404)
 
-        ctx['company'] = Company.query.get(invoice.company)
-        ctx['invoice'] = invoice
+    if not request.form['id']:
+        return abort(400)
 
-        if invoice.taxes:
-            ctx['taxes'] = Tax.query.filter(Tax.invoice == invoice.id)
-
-        else:
-            ctx['taxes'] = Tax.query.filter(Tax.company == invoice.company)
-
-        return render_template('invoice_company.html', **ctx)
-
-    elif request.method == 'POST':
-        form = request.form
-        new = False
-        com = None
-
-        if not form['id']:
-            com = Company(user_id=g.user.id)
-            new = True
-
-        elif invoice.company != form['id']:
-            com = Company.query.get(form['id'])
-
-        else:
-            com = Company.query.get(invoice.company)
-
-        if form['name'] != com.name:
-            com.name = form['name']
-
-        if form['email'] != com.email:
-            com.email = form['email']
-
-        if form['phone'] != com.phone:
-            com.phone = form['phone']
-
-        if form['address'] != com.address:
-            com.address = form['address']
-
-        if form['contact'] != com.contact:
-            com.contact = form['contact']
-
-        if form['banking_info'] != com.banking_info:
-            com.banking_info = form['banking_info']
-
-        if new:
-            db.session.add(com)
-            db.session.flush()
-
-        invoice.company = com.id
-
-        db.session.commit()
-
-        return jsonify(id=com.id)
-
-    return abort(400)
+    company = mongo.db.company.find_one(ObjectId(request.form['id']))
+    mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': {'company': company}})
+    return _ajax_ok()
 
 
 @login_required
 @app.route('/create_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
 def create_invoice_tax(invoice_id):
-    invoice = Invoice.query.get_or_404(invoice_id)
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
+
+    if not invoice:
+        return abort(404)
 
     if request.method == 'GET':
-        resp = {'html': '', 'json': {}}
-        ctx = {}
-
-        ctx['invoice'] = invoice
-        ctx['taxes'] = Tax.query.filter(Tax.invoice == invoice.id)
-
-        resp['html'] = render_template('invoice_tax.html', **ctx)
-        resp['json'] = {'total': '{0:.2f}'.format(invoice.total_with_taxes)}
-
+        total = _value_with_taxes(invoice['value'], invoice['taxes'])
+        resp = {
+            'html': render_template('invoice_tax.html', invoice=invoice),
+            'json': {'total': '{0:.2f}'.format(total)}
+        }
         return jsonify(resp)
-
     elif request.method == 'POST':
         form = loads(request.form['data'])
-        tax = Tax(invoice=invoice_id)
-
-        tax.tax = form['tax']
-        tax.name = form['name']
-        tax.number = form['number']
-
-        db.session.add(tax)
-        db.session.commit()
-
-        return redirect(url_for('create_invoice_tax', invoice_id=invoice.id))
+        tax = {
+            'name': form['name'],
+            'value': form['tax'],
+            'number': form['number']
+        }
+        mongo.db.invoice.update({'_id': invoice['_id']}, {'$push': {'taxes': tax}})
+        return redirect(url_for('create_invoice_tax', invoice_id=invoice['_id']))
 
 
 @login_required
 @app.route('/edit_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_tax(invoice_id):
-    invoice = Invoice.query.get_or_404(invoice_id)
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
+
+    if not invoice:
+        return abort(404)
 
     if request.method == 'GET':
-        resp = {'html': '', 'json': {}}
-        ctx = {}
-
-        ctx['invoice'] = invoice
-        ctx['taxes'] = Tax.query.filter(Tax.invoice == invoice.id)
-
-        resp['html'] = render_template('invoice_tax.html', **ctx)
-        resp['json'] = {'total': '{0:.2f}'.format(invoice.total_with_taxes)}
-
+        resp = {
+            'html': render_template('invoice_tax.html', **{'invoice': invoice}),
+            'json': {'total': '{0:.2f}'.format(invoice['value'])}
+        }
         return jsonify(resp)
-
     elif request.method == 'POST':
         form = loads(request.form['data'])
-        tax = Tax.query.get(form['id'])
-
-        tax.tax = form['tax']
-        tax.name = form['name']
-        tax.number = form['number']
-
-        db.session.commit()
-
-        return redirect(url_for('edit_invoice_tax', invoice_id=invoice.id))
+        invoice['taxes'][int(form['index'])] = {
+            'value': form['tax'],
+            'name': form['name'],
+            'number': form['number']
+        }
+        doc = {'$set': {'taxes': invoice['taxes']}}
+        mongo.db.invoice.update({'_id': invoice['_id']}, doc)
+        return redirect(url_for('create_invoice_tax', invoice_id=invoice['_id']))
 
 
 @login_required
@@ -406,38 +326,46 @@ def upload_timesheet(invoice_id):
     def allowed_file(file):
         return '.' in file and file.rsplit('.', 1)[1] in _ALLOWED_EXT
 
-    invoice = Invoice.query.get_or_404(invoice_id)
+    def str2int(x):
+        return int(x) if x.strip() else 0
+
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
+
+    if not invoice:
+        return abort(404)
 
     if request.method == 'GET':
-        resp = {'html': '', 'json': {}}
-        lst = list(Timesheet.query.filter(Timesheet.invoice == invoice.id))
-        c = {}
-
-        c['invoice'] = invoice
-        c['company'] = Company.query.get(invoice.company) if invoice.company else {}
-        c['timesheets'] = _get_array_chunks(lst, _MAX_ROWS_PER_PAGE)
-
-        resp['html'] = render_template('invoice_timesheet.html', **c)
-        resp['json']['total'] = "{0:.2f}".format(invoice.total_with_taxes)
-
-        return jsonify(resp)
-
+        total = _value_with_taxes(invoice['value'], invoice['taxes'])
+        timesheet = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
+        context = {
+            'invoice': invoice,
+            'timesheets': timesheet
+        }
+        response = {
+            'html': render_template('invoice_timesheet.html', **context),
+            'json': "{0:.2f}".format(total)
+        }
+        return jsonify(response)
     elif request.method == 'POST' and 'file' in request.files:
         file = request.files['file']
         name = secure_filename(file.filename).strip() if file else ''
 
         if name and allowed_file(name):
-            Timesheet.query.filter(Timesheet.invoice == invoice.id).delete()
-            invoice.total = 0
+            invoice['value'] = 0
+            timesheet = []
 
             for idx, row in enumerate(reader(file)):
                 if idx > 0 and len(row) == 14:
-                    tms = Timesheet(invoice=invoice_id)
-                    fun = lambda x: int(x) if x.strip() else 0
-                    lst = list(map(fun, row[7].split('-')))
+                    lst = list(map(str2int, row[7].split('-')))
+                    entry = {
+                        'date': None,
+                        'amount': 0,
+                        'duration': None,
+                        'description': ''
+                    }
 
                     if len(lst) == 3 and all(lst):
-                        tms.date = date(*lst)
+                        entry['date'] = datetime(*lst)
 
                     if row[11].strip():
                         aux = strptime(row[11], '%H:%M:%S')
@@ -447,150 +375,132 @@ def upload_timesheet(invoice_id):
                         kwa['minutes'] = aux.tm_min
                         kwa['seconds'] = aux.tm_sec
 
-                        tms.duration = timedelta(**kwa).total_seconds()
+                        entry['duration'] = timedelta(**kwa).total_seconds()
 
-                    tms.amount = Decimal(row[13] if row[13] else 0)
-                    tms.description = row[5]
+                    entry['amount'] = float(row[13]) if row[13] else 0
+                    entry['description'] = row[5]
+                    invoice['value'] += entry['amount']
+                    timesheet.append(entry)
 
-                    invoice.total += tms.amount
-
-                    db.session.add(tms)
-
-            db.session.commit()
-
-            return redirect(url_for('upload_timesheet', invoice_id=invoice.id))
+            doc = {'$set': {'timesheet': timesheet}}
+            mongo.db.invoice.update({'_id': invoice['_id']}, doc)
+            return redirect(url_for('upload_timesheet', invoice_id=invoice['_id']))
 
     return abort(400)
 
 
+# Company controllers
+# -------------------
+
 @app.route('/get_companies/<invoice_id>', methods=['GET'])
 @login_required
 def get_companies(invoice_id):
-    inv = Invoice.query.get_or_404(invoice_id)
-    txt = request.args.get('q').strip()
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
 
+    if not invoice:
+        return abort(404)
+
+    txt = request.args.get('q').strip()
     mim = 'application/json'
     res = {'query': txt, 'suggestions': []}
-    qry = Company.query.filter(
-        Company.user_id == g.user.id,
-        Company.name.ilike('%' + txt + '%')
-    ).limit(_MAX_SUGGESTIONS)
+    qry = {
+        'user_id': g.user.gh_id,
+        'name': {'$regex': txt, '$options': 'i'}
+    }
 
-    for com in qry.all():
-        ctx = {}
+    for company in mongo.db.company.find(qry).limit(_MAX_SUGGESTIONS):
         dic = {}
 
-        ctx['company'] = com
-        ctx['invoice'] = inv
+        invoice['company'] = company
 
-        if inv.taxes:
-            ctx['taxes'] = Tax.query.filter(Tax.invoice == inv.id)
-
-        else:
-            ctx['taxes'] = Tax.query.filter(Tax.company == inv.company)
-
-        dic['value'] = com.name
-        dic['data'] = render_template('invoice_company.html', **ctx)
+        dic['value'] = company['name']
+        dic['data'] = render_template('invoice_company.html', invoice=invoice)
 
         res['suggestions'].append(dic)
 
     return Response(response=dumps(res), status=200, mimetype=mim)
-
-
-@login_required
-@app.route('/get_clients/<invoice_id>', methods=['GET'])
-def get_clients(invoice_id):
-    inv = Invoice.query.get_or_404(invoice_id)
-    txt = request.args.get('q').strip()
-
-    mim = 'application/json'
-    res = {'query': txt, 'suggestions': []}
-    qry = Client.query.filter(
-        Client.user_id == g.user.id,
-        Client.name.ilike('%' + txt + '%')
-    ).limit(_MAX_SUGGESTIONS)
-
-    for cli in qry.all():
-        ctx = {}
-        dic = {}
-
-        ctx['client'] = cli
-        ctx['invoice'] = inv
-
-        dic['id'] = cli.id
-        dic['value'] = cli.name
-        dic['data'] = render_template('invoice_client.html', **ctx)
-
-        res['suggestions'].append(dic)
-
-    return Response(response=dumps(res), status=200, mimetype=mim)
-
-
-@login_required
-@app.route('/clients', methods=['GET'])
-def clients():
-    return render_template('clients.html')
-
-
-@login_required
-@app.route('/create_client', methods=['POST'])
-def create_client():
-    form = request.form
-    client = Client(user_id=g.user.id)
-
-    client.name = form['client_name']
-    client.email = form['email']
-    client.phone = form['phone']
-    client.address = form['address']
-    client.contact = form['contact_name']
-    client.vendor_number = form['vendor_number']
-
-    db.session.add(client)
-    db.session.flush()
-    db.session.commit()
-
-    return redirect(url_for('clients'))
-
-
-@login_required
-@app.route('/delete_client/<client_id>', methods=['POST'])
-def delete_client(client_id):
-    client = Client.query.get_or_404(client_id)
-
-    db.session.delete(client)
-    db.session.commit()
-
-    return redirect(url_for('clients'))
 
 
 @login_required
 @app.route('/company', methods=['GET', 'POST'])
 def company():
     if request.method == 'GET':
-        ctx = {'company': Company.query.filter_by(user_id=g.user.id).first()}
-
-        return render_template('company.html', **ctx)
-
+        company = mongo.db.company.find_one({'user_id': g.user.gh_id}) or {}
+        return render_template('company.html', company=company)
     else:
-        company = Company.query.filter_by(user_id=g.user.id).first()
-        form = request.form
-        new = False
+        company = mongo.db.company.find_one({'user_id': g.user.gh_id}) or {}
+        company['name'] = request.form['company_name']
+        company['email'] = request.form['email']
+        company['phone'] = request.form['phone']
+        company['address'] = request.form['address']
+        company['contact'] = request.form['contact_name']
+        company['banking_info'] = request.form['banking']
 
-        if not company:
-            company = Company(user_id=g.user.id)
-            new = True
-
-        company.name = form['company_name']
-        company.email = form['email']
-        company.phone = form['phone']
-        company.address = form['address']
-        company.contact = form['contact_name']
-        company.banking_info = form['banking']
-
-        if new:
-            db.session.add(company)
-            db.session.flush()
-
-        db.session.commit()
+        if '_id' in company:
+            mongo.db.company.update({'_id': company['_id']}, {'$set': company})
+        else:
+            company['user_id'] = g.user.gh_id
+            mongo.db.company.insert(company)
 
         return redirect(url_for('company'))
+
+
+# Client controllers
+# ------------------
+
+@login_required
+@app.route('/get_clients/<invoice_id>', methods=['GET'])
+def get_clients(invoice_id):
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
+
+    if not invoice:
+        return abort(404)
+
+    txt = request.args.get('q').strip()
+    res = {'query': txt, 'suggestions': []}
+    qry = {
+        'user_id': g.user.gh_id,
+        'name': {'$regex': txt, '$options': 'i'}
+    }
+    for client in mongo.db.iclient.find(qry).limit(_MAX_SUGGESTIONS):
+        invoice['client'] = client
+        dic = {
+            'id': str(client['_id']),
+            'value': client['name'],
+            'data': render_template('invoice_client.html', invoice=invoice)
+        }
+        res['suggestions'].append(dic)
+
+    return jsonify(res)
+
+
+@login_required
+@app.route('/clients', methods=['GET'])
+def clients():
+    clients = mongo.db.iclient.find({'user_id': g.user.gh_id})
+    return render_template('clients.html', clients=clients)
+
+
+@login_required
+@app.route('/create_client', methods=['POST'])
+def create_client():
+    form = request.form
+    client = {
+        'user_id': g.user.gh_id,
+        'name': form['client_name'],
+        'email': form['email'],
+        'phone': form['phone'],
+        'address': form['address'],
+        'contact': form['contact_name'],
+        'currency': form['currency'],
+        'vendor_number': form['vendor_number'],
+    }
+    mongo.db.iclient.insert(client)
+    return redirect(url_for('clients'))
+
+
+@login_required
+@app.route('/delete_client/<client_id>', methods=['POST'])
+def delete_client(client_id):
+    mongo.db.iclient.remove({'_id': ObjectId(client_id)})
+    return redirect(url_for('clients'))

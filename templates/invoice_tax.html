@@ -1,21 +1,21 @@
 <h4 class="spaced">Government Registration</h4>
 <div class="contextual-controls">
-  <span class="add-button contextual-controls__button invoice__button" title="Add Registration"><i class=" material-icons">add</i></span>  
+  <span class="add-button contextual-controls__button invoice__button" title="Add Registration"><i class=" material-icons">add</i></span>
 </div>
 
 <table>
-  {% for i in taxes %}
-    <tr class="edit-tax" data-url="{{ url_for('edit_invoice_tax', invoice_id=invoice.id) }}">
+  {% for i in invoice.taxes %}
+    <tr class="edit-tax" data-url="{{ url_for('edit_invoice_tax', invoice_id=invoice._id) }}">
       <td>
-        <input type="hidden" name="id" value="{{ i.id }}"/>
+        <input type="hidden" name="index" value="{{ loop.index0 }}"/>
         <input class="name base-field small" name="name" placeholder="Register" value="{{ i.name }}"/>
       </td>
       <td><input class="base-field small" name="number" placeholder="Number" value="{{ i.number }}"/></td>
-      <td><input class="base-field small" name="tax" placeholder="Tax % (0.XX)" value="{{ i.tax }}"/></td></td>
+      <td><input class="base-field small" name="tax" placeholder="Tax % (0.XX)" value="{{ i.value }}"/></td></td>
     </tr>
   {% endfor %}
 
-  <tr id="create-tax" data-url="{{ url_for('create_invoice_tax', invoice_id=invoice.id) }}">
+  <tr id="create-tax" data-url="{{ url_for('create_invoice_tax', invoice_id=invoice._id) }}">
     <td><input class="name base-field small" name="name" placeholder="Register"/></td>
     <td><input class="base-field small" name="number" placeholder="Number"/></td>
     <td><input class="base-field small" name="tax" placeholder="Tax % (0.XX)"/></td></td>

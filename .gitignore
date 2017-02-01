@@ -1,12 +1,8 @@
 .env
 .DS_Store
 *.pyc
-invoice-app-master/
-migrations/*
-static/.webassets-cache/
-static/.sass-cache/
 static/css/
-venv/
 node_modules/
 deploy.sh
 .rsync_exclude
+venv/

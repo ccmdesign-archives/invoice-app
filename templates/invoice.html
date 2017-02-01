@@ -10,7 +10,7 @@
     {# <a class="controls__button" href="#" title="Clear Invoice"><i>clear</i></a> #}
   </div>
 
-  <article class="invoice" data-invoice-id="{{ invoice.id }}"  data-url="{{ url_for('edit_invoice', invoice_id=invoice.id) }}">
+  <article class="invoice" data-invoice-id="{{ invoice.id }}"  data-url="{{ url_for('edit_invoice', invoice_id=invoice._id) }}">
     <header class="invoice__header">
       <div class="invoice__branding">
         {% if company %}
@@ -29,15 +29,15 @@
     </header>
 
     <section class="invoice__summary">
-      <input type="text" class="invoice__title edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service_name }}"/>
-      <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="Description">{{ invoice.service_description }}</textarea>
+      <input type="text" class="invoice__title edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service.name }}"/>
+      <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="Description">{{ invoice.service.description }}</textarea>
 
       <div class="service-info">
         {% include 'invoice_service.html' %}
       </div>
     </section>
     <footer class="invoice__footer clearfix">
-      <p class="invoice__date editable" contenteditable>{{invoice.date.strftime('%Y/%m/%d')}}</p>
+      <p class="invoice__date editable" contenteditable>{{ invoice.created.strftime('%Y/%m/%d') }}</p>
     </footer>
   </article>
 
