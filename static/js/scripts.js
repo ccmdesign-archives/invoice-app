@@ -176,7 +176,7 @@ $(function () {
   $('body').on('submit', '#upload-timesheet', function() {
     function valid_response(data) {
       $('.timesheet-info').html(data.html);
-      $('.invoice__amount__input').val('$ ' + data.json.total);
+      $('.invoice__amount__input').val('$ ' + data.json);
     }
 
     var $form = $(this);

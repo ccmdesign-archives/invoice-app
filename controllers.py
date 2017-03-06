@@ -14,7 +14,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 
 # Invoice
-from app import app, github, login_manager, mongo
+from invoice_app import app, github, login_manager, mongo
 from models import User
 
 
@@ -116,14 +116,14 @@ def before_request():
         paid_value = 0
         open_value = 0
 
-        for invoice in mongo.db.invoice.find({'user': g.user.gh_id}):
-            if invoice.paid:
+        for invoice in mongo.db.invoice.find({'user_id': g.user.gh_id}):
+            if invoice['paid']:
                 g.user.paid_invoices += 1
-                # paid_value += invoice.total_with_taxes
+                paid_value += _value_with_taxes(invoice['value'], invoice['taxes'])
 
             else:
                 g.user.open_invoices += 1
-                # open_value += invoice.total_with_taxes
+                open_value += _value_with_taxes(invoice['value'], invoice['taxes'])
 
         g.user.paid_invoices_value = '{0:.2f}'.format(paid_value)
         g.user.open_invoices_value = '{0:.2f}'.format(open_value)
@@ -351,8 +351,8 @@ def upload_timesheet(invoice_id):
         name = secure_filename(file.filename).strip() if file else ''
 
         if name and allowed_file(name):
-            invoice['value'] = 0
             timesheet = []
+            total = 0
 
             for idx, row in enumerate(reader(file)):
                 if idx > 0 and len(row) == 14:
@@ -379,10 +379,10 @@ def upload_timesheet(invoice_id):
 
                     entry['amount'] = float(row[13]) if row[13] else 0
                     entry['description'] = row[5]
-                    invoice['value'] += entry['amount']
                     timesheet.append(entry)
+                    total += entry['amount']
 
-            doc = {'$set': {'timesheet': timesheet}}
+            doc = {'$set': {'timesheet': timesheet, 'value': total}}
             mongo.db.invoice.update({'_id': invoice['_id']}, doc)
             return redirect(url_for('upload_timesheet', invoice_id=invoice['_id']))
 
