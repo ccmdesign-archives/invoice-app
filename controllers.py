@@ -153,10 +153,28 @@ def toggle_invoice_status(invoice_id):
         return abort(404)
 
     if request.method == 'POST':
+        client = mongo.db.iclient.find_one({'_id': invoice['client']['_id']})
         url = url_for('toggle_invoice_status', invoice_id=invoice['_id'])
         form = loads(request.form['data'])
         doc = {'$set': {'paid': form['paid']}}
         mongo.db.invoice.update({'_id': invoice['_id']}, doc)
+
+        if form['paid']:
+            doc = {
+                '$inc': {
+                    'pending.count': -1,
+                    'pending.value': -invoice['value']
+                }
+            }
+        else:
+            doc = {
+                '$inc': {
+                    'pending.count': 1,
+                    'pending.value': invoice['value']
+                }
+            }
+
+        mongo.db.iclient.update({'_id': client['_id']}, doc)
         return redirect(url)
 
     elif request.method == 'GET':
@@ -197,7 +215,19 @@ def create_invoice():
 @login_required
 @app.route('/delete_invoice/<invoice_id>', methods=['POST'])
 def delete_invoice(invoice_id):
-    mongo.db.invoice.remove(ObjectId(invoice_id))
+    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
+
+    if not invoice:
+        return abort(404)
+
+    mongo.db.invoice.remove(invoice['_id'])
+    doc = {
+        '$inc': {
+            'pending.count': -1,
+            'pending.value': -invoice['value']
+        }
+    }
+    mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
     return redirect(url_for('home'))
 
 
@@ -233,6 +263,8 @@ def edit_invoice(invoice_id):
         }
     }
     mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': doc})
+    doc = {'$inc': {'pending.value': value - invoice['value']}}
+    mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
     return jsonify(total='{0:.2f}'.format(total))
 
 
@@ -249,6 +281,7 @@ def set_invoice_client(invoice_id):
 
     client = mongo.db.iclient.find_one(ObjectId(request.form['id']))
     mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': {'client': client}})
+    mongo.db.iclient.update({'_id': client['_id']}, {'$inc': {'pending.count': 1}})
     return _ajax_ok()
 
 
@@ -384,6 +417,8 @@ def upload_timesheet(invoice_id):
 
             doc = {'$set': {'timesheet': timesheet, 'value': total}}
             mongo.db.invoice.update({'_id': invoice['_id']}, doc)
+            doc = {'$inc': {'pending.value': total - invoice['value']}}
+            mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
             return redirect(url_for('upload_timesheet', invoice_id=invoice['_id']))
 
     return abort(400)
@@ -494,6 +529,10 @@ def create_client():
         'contact': form['contact_name'],
         'currency': form['currency'],
         'vendor_number': form['vendor_number'],
+        'pending': {
+            'count': 0,
+            'value': 0
+        }
     }
     mongo.db.iclient.insert(client)
     return redirect(url_for('clients'))
