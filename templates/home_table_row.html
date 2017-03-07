@@ -1,10 +1,10 @@
 <tr  data-url="{{ url_for('toggle_invoice_status', invoice_id=invoice._id) }}">
   <td class="list__action"><i class="material-icons">{% if invoice.paid %}check_box{% else %}check_box_outline_blank{% endif %}</i></td>
   <td><a href="{{ url_for('open_invoice', invoice_id=invoice._id) }}">{{ invoice.tag_number }}</a></td>
-  <td>{{invoice.created.strftime('%Y/%m/%d')}}</td>
-  <td>{{invoice.client.name or "" }}</td>
-  <td>{{invoice.service.name}}</td>
-  <td class="list__amount">{{ invoice.currency }} {{invoice.value}}</td>
+  <td>{{ invoice.created.strftime('%Y/%m/%d') }}</td>
+  <td>{{ invoice.client.name or "" }}</td>
+  <td>{{ invoice.service.name }}</td>
+  <td class="list__amount">{{ invoice.currency }} {{ '{:,.2f}'.format(invoice.value) }}</td>
   <td class="list__action list__action--red">
     <form action="{{ url_for('delete_invoice', invoice_id=invoice._id) }}" method="post" onclick="submit()">
       <i class="material-icons">close</i>

@@ -11,15 +11,15 @@
   </div>
   <div class="grid-row">
     <div class="grid-half">
-      <input type="text" readonly class="base-field" name="vendor_number" placeholder="Your vendor # with that client" value="{{ invoice.client.vendor_number }}"/>
-      <input type="text" readonly class="base-field" name="contact" placeholder="Client Contact Name" value="{{ invoice.client.contact }}"/>
-      <input type="text" readonly class="base-field" name="email" placeholder="Client Email" value="{{ invoice.client.email }}"/>
-      <input type="text" readonly class="base-field" name="phone" placeholder="Client Phone" value="{{ invoice.client.phone }}"/>
+      <input type="text" class="base-field" name="vendor_number" placeholder="Your vendor # with that client" value="{{ invoice.client.vendor_number }}"/>
+      <input type="text" class="base-field" name="contact" placeholder="Client Contact Name" value="{{ invoice.client.contact }}"/>
+      <input type="text" class="base-field" name="email" placeholder="Client Email" value="{{ invoice.client.email }}"/>
+      <input type="text" class="base-field" name="phone" placeholder="Client Phone" value="{{ invoice.client.phone }}"/>
     </div>
 
     <div class="grid-half">
       <h4>Address</h4>
-      <textarea readonly name="address" placeholder="Client Address, City, State, Country, ZIP Code">{{ invoice.client.address }}</textarea>
+      <textarea name="address" placeholder="Client Address, City, State, Country, ZIP Code">{{ invoice.client.address }}</textarea>
     </div>
   </div>
 </form>

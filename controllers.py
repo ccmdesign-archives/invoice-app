@@ -208,7 +208,15 @@ def create_invoice():
         'client': {},
         'timesheet': []
     }
+
+    if company:
+        number = (date.today().year, company['current_invoice_num'] + 1)
+        invoice['tag_number'] = '%s%03d' % number
+        doc = {'$inc': {'current_invoice_num': 1}}
+        mongo.db.company.update({'user_id': g.user.gh_id}, doc)
+
     invoice['_id'] = mongo.db.invoice.insert(invoice)
+
     return redirect(url_for('open_invoice', invoice_id=invoice['_id']))
 
 
@@ -470,6 +478,7 @@ def company():
         company['address'] = request.form['address']
         company['contact'] = request.form['contact_name']
         company['banking_info'] = request.form['banking']
+        company['current_invoice_num'] = int(request.form['invoice_num'])
 
         if '_id' in company:
             mongo.db.company.update({'_id': company['_id']}, {'$set': company})
