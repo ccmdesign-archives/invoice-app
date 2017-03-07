@@ -31,7 +31,16 @@
       <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="Description">{{ invoice.service.description }}</textarea>
 
       <div class="service-info">
-        {% include 'invoice_service.html' %}
+        <table class="invoice__total">
+          <tbody>
+            <tr class="invoice__grand-total">
+              <td>Total</td>
+              <td class="invoice__amount" >
+                <input type="text" class="invoice__amount__input edit-invoice-input" name="total" value="{{ format_price(invoice.value_with_taxes, invoice.currency) }}">
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </section>
     <footer class="invoice__footer clearfix">

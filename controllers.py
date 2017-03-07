@@ -42,7 +42,7 @@ def _value_with_taxes(value, taxes):
     for tax in taxes:
         total_taxes += int(tax['value'])
 
-    return float(value) * (1 + total_taxes / 100)
+    return float(value) * (1 + float(total_taxes) / 100)
 
 
 # Login manager
@@ -226,12 +226,6 @@ def delete_invoice(invoice_id):
     # Delete invoice
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     mongo.db.invoice.remove(invoice['_id'])
-    doc = {
-        '$inc': {
-            'pending.count': -1,
-            'pending.value': -invoice['value']
-        }
-    }
 
     # Update client's pending invoices data
     if invoice['client']:
@@ -247,41 +241,36 @@ def delete_invoice(invoice_id):
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def open_invoice(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    timesheet = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
-    return render_template('invoice.html', invoice=invoice, timesheets=timesheet)
+    invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['taxes'])
+    invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
+    return render_template('invoice.html', invoice=invoice)
 
 
 @login_required
 @app.route('/edit_invoice/<invoice_id>', methods=['POST'])
 def edit_invoice(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
-
+    # Update invoice
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     form = loads(request.form['data'])
     value = float(form['total'].replace('$', '').strip())
     total = _value_with_taxes(value, invoice['taxes'])
-    doc = {
-        'value': value,
-        'service': {
-            'name': form['service_name'],
-            'description': form['service_description']
-        }
-    }
+    doc = {'service': {}}
+    doc['value'] = value
+    doc['service']['name'] = form['service_name']
+    doc['service']['description'] = form['service_description']
     mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': doc})
+
+    # Update client's pending invoices data
     doc = {'$inc': {'pending.value': value - invoice['value']}}
     mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
+
     return jsonify(total='{0:.2f}'.format(total))
 
 
 @login_required
 @app.route('/set_invoice_client/<invoice_id>', methods=['POST'])
 def set_invoice_client(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if not request.form['id']:
         return abort(400)
