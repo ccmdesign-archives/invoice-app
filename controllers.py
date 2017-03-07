@@ -223,11 +223,8 @@ def create_invoice():
 @login_required
 @app.route('/delete_invoice/<invoice_id>', methods=['POST'])
 def delete_invoice(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
-
+    # Delete invoice
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     mongo.db.invoice.remove(invoice['_id'])
     doc = {
         '$inc': {
@@ -235,20 +232,22 @@ def delete_invoice(invoice_id):
             'pending.value': -invoice['value']
         }
     }
-    mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
+
+    # Update client's pending invoices data
+    if invoice['client']:
+        doc = {'$inc': {}}
+        doc['$inc']['pending.count'] = -1
+        doc['$inc']['pending.value'] = -invoice['value']
+        mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
+
     return redirect(url_for('home'))
 
 
 @login_required
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def open_invoice(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
-
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     timesheet = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
-
     return render_template('invoice.html', invoice=invoice, timesheets=timesheet)
 
 
