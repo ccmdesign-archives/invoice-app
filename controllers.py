@@ -139,11 +139,11 @@ def before_request():
         for invoice in mongo.db.invoice.find({'user_id': g.user.gh_id}):
             if invoice['paid']:
                 g.user.paid_invoices += 1
-                paid_value += _value_with_taxes(invoice['value'], invoice['taxes'])
+                paid_value += _value_with_taxes(invoice['value'], invoice['company']['taxes'])
 
             else:
                 g.user.open_invoices += 1
-                open_value += _value_with_taxes(invoice['value'], invoice['taxes'])
+                open_value += _value_with_taxes(invoice['value'], invoice['company']['taxes'])
 
         g.user.paid_invoices_value = '{0:.2f}'.format(paid_value)
         g.user.open_invoices_value = '{0:.2f}'.format(open_value)
@@ -163,7 +163,7 @@ def home():
     invoices = list(mongo.db.invoice.find({'user_id': g.user.gh_id}))
 
     for invoice in invoices:
-        invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['taxes'])
+        invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
 
     return render_template('home.html', invoices=invoices)
 
@@ -188,6 +188,7 @@ def toggle_invoice_status(invoice_id):
         dic = {'paid': [], 'open': []}
 
         for invoice in mongo.db.invoice.find({'user_id': g.user.gh_id}):
+            invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
             template = render_template('home_table_row.html', invoice=invoice)
 
             if invoice['paid']:
@@ -211,7 +212,6 @@ def create_invoice():
         'value': 0,
         'currency': '$',
         'paid': False,
-        'taxes': [],
         'client': {},
         'timesheet': []
     }
@@ -248,7 +248,7 @@ def delete_invoice(invoice_id):
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def open_invoice(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['taxes'])
+    invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
     invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
     return render_template('invoice.html', invoice=invoice)
 
@@ -260,7 +260,7 @@ def edit_invoice(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     form = loads(request.form['data'])
     value = float(form['total'].replace('$', '').strip())
-    total = _value_with_taxes(value, invoice['taxes'])
+    total = _value_with_taxes(value, invoice['company']['taxes'])
     doc = {'service': {}}
     doc['value'] = value
     doc['service']['name'] = form['service_name']
@@ -302,52 +302,6 @@ def set_invoice_company(invoice_id):
 
 
 @login_required
-@app.route('/create_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
-def create_invoice_tax(invoice_id):
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-
-    if request.method == 'GET':
-        total = _value_with_taxes(invoice['value'], invoice['taxes'])
-        resp = {
-            'html': render_template('invoice_tax.html', invoice=invoice),
-            'json': {'total': '{0:.2f}'.format(total)}
-        }
-        return jsonify(resp)
-    elif request.method == 'POST':
-        form = loads(request.form['data'])
-        tax = {
-            'name': form['name'],
-            'value': form['tax'],
-            'number': form['number']
-        }
-        mongo.db.invoice.update({'_id': invoice['_id']}, {'$push': {'taxes': tax}})
-        return redirect(url_for('create_invoice_tax', invoice_id=invoice['_id']))
-
-
-@login_required
-@app.route('/edit_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
-def edit_invoice_tax(invoice_id):
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-
-    if request.method == 'GET':
-        resp = {
-            'html': render_template('invoice_tax.html', **{'invoice': invoice}),
-            'json': {'total': '{0:.2f}'.format(invoice['value'])}
-        }
-        return jsonify(resp)
-    elif request.method == 'POST':
-        form = loads(request.form['data'])
-        invoice['taxes'][int(form['index'])] = {
-            'value': form['tax'],
-            'name': form['name'],
-            'number': form['number']
-        }
-        doc = {'$set': {'taxes': invoice['taxes']}}
-        mongo.db.invoice.update({'_id': invoice['_id']}, doc)
-        return redirect(url_for('create_invoice_tax', invoice_id=invoice['_id']))
-
-
-@login_required
 @app.route('/upload_timesheet/<invoice_id>', methods=['GET', 'POST'])
 def upload_timesheet(invoice_id):
     def allowed_file(file):
@@ -359,14 +313,10 @@ def upload_timesheet(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if request.method == 'GET':
-        total = _value_with_taxes(invoice['value'], invoice['taxes'])
-        timesheet = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
-        context = {
-            'invoice': invoice,
-            'timesheets': timesheet
-        }
+        total = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+        invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
         response = {
-            'html': render_template('invoice_timesheet.html', **context),
+            'html': render_template('invoice_timesheet.html', invoice=invoice),
             'json': "{0:.2f}".format(total)
         }
         return jsonify(response)
@@ -448,6 +398,10 @@ def get_companies(invoice_id):
 @login_required
 @app.route('/company', methods=['GET', 'POST'])
 def company():
+    def tax(name, number, value):
+        if name and number and value:
+            return {'name': name, 'number': number, 'value': value}
+
     if request.method == 'GET':
         company = mongo.db.company.find_one({'user_id': g.user.gh_id}) or {}
         return render_template('company.html', company=company)
@@ -460,6 +414,15 @@ def company():
         company['contact'] = request.form['contact_name']
         company['banking_info'] = request.form['banking']
         company['current_invoice_num'] = int(request.form['invoice_num'])
+        company['taxes'] = []
+        names = request.form.getlist('tax_name')
+        numbers = request.form.getlist('tax_number')
+        values = request.form.getlist('tax_value')
+        taxes = map(tax, names, numbers, values)
+
+        for tax in taxes:
+            if tax:
+                company['taxes'].append(tax)
 
         if '_id' in company:
             mongo.db.company.update({'_id': company['_id']}, {'$set': company})
@@ -505,20 +468,19 @@ def clients():
 @login_required
 @app.route('/create_client', methods=['POST'])
 def create_client():
-    form = request.form
-    client = {
-        'user_id': g.user.gh_id,
-        'name': form['client_name'],
-        'email': form['email'],
-        'phone': form['phone'],
-        'address': form['address'],
-        'contact': form['contact_name'],
-        'currency': form['currency'],
-        'vendor_number': form['vendor_number'],
-        'pending': {
-            'count': 0,
-            'value': 0
-        }
+    client = {}
+    client['user_id'] = g.user.gh_id,
+    client['name'] = request.form['client_name'],
+    client['email'] = request.form['email'],
+    client['phone'] = request.form['phone'],
+    client['address'] = request.form['address'],
+    client['contact'] = request.form['contact_name'],
+    client['currency'] = request.form['currency'],
+    client['vendor_number'] = request.form['vendor_number'],
+    client['apply_taxes'] = request.form.get('apply_taxes', '') == 'on',
+    client['pending'] = {
+        'count': 0,
+        'value': 0
     }
     mongo.db.iclient.insert(client)
     return redirect(url_for('clients'))

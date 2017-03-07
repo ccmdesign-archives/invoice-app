@@ -20,28 +20,29 @@
         <textarea class="base-field-textarea" name="address" placeholder="Company Address" value="{{ company.address }}">{{ company.address }}</textarea>
         <textarea class="base-field-textarea" name="banking" placeholder="Banking Information" value="{{ company.banking_info }}">{{ company.banking_info }}</textarea>
 
-        <!--<div class="add-gov-registry">
+        <div class="add-gov-registry">
           <h3>Add Government Registries and Trade Taxes</h3>
           <div class="contextual-controls">
             <span class="add-button contextual-controls__button invoice__button" title="Add Registration"><i class=" material-icons">add</i></span>
           </div>
-          <table class="table-list-add">
-            <tr class="edit-tax">
-              <td>
-                <input type="hidden" name="id" value=""/>
-                <input class="name base-field small" name="name" placeholder="Register" value=""/>
-              </td>
-              <td><input class="base-field small" name="number" placeholder="Number" value=""/></td>
-              <td><input class="base-field small" name="tax" placeholder="Tax % (i.e. 0.12)" value=""/></td></td>
-            </tr>
 
-            <tr id="create-tax">
-              <td><input class="name base-field small" name="name" placeholder="Register"/></td>
-              <td><input class="base-field small" name="number" placeholder="Number"/></td>
-              <td><input class="base-field small" name="tax" placeholder="Tax % (i.e. 0.12)"/></td></td>
+          <table class="table-list-add">
+            {% for i in company.taxes %}
+              <tr class="edit-tax">
+                <td><input class="name base-field small" name="tax_name" placeholder="Register" value="{{ i.name }}"/></td>
+                <td><input class="base-field small" name="tax_number" placeholder="Number" value="{{ i.number }}"/></td>
+                <td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)" value="{{ i.value }}"/></td></td>
+              </tr>
+            {% endfor %}
+
+            <tr class="edit-tax">
+              <td><input class="name base-field small" name="tax_name" placeholder="Register"/></td>
+              <td><input class="base-field small" name="tax_number" placeholder="Number"/></td>
+              <td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)"/></td></td>
             </tr>
           </table>
-        </div>-->
+        </div>
+
         <button class="button" type="submit">Save</button>
       </form>
     </div>

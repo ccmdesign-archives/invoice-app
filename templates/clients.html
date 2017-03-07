@@ -11,15 +11,16 @@
 
     <div class="new-client">
       <form action="{{ url_for('create_client') }}" method="post" class="form">
-        <h2>New Client</h2>
         <div class="grid-row">
           <div class="grid-half">
+            <h2>New Client</h2>
             <input type="text" name="client_name" placeholder="Client Name" class="base-field">
             <input type="text" name="contact_name" placeholder="Contact Person" class="base-field">
             <input type="text" name="email" placeholder="Contact Email" class="base-field">
             <input type="text" name="phone" placeholder="Contact Phone" class="base-field">
           </div>
           <div class="grid-half">
+            <div class="checkbox align-with-title"><input id="apply-taxes-to-client" name="apply_taxes" type="checkbox"><label for="apply-taxes-to-client">Apply Sales Taxes</label></div>
             <input type="text" name="vendor_number" placeholder="Your vendor number with this client" class="base-field">
             <input type="text" name="currency" placeholder="Currency" class="base-field">
             <textarea class="base-field-textarea" name="address" placeholder="Client Address"></textarea>

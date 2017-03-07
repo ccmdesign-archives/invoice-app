@@ -90,31 +90,10 @@ $(function () {
   });
 
   // Creates a tax and updates the invoice price
-  $('.company-info').on('click', '.contextual-controls .add-button', function() {
-    if ($('#create-tax .name').val()) {
-      var $objc = $('#create-tax');
-      var $resp = null;
-      var data = {};
+  $('.add-gov-registry').on('click', '.contextual-controls .add-button', function() {
+    var template = '<tr class="edit-tax"><td><input class="name base-field small" name="tax_name" placeholder="Register"/></td><td><input class="base-field small" name="tax_number" placeholder="Number"/></td><td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)"/></td></td></tr>'
 
-      $objc.find('input').each(function() {
-        data[$(this).attr('name')] = $(this).val();
-      });
-
-      $resp = $.post($objc.data('url'), {data: JSON.stringify(data)});
-
-      $resp.done(function(data) {
-        $('.tax-info').html(data.html);
-        $('.invoice__amount__input').val('$ ' + data.json.total);
-
-      }).fail(function(data, state, xhr) {
-        if (xhr == 'BAD REQUEST') {
-          console.log('Bad request.');
-
-        } else {
-          console.log('Server error.');
-        }
-      });
-    }
+    $('.table-list-add').append(template);
   });
 
   // Updates invoice price when a tax is changed
