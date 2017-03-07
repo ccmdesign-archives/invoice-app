@@ -413,8 +413,11 @@ def upload_timesheet(invoice_id):
 
             doc = {'$set': {'timesheet': timesheet, 'value': total}}
             mongo.db.invoice.update({'_id': invoice['_id']}, doc)
-            doc = {'$inc': {'pending.value': total - invoice['value']}}
-            mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
+
+            if invoice['client']:
+                doc = {'$inc': {'pending.value': total - invoice['value']}}
+                mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
+
             return redirect(url_for('upload_timesheet', invoice_id=invoice['_id']))
 
     return abort(400)
