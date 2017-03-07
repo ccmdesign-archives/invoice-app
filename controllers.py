@@ -45,6 +45,26 @@ def _value_with_taxes(value, taxes):
     return float(value) * (1 + float(total_taxes) / 100)
 
 
+def _update_pending_data(client_id):
+    # Aggregate
+    match = {'client._id': client_id, 'paid': False}
+    group = {'_id': None, 'count': {'$sum': 1}, 'value': {'$sum': '$value'}}
+    pipeline = [{'$match': match}, {'$group': group}]
+    result = list(mongo.db.invoice.aggregate(pipeline))
+
+    # Update client
+    doc = {'$set': {}}
+
+    if result:
+        doc['$set']['pending.count'] = result[0]['count']
+        doc['$set']['pending.value'] = result[0]['value']
+    else:
+        doc['$set']['pending.count'] = 0
+        doc['$set']['pending.value'] = 0
+
+    mongo.db.iclient.update({'_id': client_id}, doc)
+
+
 # Login manager
 # -------------
 
@@ -141,40 +161,27 @@ def index():
 @login_required
 def home():
     invoices = list(mongo.db.invoice.find({'user_id': g.user.gh_id}))
+
+    for invoice in invoices:
+        invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['taxes'])
+
     return render_template('home.html', invoices=invoices)
 
 
 @login_required
 @app.route('/toggle_invoice_status/<invoice_id>', methods=['GET', 'POST'])
 def toggle_invoice_status(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if request.method == 'POST':
-        client = mongo.db.iclient.find_one({'_id': invoice['client']['_id']})
         url = url_for('toggle_invoice_status', invoice_id=invoice['_id'])
         form = loads(request.form['data'])
         doc = {'$set': {'paid': form['paid']}}
         mongo.db.invoice.update({'_id': invoice['_id']}, doc)
 
-        if form['paid']:
-            doc = {
-                '$inc': {
-                    'pending.count': -1,
-                    'pending.value': -invoice['value']
-                }
-            }
-        else:
-            doc = {
-                '$inc': {
-                    'pending.count': 1,
-                    'pending.value': invoice['value']
-                }
-            }
+        if invoice['client']:
+            _update_pending_data(invoice['client']['_id'])
 
-        mongo.db.iclient.update({'_id': client['_id']}, doc)
         return redirect(url)
 
     elif request.method == 'GET':
@@ -261,8 +268,8 @@ def edit_invoice(invoice_id):
     mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': doc})
 
     # Update client's pending invoices data
-    doc = {'$inc': {'pending.value': value - invoice['value']}}
-    mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
+    if invoice['client']:
+        _update_pending_data(invoice['client']['_id'])
 
     return jsonify(total='{0:.2f}'.format(total))
 
@@ -277,17 +284,14 @@ def set_invoice_client(invoice_id):
 
     client = mongo.db.iclient.find_one(ObjectId(request.form['id']))
     mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': {'client': client}})
-    mongo.db.iclient.update({'_id': client['_id']}, {'$inc': {'pending.count': 1}})
+    _update_pending_data(invoice['client']['_id'])
     return _ajax_ok()
 
 
 @login_required
 @app.route('/set_invoice_company/<invoice_id>', methods=['POST'])
 def set_invoice_company(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if not request.form['id']:
         return abort(400)
@@ -300,10 +304,7 @@ def set_invoice_company(invoice_id):
 @login_required
 @app.route('/create_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
 def create_invoice_tax(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if request.method == 'GET':
         total = _value_with_taxes(invoice['value'], invoice['taxes'])
@@ -326,10 +327,7 @@ def create_invoice_tax(invoice_id):
 @login_required
 @app.route('/edit_invoice_tax/<invoice_id>', methods=['GET', 'POST'])
 def edit_invoice_tax(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if request.method == 'GET':
         resp = {
@@ -358,10 +356,7 @@ def upload_timesheet(invoice_id):
     def str2int(x):
         return int(x) if x.strip() else 0
 
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if request.method == 'GET':
         total = _value_with_taxes(invoice['value'], invoice['taxes'])
@@ -415,8 +410,7 @@ def upload_timesheet(invoice_id):
             mongo.db.invoice.update({'_id': invoice['_id']}, doc)
 
             if invoice['client']:
-                doc = {'$inc': {'pending.value': total - invoice['value']}}
-                mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
+                _update_pending_data(invoice['client']['_id'])
 
             return redirect(url_for('upload_timesheet', invoice_id=invoice['_id']))
 
@@ -429,11 +423,7 @@ def upload_timesheet(invoice_id):
 @app.route('/get_companies/<invoice_id>', methods=['GET'])
 @login_required
 def get_companies(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
-
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     txt = request.args.get('q').strip()
     mim = 'application/json'
     res = {'query': txt, 'suggestions': []}
@@ -486,11 +476,7 @@ def company():
 @login_required
 @app.route('/get_clients/<invoice_id>', methods=['GET'])
 def get_clients(invoice_id):
-    invoice = mongo.db.invoice.find_one(ObjectId(invoice_id))
-
-    if not invoice:
-        return abort(404)
-
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     txt = request.args.get('q').strip()
     res = {'query': txt, 'suggestions': []}
     qry = {
