@@ -139,11 +139,19 @@ def before_request():
         for invoice in mongo.db.invoice.find({'user_id': g.user.gh_id}):
             if invoice['paid']:
                 g.user.paid_invoices += 1
-                paid_value += _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+
+                if invoice['company']:
+                    paid_value += _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+                else:
+                    paid_value += invoice['value']
 
             else:
                 g.user.open_invoices += 1
-                open_value += _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+
+                if invoice['company']:
+                    open_value += _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+                else:
+                    open_value += invoice['value']
 
         g.user.paid_invoices_value = '{0:.2f}'.format(paid_value)
         g.user.open_invoices_value = '{0:.2f}'.format(open_value)
@@ -163,7 +171,10 @@ def home():
     invoices = list(mongo.db.invoice.find({'user_id': g.user.gh_id}))
 
     for invoice in invoices:
-        invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+        if invoice['company']:
+            invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+        else:
+            invoice['value_with_taxes'] = invoice['value']
 
     return render_template('home.html', invoices=invoices)
 
@@ -248,8 +259,13 @@ def delete_invoice(invoice_id):
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def open_invoice(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
     invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
+
+    if invoice['company']:
+        invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+    else:
+        invoice['value_with_taxes'] = invoice['value']
+
     return render_template('invoice.html', invoice=invoice)
 
 
@@ -313,7 +329,11 @@ def upload_timesheet(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if request.method == 'GET':
-        total = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+        if invoice['company']:
+            total = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+        else:
+            total = invoice['value']
+
         invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
         response = {
             'html': render_template('invoice_timesheet.html', invoice=invoice),
@@ -469,15 +489,15 @@ def clients():
 @app.route('/create_client', methods=['POST'])
 def create_client():
     client = {}
-    client['user_id'] = g.user.gh_id,
-    client['name'] = request.form['client_name'],
-    client['email'] = request.form['email'],
-    client['phone'] = request.form['phone'],
-    client['address'] = request.form['address'],
-    client['contact'] = request.form['contact_name'],
-    client['currency'] = request.form['currency'],
-    client['vendor_number'] = request.form['vendor_number'],
-    client['apply_taxes'] = request.form.get('apply_taxes', '') == 'on',
+    client['user_id'] = g.user.gh_id
+    client['name'] = request.form['client_name']
+    client['email'] = request.form['email']
+    client['phone'] = request.form['phone']
+    client['address'] = request.form['address']
+    client['contact'] = request.form['contact_name']
+    client['currency'] = request.form['currency']
+    client['vendor_number'] = request.form['vendor_number']
+    client['apply_taxes'] = request.form.get('apply_taxes', '') == 'on'
     client['pending'] = {
         'count': 0,
         'value': 0
