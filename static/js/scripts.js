@@ -64,7 +64,7 @@ $(function () {
   $('#client-autocomplete').autocomplete(opts2);
 
   // Updates the invoice header when client's name is changed
-  $('.company-info h2').on('keyup', '.name', function() {
+  $('body').on('keyup', '.company-info h2 .name', function() {
     $('.invoice__branding h2').text($(this).val());
   });
 

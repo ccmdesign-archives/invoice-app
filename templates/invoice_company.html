@@ -25,10 +25,12 @@
     </div>
   </div>
 </form>
-<div class="grid-row">
-  <div class="grid-half">
-    <div class="tax-info">
-      {% include 'invoice_tax.html' %}
+{% if invoice.company and invoice.company.taxes %}
+  <div class="grid-row">
+    <div class="grid-half">
+      <div class="tax-info">
+        {% include 'invoice_tax.html' %}
+      </div>
     </div>
   </div>
-</div>
+{% endif %}

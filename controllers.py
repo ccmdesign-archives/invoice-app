@@ -36,13 +36,17 @@ def _get_array_chunks(array, size):
     return (array[pos:pos + size] for pos in xrange(0, len(array), size))
 
 
-def _value_with_taxes(value, taxes):
-    total_taxes = 0
+def _value_with_taxes(invoice):
+    if invoice['client'].get('apply_taxes', False):
+        total_taxes = 0
 
-    for tax in taxes:
-        total_taxes += int(tax['value'])
+        for tax in invoice['company'].get('taxes', []):
+            total_taxes += int(tax['value'])
 
-    return float(value) * (1 + float(total_taxes) / 100)
+        return float(invoice['value']) * (1 + float(total_taxes) / 100)
+
+    else:
+        return invoice['value']
 
 
 def _update_pending_data(client_id):
@@ -141,7 +145,7 @@ def before_request():
                 g.user.paid_invoices += 1
 
                 if invoice['company']:
-                    paid_value += _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+                    paid_value += _value_with_taxes(invoice)
                 else:
                     paid_value += invoice['value']
 
@@ -149,7 +153,7 @@ def before_request():
                 g.user.open_invoices += 1
 
                 if invoice['company']:
-                    open_value += _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+                    open_value += _value_with_taxes(invoice)
                 else:
                     open_value += invoice['value']
 
@@ -172,7 +176,7 @@ def home():
 
     for invoice in invoices:
         if invoice['company']:
-            invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+            invoice['value_with_taxes'] = _value_with_taxes(invoice)
         else:
             invoice['value_with_taxes'] = invoice['value']
 
@@ -185,8 +189,8 @@ def toggle_invoice_status(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
 
     if request.method == 'POST':
-        url = url_for('toggle_invoice_status', invoice_id=invoice['_id'])
         form = loads(request.form['data'])
+        url = url_for('toggle_invoice_status', invoice_id=invoice['_id'])
         doc = {'$set': {'paid': form['paid']}}
         mongo.db.invoice.update({'_id': invoice['_id']}, doc)
 
@@ -199,7 +203,7 @@ def toggle_invoice_status(invoice_id):
         dic = {'paid': [], 'open': []}
 
         for invoice in mongo.db.invoice.find({'user_id': g.user.gh_id}):
-            invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+            invoice['value_with_taxes'] = _value_with_taxes(invoice)
             template = render_template('home_table_row.html', invoice=invoice)
 
             if invoice['paid']:
@@ -262,7 +266,7 @@ def open_invoice(invoice_id):
     invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
 
     if invoice['company']:
-        invoice['value_with_taxes'] = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+        invoice['value_with_taxes'] = _value_with_taxes(invoice)
     else:
         invoice['value_with_taxes'] = invoice['value']
 
@@ -275,10 +279,10 @@ def edit_invoice(invoice_id):
     # Update invoice
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     form = loads(request.form['data'])
-    value = float(form['total'].replace('$', '').strip())
-    total = _value_with_taxes(value, invoice['company']['taxes'])
+    invoice['value'] = float(form['total'].replace('$', '').strip())
+    total = _value_with_taxes(invoice)
     doc = {'service': {}}
-    doc['value'] = value
+    doc['value'] = invoice['value']
     doc['service']['name'] = form['service_name']
     doc['service']['description'] = form['service_description']
     mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': doc})
@@ -300,7 +304,10 @@ def set_invoice_client(invoice_id):
 
     client = mongo.db.iclient.find_one(ObjectId(request.form['id']))
     mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': {'client': client}})
-    _update_pending_data(invoice['client']['_id'])
+
+    if invoice['client']:
+        _update_pending_data(invoice['client']['_id'])
+
     return _ajax_ok()
 
 
@@ -330,7 +337,7 @@ def upload_timesheet(invoice_id):
 
     if request.method == 'GET':
         if invoice['company']:
-            total = _value_with_taxes(invoice['value'], invoice['company']['taxes'])
+            total = _value_with_taxes(invoice)
         else:
             total = invoice['value']
 

@@ -11,10 +11,8 @@
   <article class="invoice" data-invoice-id="{{ invoice.id }}"  data-url="{{ url_for('edit_invoice', invoice_id=invoice._id) }}">
     <header class="invoice__header">
       <div class="invoice__branding">
-        {% if company %}
-          {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
-          <h2>{{company.name}}</h2>
-        {% endif %}
+        {% if invoice.company.logo %}<img class="company-logo" src="./images/{{ invoice.company.logo }}" alt="">{% endif %}
+        <h2>{{ invoice.company.name }}</h2>
         <h1>Invoice {{ invoice.tag_number }}</h1>
       </div>
       <div class="client-info">
