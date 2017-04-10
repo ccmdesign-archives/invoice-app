@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block body_class %}invoice-page{% endblock %}
+
+{% block content %}
+  {# Side buttons #}
+  <div class="main-controls no-print">
+    <button id="js-save-invoice-button" type="submit" class="main-controls__button" title="Save Invoice"><i>save</i></button>
+  </div>
+  {# End side buttons #}
+
+  {# Invoice form #}
+  <form id="js-invoice-form" action="{{ url_for('save_invoice') }}" enctype="multipart/form-data" method="post">
+    <div class="invoice">
+      <div class="invoice__header">
+        {# Client info #}
+        <div class="client-info">
+          <div class="contextual-controls no-print">
+            <a href="{{ url_for('clients') }}" target="_blank" class="contextual-controls__button" title="Add Client"><i class="material-icons">add</i></a>
+          </div>
+
+          <input id="js-client-id" type="hidden" name="client_id" />
+
+          <div class="grid-row">
+            <div class="grid-full">
+              <h2>To <input id="client-autocomplete" type="text" class="name" name="client_name" placeholder="Client Name" data-url="{{ url_for('get_clients') }}" autocomplete="off"/></h2>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-half">
+              <input id="js-client-vendor-number" type="text" class="base-field" name="client_vendor_number" placeholder="Your vendor # with that client" />
+              <input id="js-client-contact" type="text" class="base-field" name="client_contact" placeholder="Client Contact Name" />
+              <input id="js-client-email" type="text" class="base-field" name="client_email" placeholder="Client Email" />
+              <input id="js-client-phone" type="text" class="base-field" name="client_phone" placeholder="Client Phone" />
+            </div>
+
+            <div class="grid-half">
+              <h4>Address</h4>
+              <textarea id="js-client-address" name="client_address" placeholder="Client Address, City, State, Country, ZIP Code"></textarea>
+            </div>
+          </div>
+        </div>
+        {# End client info #}
+
+        {# Company info #}
+        <div class="company-info">
+          <div class="contextual-controls no-print">
+            <a href="{{ url_for('company') }}" target="_blank" class="contextual-controls__button" title="Edit Company"><i class="material-icons">edit</i></a>
+          </div>
+
+          {% if company %}
+            <input id="#company-id" type="hidden" name="company_id" value="{{ company._id }}" />
+          {% endif %}
+
+          <div class="grid-row">
+            <div class="grid-full">
+              <h2>From <input type="text" class="name" name="company_name" placeholder="Company Name" {% if company %}value="{{ company.name }}"{% endif %} /></h2>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-half">
+              <input type="text" class="base-field" name="company_contact" placeholder="Contact Person Name" {% if company %}value="{{ company.contact }}"{% endif %} />
+              <input type="text" class="base-field" name="company_email" placeholder="Contact Email" {% if company %}value="{{ company.email }}"{% endif %} />
+              <input type="text" class="base-field" name="company_phone" placeholder="Contact Phone" {% if company %}value="{{ company.phone }}"{% endif %} />
+
+              <h4 class="spaced">Address</h4>
+              <textarea name="company_address" placeholder="Company Address, City, State, Country">{% if company %}{{ company.address }}{% endif %}</textarea>
+            </div>
+
+            <div class="grid-half">
+              <div class="company-info__extra">
+                <h4>Banking Information</h4>
+                <textarea class="bank-info" name="company_banking_info" placeholder="Banking Information for Deposit">{% if company %}{{ company.banking_info }}{% endif %}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        {# End company info #}
+
+        {# Invoice summary #}
+        <div class="invoice__summary">
+          <input type="text" class="invoice__title edit-invoice-input" name="invoice_service_name" placeholder="Services" />
+          <textarea type="text" class="invoice__description edit-invoice-input" name="invoice_service_description" placeholder="Description"></textarea>
+
+          <div class="service-info">
+            <table class="invoice__total">
+              <tbody>
+                <tr class="invoice__grand-total">
+                  <td>Total ($)</td>
+                  <td class="invoice__amount" >
+                    <input type="text" class="invoice__amount__input edit-invoice-input" name="invoice_value" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {# End invoice summary #}
+      </div>
+    </div>
+
+    {# Timesheet #}
+    <div id="js-dinamic-content"></div>
+
+    <div class="page-break hidden js-page-break"></div>
+
+    <div class="invoice hidden js-invoice">
+      <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+
+      <div class="invoice__summary">
+        <table class="timesheet">
+          <thead>
+            <th class="description">Description</th>
+            <th class="start">Date</th>
+            <th class="duration">Duration</th>
+            <th class="amount">Amount</th>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="timesheet-info">
+      <div class="grid-row no-print">
+        <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
+          <input type="file" name="file">
+          <span id="upload-timesheet" class="button">Upload Timesheet CSV</span>
+        </div>
+      </div>
+    </div>
+    {# End timesheet #}
+  </form>
+  {# End invoice form #}
+{% endblock %}

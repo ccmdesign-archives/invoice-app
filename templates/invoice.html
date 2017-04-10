@@ -3,50 +3,338 @@
 {% block body_class %}invoice-page{% endblock %}
 
 {% block content %}
-  <div class="main-controls no-print">
-    <button type="submit" class="main-controls__button" title="Save Invoice"><i>save</i></button>
-    <a class="main-controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
-  </div>
 
-  <article class="invoice" data-invoice-id="{{ invoice.id }}"  data-url="{{ url_for('edit_invoice', invoice_id=invoice._id) }}">
-    <header class="invoice__header">
-      <div class="invoice__branding">
-        {% if invoice.company.logo %}<img class="company-logo" src="./images/{{ invoice.company.logo }}" alt="">{% endif %}
-        <h2>{{ invoice.company.name }}</h2>
-        <h1>Invoice {{ invoice.tag_number }}</h1>
+  {# Pending version - Editable #}
+  {# -------------------------- #}
+
+  {% if not invoice.paid %}
+    {# Side buttons #}
+    <div class="main-controls no-print">
+      <button id="js-save-invoice-button" type="submit" class="main-controls__button" title="Save Invoice"><i>save</i></button>
+      <a class="main-controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
+    </div>
+    {# End side buttons #}
+
+    {# Invoice form #}
+    <form id="js-invoice-form" action="{{ url_for('save_invoice', invoice_id=invoice._id) }}" enctype="multipart/form-data" method="post">
+      <div class="invoice">
+        <div class="invoice__header">
+          <div class="invoice__branding">
+            {% if invoice.company.logo %}<img class="company-logo" src="./images/{{ invoice.company.logo }}" alt="">{% endif %}
+            <h2>{{ invoice.company.name }}</h2>
+            <h1>Invoice {{ invoice.tag_number }}</h1>
+          </div>
+
+          {# Client info #}
+          <div class="client-info">
+            <div class="contextual-controls no-print">
+              <a href="{{ url_for('clients') }}" target="_blank" class="contextual-controls__button" title="Add Client"><i class="material-icons">add</i></a>
+            </div>
+
+            <input id="js-client-id" type="hidden" name="client_id" value="{{ invoice.client._id }}" />
+
+            <div class="grid-row">
+              <div class="grid-full">
+                <h2>To <input id="client-autocomplete" type="text" class="name" name="client_name" value="{{ invoice.client.name }}" placeholder="Client Name" data-url="{{ url_for('get_clients') }}" autocomplete="off"/></h2>
+              </div>
+            </div>
+
+            <div class="grid-row">
+              <div class="grid-half">
+                <input id="js-client-vendor-number" type="text" class="base-field" name="client_vendor_number" value="{{ invoice.client.vendor_number }}" placeholder="Your vendor # with that client" />
+                <input id="js-client-contact" type="text" class="base-field" name="client_contact" value="{{ invoice.client.contact }}" placeholder="Client Contact Name" />
+                <input id="js-client-email" type="text" class="base-field" name="client_email" value="{{ invoice.client.email }}" placeholder="Client Email" />
+                <input id="js-client-phone" type="text" class="base-field" name="client_phone" value="{{ invoice.client.phone }}" placeholder="Client Phone" />
+              </div>
+
+              <div class="grid-half">
+                <h4>Address</h4>
+                <textarea id="js-client-address" name="client_address" placeholder="Client Address, City, State, Country, ZIP Code">{{ invoice.client.address }}</textarea>
+              </div>
+            </div>
+          </div>
+          {# End client info #}
+
+          {# Company info #}
+          <div class="company-info">
+            <div class="contextual-controls no-print">
+              <a href="{{ url_for('company') }}" target="_blank" class="contextual-controls__button" title="Edit Company"><i class="material-icons">edit</i></a>
+            </div>
+
+            <input id="#company-id" type="hidden" name="company_id" value="{{ invoice.company._id }}" />
+
+            <div class="grid-row">
+              <div class="grid-full">
+                <h2>From <input type="text" class="name" name="company_name" placeholder="Company Name" value="{{ invoice.company.name }}" /></h2>
+              </div>
+            </div>
+
+            <div class="grid-row">
+              <div class="grid-half">
+                <input type="text" class="base-field" name="company_contact" placeholder="Contact Person Name" value="{{ invoice.company.contact }}" />
+                <input type="text" class="base-field" name="company_email" placeholder="Contact Email" value="{{ invoice.company.email }}" />
+                <input type="text" class="base-field" name="company_phone" placeholder="Contact Phone" value="{{ invoice.company.phone }}" />
+
+                <h4 class="spaced">Address</h4>
+                <textarea name="company_address" placeholder="Company Address, City, State, Country">{{ invoice.company.address }}</textarea>
+              </div>
+
+              <div class="grid-half">
+                <div class="company-info__extra">
+                  <h4>Banking Information</h4>
+                  <textarea class="bank-info" name="company_banking_info" placeholder="Banking Information for Deposit">{{ invoice.company.banking_info }}</textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          {# End company info #}
+
+          {# Invoice summary #}
+          <div class="invoice__summary">
+            <input type="text" class="invoice__title edit-invoice-input" name="invoice_service_name" value="{{ invoice.service.name }}" placeholder="Services" />
+            <textarea type="text" class="invoice__description edit-invoice-input" name="invoice_service_description" placeholder="Description">{{ invoice.service.description }}</textarea>
+
+            <div class="service-info">
+              <table class="invoice__total">
+                <tbody>
+                  <tr class="invoice__grand-total">
+                    <td>Total ($)</td>
+                    <td class="invoice__amount" >
+                      <input type="text" class="invoice__amount__input edit-invoice-input" name="invoice_value" value="{{ format_price(invoice.value, invoice.currency) }}"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {# End invoice summary #}
+        </div>
+
+        {# Footer #}
+        <footer class="invoice__footer clearfix">
+          <p class="invoice__date editable" contenteditable>{{ invoice.created.strftime('%Y/%m/%d') }}</p>
+        </footer>
+        {# End footer #}
       </div>
-      <div class="client-info">
-        {% include 'invoice_client.html' %}
+
+      {# Timesheet #}
+      <div id="js-dinamic-content">
+        {% for chunk in invoice.timesheet %}
+          <div class="page-break"></div>
+
+          <div class="invoice">
+            <div class="invoice__branding">
+              {% if company %}
+                {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
+                <h2>{{ company.name }}</h2>
+              {% endif %}
+              <h1>Invoice {{ invoice.tag_number }}</h1>
+            </div>
+            <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+            <div class="invoice__summary">
+              <table class="timesheet">
+                <thead>
+                  <th class="description">Description</th>
+                  <th class="start">Date</th>
+                  <th class="duration">Duration</th>
+                  <th class="amount">Amount</th>
+                </thead>
+
+                <tbody>
+                  {% for i in chunk %}
+                    <tr>
+                      <td class="description">{{ i.description }}</td>
+                      <td class="start">{{ i.date.strftime('%Y/%m/%d') }}</td>
+                      <td class="duration">{{ format_duration(i.duration) }}</td>
+                      <td class="amount">{{ format_price(i.amount, invoice.currency) }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <footer class="invoice__footer clearfix">
+              <p class="invoice__date editable" contenteditable>{{ invoice.created.strftime('%Y/%m/%d') }}</p>
+            </footer>
+          </div>
+        {% endfor %}
       </div>
 
-      <div class="company-info">
-        {% include 'invoice_company.html' %}
+      <div class="page-break hidden js-page-break"></div>
+
+      <div class="invoice hidden js-invoice">
+        <div class="invoice__branding">
+          <h1>Invoice <span class="js-invoice-number">{{ invoice.tag_number }}</span></h1>
+        </div>
+
+        <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+
+        <div class="invoice__summary">
+          <table class="timesheet">
+            <thead>
+              <th class="description">Description</th>
+              <th class="start">Date</th>
+              <th class="duration">Duration</th>
+              <th class="amount">Amount</th>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <footer class="invoice__footer" class="clearfix">
+          <p class="invoice__date editable" contenteditable>{{ today }}</p>
+        </footer>
       </div>
-    </header>
 
-    <section class="invoice__summary">
-      <input type="text" class="invoice__title edit-invoice-input" name="service_name" placeholder="Services" value="{{ invoice.service.name }}"/>
-      <textarea type="text" class="invoice__description edit-invoice-input" name="service_description" placeholder="Description">{{ invoice.service.description }}</textarea>
-
-      <div class="service-info">
-        <table class="invoice__total">
-          <tbody>
-            <tr class="invoice__grand-total">
-              <td>Total</td>
-              <td class="invoice__amount" >
-                <input type="text" class="invoice__amount__input edit-invoice-input" name="total" value="{{ format_price(invoice.value_with_taxes, invoice.currency) }}">
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="timesheet-info">
+        <div class="grid-row no-print">
+          <div class="grid-full" style="text-align: center; margin-bottom: 40px;">
+            <input type="file" name="file">
+            <span id="upload-timesheet" class="button">Upload Timesheet CSV</span>
+          </div>
+        </div>
       </div>
-    </section>
-    <footer class="invoice__footer clearfix">
-      <p class="invoice__date editable" contenteditable>{{ invoice.created.strftime('%Y/%m/%d') }}</p>
-    </footer>
-  </article>
+      {# End timesheet #}
+    </form>
+    {# End invoice form #}
 
-  <div class="timesheet-info">
-    {% include 'invoice_timesheet.html' %}
-  </div>
+  {# Paid version - Non editable #}
+  {# --------------------------- #}
+
+  {% else %}
+    {# Side buttons #}
+    <div class="main-controls no-print">
+      <a class="main-controls__button" href="#" title="Download PDF" onclick="window.print()"><i>file_download</i></a>
+    </div>
+    {# End side buttons #}
+
+    <div class="invoice">
+      <div class="invoice__header">
+        <div class="invoice__branding">
+          {% if invoice.company.logo %}<img class="company-logo" src="./images/{{ invoice.company.logo }}" alt="">{% endif %}
+          <h2>{{ invoice.company.name }}</h2>
+          <h1>Invoice {{ invoice.tag_number }}</h1>
+        </div>
+
+        {# Client info #}
+        <div class="client-info">
+          <div class="grid-row">
+            <div class="grid-full">
+              <h2>To <input readonly type="text" class="name" value="{{ invoice.client.name }}" placeholder="Client Name" /></h2>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-half">
+              <input readonly type="text" class="base-field" value="{{ invoice.client.vendor_number }}" placeholder="Your vendor # with that client" />
+              <input readonly type="text" class="base-field" value="{{ invoice.client.contact }}" placeholder="Client Contact Name" />
+              <input readonly type="text" class="base-field" value="{{ invoice.client.email }}" placeholder="Client Email" />
+              <input readonly type="text" class="base-field" value="{{ invoice.client.phone }}" placeholder="Client Phone" />
+            </div>
+
+            <div class="grid-half">
+              <h4>Address</h4>
+              <textarea readonly name="client_address" placeholder="Client Address, City, State, Country, ZIP Code">{{ invoice.client.address }}</textarea>
+            </div>
+          </div>
+        </div>
+        {# End client info #}
+
+        {# Company info #}
+        <div class="company-info">
+          <div class="grid-row">
+            <div class="grid-full">
+              <h2>From <input readonly type="text" class="name" placeholder="Company Name" value="{{ invoice.company.name }}" /></h2>
+            </div>
+          </div>
+
+          <div class="grid-row">
+            <div class="grid-half">
+              <input readonly type="text" class="base-field" placeholder="Contact Person Name" value="{{ invoice.company.contact }}" />
+              <input readonly type="text" class="base-field" placeholder="Contact Email" value="{{ invoice.company.email }}" />
+              <input readonly type="text" class="base-field" placeholder="Contact Phone" value="{{ invoice.company.phone }}" />
+
+              <h4 class="spaced">Address</h4>
+              <textarea readonly placeholder="Company Address, City, State, Country">{{ invoice.company.address }}</textarea>
+            </div>
+
+            <div class="grid-half">
+              <div class="company-info__extra">
+                <h4>Banking Information</h4>
+                <textarea readonly class="bank-info" placeholder="Banking Information for Deposit">{{ invoice.company.banking_info }}</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        {# End company info #}
+
+        {# Invoice summary #}
+        <div class="invoice__summary">
+          <input readonly type="text" class="invoice__title edit-invoice-input" value="{{ invoice.service.name }}" placeholder="Services" />
+          <textarea readonly class="invoice__description edit-invoice-input" placeholder="Description">{{ invoice.service.description }}</textarea>
+
+          <div class="service-info">
+            <table class="invoice__total">
+              <tbody>
+                <tr class="invoice__grand-total">
+                  <td>Total ($)</td>
+                  <td class="invoice__amount" >
+                    <input readonlys type="text" class="invoice__amount__input edit-invoice-input" value="{{ format_price(invoice.value, invoice.currency) }}"/>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        {# End invoice summary #}
+      </div>
+
+      {# Footer #}
+      <footer class="invoice__footer clearfix">
+        <p class="invoice__date editable">{{ invoice.created.strftime('%Y/%m/%d') }}</p>
+      </footer>
+      {# End footer #}
+    </div>
+
+    {# Timesheet #}
+    {% for chunk in invoice.timesheet %}
+      <div class="page-break"></div>
+
+      <div class="invoice">
+        <div class="invoice__branding">
+          {% if company %}
+            {% if company.logo %}<img class="company-logo" src="./images/{{company.logo}}" alt="">{% endif %}
+            <h2>{{ company.name }}</h2>
+          {% endif %}
+          <h1>Invoice {{ invoice.tag_number }}</h1>
+        </div>
+        <h2 class="invoice__timesheet-title">Hour Breakdown</h2>
+        <div class="invoice__summary">
+          <table class="timesheet">
+            <thead>
+              <th class="description">Description</th>
+              <th class="start">Date</th>
+              <th class="duration">Duration</th>
+              <th class="amount">Amount</th>
+            </thead>
+
+            <tbody>
+              {% for i in chunk %}
+                <tr>
+                  <td class="description">{{ i.description }}</td>
+                  <td class="start">{{ i.date.strftime('%Y/%m/%d') }}</td>
+                  <td class="duration">{{ format_duration(i.duration) }}</td>
+                  <td class="amount">{{ format_price(i.amount, invoice.currency) }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <footer class="invoice__footer clearfix">
+          <p class="invoice__date editable" contenteditable>{{ invoice.created.strftime('%Y/%m/%d') }}</p>
+        </footer>
+      </div>
+    {% endfor %}
+    {# End timesheet #}
+  {% endif %}
 {% endblock %}
+

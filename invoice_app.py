@@ -7,14 +7,12 @@ from time import strftime, gmtime
 from flask import Flask
 from flask_oauth import OAuth
 from flask_login import LoginManager
-# from flask_sqlalchemy import SQLAlchemy
 from flask_pymongo import PyMongo
 
 
 app = Flask(__name__)
 app.config.from_object('config')
 
-# db = SQLAlchemy(app)
 mongo = PyMongo(app)
 
 # Github login

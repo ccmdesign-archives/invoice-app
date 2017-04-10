@@ -215,53 +215,15 @@ def toggle_invoice_status(invoice_id):
 
 
 @login_required
-@app.route('/invoice', methods=['POST'])
-def create_invoice():
+@app.route('/new_invoice', methods=['GET', 'POST'])
+def new_invoice():
     company = mongo.db.company.find_one({'user_id': g.user.gh_id}) or {}
-    invoice = {
-        'user_id': g.user.gh_id,
-        'tag_number': '%s%03d' % (date.today().year, 1),
-        'created': datetime.now(),
-        'company': company,
-        'service': {},
-        'value': 0,
-        'currency': '$',
-        'paid': False,
-        'client': {},
-        'timesheet': []
-    }
-
-    if company:
-        number = (date.today().year, company['current_invoice_num'] + 1)
-        invoice['tag_number'] = '%s%03d' % number
-        doc = {'$inc': {'current_invoice_num': 1}}
-        mongo.db.company.update({'user_id': g.user.gh_id}, doc)
-
-    invoice['_id'] = mongo.db.invoice.insert(invoice)
-
-    return redirect(url_for('open_invoice', invoice_id=invoice['_id']))
-
-
-@login_required
-@app.route('/delete_invoice/<invoice_id>', methods=['POST'])
-def delete_invoice(invoice_id):
-    # Delete invoice
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    mongo.db.invoice.remove(invoice['_id'])
-
-    # Update client's pending invoices data
-    if invoice['client']:
-        doc = {'$inc': {}}
-        doc['$inc']['pending.count'] = -1
-        doc['$inc']['pending.value'] = -invoice['value']
-        mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
-
-    return redirect(url_for('home'))
+    return render_template('invoice_form.html', company=company)
 
 
 @login_required
 @app.route('/invoice/<invoice_id>', methods=['GET'])
-def open_invoice(invoice_id):
+def invoice(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
 
@@ -273,86 +235,69 @@ def open_invoice(invoice_id):
     return render_template('invoice.html', invoice=invoice)
 
 
-@login_required
-@app.route('/edit_invoice/<invoice_id>', methods=['POST'])
-def edit_invoice(invoice_id):
-    # Update invoice
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    form = loads(request.form['data'])
-    invoice['value'] = float(form['total'].replace('$', '').strip())
-    total = _value_with_taxes(invoice)
-    doc = {'service': {}}
-    doc['value'] = invoice['value']
-    doc['service']['name'] = form['service_name']
-    doc['service']['description'] = form['service_description']
-    mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': doc})
-
-    # Update client's pending invoices data
-    if invoice['client']:
-        _update_pending_data(invoice['client']['_id'])
-
-    return jsonify(total='{0:.2f}'.format(total))
-
-
-@login_required
-@app.route('/set_invoice_client/<invoice_id>', methods=['POST'])
-def set_invoice_client(invoice_id):
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-
-    if not request.form['id']:
-        return abort(400)
-
-    client = mongo.db.iclient.find_one(ObjectId(request.form['id']))
-    mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': {'client': client}})
-
-    if invoice['client']:
-        _update_pending_data(invoice['client']['_id'])
-
-    return _ajax_ok()
-
-
-@login_required
-@app.route('/set_invoice_company/<invoice_id>', methods=['POST'])
-def set_invoice_company(invoice_id):
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-
-    if not request.form['id']:
-        return abort(400)
-
-    company = mongo.db.company.find_one(ObjectId(request.form['id']))
-    mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': {'company': company}})
-    return _ajax_ok()
-
-
-@login_required
-@app.route('/upload_timesheet/<invoice_id>', methods=['GET', 'POST'])
-def upload_timesheet(invoice_id):
+@app.route('/save_invoice/', methods=['POST'])
+@app.route('/save_invoice/<invoice_id>', methods=['POST'])
+def save_invoice(invoice_id=''):
     def allowed_file(file):
         return '.' in file and file.rsplit('.', 1)[1] in _ALLOWED_EXT
 
     def str2int(x):
         return int(x) if x.strip() else 0
 
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
+    def str2float(x):
+        return float(x) if x.strip() else 0
 
-    if request.method == 'GET':
-        if invoice['company']:
-            total = _value_with_taxes(invoice)
-        else:
-            total = invoice['value']
-
-        invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
-        response = {
-            'html': render_template('invoice_timesheet.html', invoice=invoice),
-            'json': "{0:.2f}".format(total)
+    if invoice_id:
+        invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
+        invoice['value'] = str2float(request.form['invoice_value'])
+    else:
+        count = mongo.db.invoice.find().count()
+        invoice = {
+            'user_id': g.user.gh_id,
+            'tag_number': '%s%03d' % (date.today().year, count + 1),
+            'value': str2float(request.form['invoice_value']),
+            'created': datetime.now(),
+            'company': {},
+            'client': {},
+            'service': {},
+            'paid': False,
+            'timesheet': []
         }
-        return jsonify(response)
-    elif request.method == 'POST' and 'file' in request.files:
+
+    # Service
+    invoice['service'] = {
+        'name': request.form['invoice_service_name'],
+        'description': request.form['invoice_service_description']
+    }
+
+    # Client
+    invoice['client'] = {
+        '_id': ObjectId(request.form['client_id']) or None,
+        'name': request.form['client_name'],
+        'email': request.form['client_email'],
+        'phone': request.form['client_phone'],
+        'address': request.form['client_address'],
+        'contact': request.form['client_contact'],
+        'vendor_number': request.form['client_vendor_number']
+    }
+
+    # Company
+    invoice['company'] = {
+        '_id': ObjectId(request.form['company_id']) or None,
+        'name': request.form['company_name'],
+        'email': request.form['company_email'],
+        'phone': request.form['company_phone'],
+        'address': request.form['company_address'],
+        'contact': request.form['company_contact'],
+        'banking_info': request.form['company_banking_info']
+    }
+
+    # Timesheet
+    if request.files:
         file = request.files['file']
         name = secure_filename(file.filename).strip() if file else ''
 
         if name and allowed_file(name):
-            timesheet = []
             total = 0
 
             for idx, row in enumerate(reader(file)):
@@ -380,18 +325,54 @@ def upload_timesheet(invoice_id):
 
                     entry['amount'] = float(row[13]) if row[13] else 0
                     entry['description'] = row[5]
-                    timesheet.append(entry)
+                    invoice['timesheet'].append(entry)
                     total += entry['amount']
 
-            doc = {'$set': {'timesheet': timesheet, 'value': total}}
-            mongo.db.invoice.update({'_id': invoice['_id']}, doc)
+    # Save invoice to the database
+    if invoice_id:
+        mongo.db.invoice.update({'_id': invoice['_id']}, invoice)
+    else:
+        invoice['_id'] = mongo.db.invoice.insert(invoice)
 
-            if invoice['client']:
-                _update_pending_data(invoice['client']['_id'])
+    return redirect(url_for('invoice', invoice_id=invoice['_id']))
 
-            return redirect(url_for('upload_timesheet', invoice_id=invoice['_id']))
 
-    return abort(400)
+@login_required
+@app.route('/delete_invoice/<invoice_id>', methods=['POST'])
+def delete_invoice(invoice_id):
+    # Delete invoice
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
+    mongo.db.invoice.remove(invoice['_id'])
+
+    # Update client's pending invoices data
+    if invoice['client']:
+        doc = {'$inc': {}}
+        doc['$inc']['pending.count'] = -1
+        doc['$inc']['pending.value'] = -invoice['value']
+        mongo.db.iclient.update({'_id': invoice['client']['_id']}, doc)
+
+    return redirect(url_for('home'))
+
+
+@login_required
+@app.route('/edit_invoice/<invoice_id>', methods=['POST'])
+def edit_invoice(invoice_id):
+    # Update invoice
+    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
+    form = loads(request.form['data'])
+    invoice['value'] = float(form['total'].replace('$', '').strip())
+    total = _value_with_taxes(invoice)
+    doc = {'service': {}}
+    doc['value'] = invoice['value']
+    doc['service']['name'] = form['service_name']
+    doc['service']['description'] = form['service_description']
+    mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': doc})
+
+    # Update client's pending invoices data
+    if invoice['client']:
+        _update_pending_data(invoice['client']['_id'])
+
+    return jsonify(total='{0:.2f}'.format(total))
 
 
 # Company controllers
@@ -464,25 +445,25 @@ def company():
 # ------------------
 
 @login_required
-@app.route('/get_clients/<invoice_id>', methods=['GET'])
-def get_clients(invoice_id):
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    txt = request.args.get('q').strip()
-    res = {'query': txt, 'suggestions': []}
+@app.route('/get_clients', methods=['GET'])
+def get_clients():
+    term = request.args.get('q').strip()
+    response = {'query': term, 'suggestions': []}
     qry = {
         'user_id': g.user.gh_id,
-        'name': {'$regex': txt, '$options': 'i'}
+        'name': {'$regex': term, '$options': 'i'}
     }
+
     for client in mongo.db.iclient.find(qry).limit(_MAX_SUGGESTIONS):
-        invoice['client'] = client
+        client['_id'] = str(client['_id'])
         dic = {
             'id': str(client['_id']),
             'value': client['name'],
-            'data': render_template('invoice_client.html', invoice=invoice)
+            'data': client
         }
-        res['suggestions'].append(dic)
+        response['suggestions'].append(dic)
 
-    return jsonify(res)
+    return jsonify(response)
 
 
 @login_required

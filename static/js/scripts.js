@@ -1,4 +1,6 @@
 $(function () {
+  var subTotal = 0;
+  var total = 0;
 
   // Home
   // ----
@@ -31,21 +33,8 @@ $(function () {
   // Invoice
   // -------
 
-  var opts1 = {
-    serviceUrl: $('#company-autocomplete').data('url'),
-    dataType: 'json',
-    paramName: 'q',
-    deferRequestBy: 100,
-    nocache: true,
-    minChars: 0,
-    triggerSelectOnValidInput: false,
-    onSelect: function (item) {
-      $('.company-info').html(item.data);
-      $('#company-autocomplete').autocomplete(opts1);
-    }
-  };
-
-  var opts2 = {
+  // Autocomplete options
+  var opts = {
     serviceUrl: $('#client-autocomplete').data('url'),
     dataType: 'json',
     paramName: 'q',
@@ -54,123 +43,130 @@ $(function () {
     minChars: 0,
     triggerSelectOnValidInput: false,
     onSelect: function (item) {
-      $('.client-info').html(item.data);
-      $('#client-autocomplete').autocomplete(opts1);
-      $.post($('#client-form').attr('action'), {'id': item.id});
+      $('#js-client-id').val(item.data._id);
+      $('#js-client-vendor-number').val(item.data.vendor_number);
+      $('#js-client-contact').val(item.data.contact);
+      $('#js-client-email').val(item.data.email);
+      $('#js-client-phone').val(item.data.phone);
+      $('#js-client-address').text(item.data.address);
     }
   };
 
-  $('#company-autocomplete').autocomplete(opts1);
-  $('#client-autocomplete').autocomplete(opts2);
+  $('#client-autocomplete').autocomplete(opts);
+
+  // Submit invoice form
+  $('#js-save-invoice-button').click(function() {
+    $('#js-invoice-form').submit();
+  });
+
+  // Updates the invoice content with the data from the uploaded CSV file
+  $('body').on('click', '#upload-timesheet', function() {
+    var $input = $(this).parent().find('input[type=file]');
+    subTotal = 0;
+    total = 0;
+
+    if ($input[0].files.length) {
+      var onComplete = function(results) {
+        var chunk = 23;  // Number of rows that fit one page
+        var slice;
+        var $page;
+        var $br;
+
+        $('#js-dinamic-content').html('');
+
+        for (var i = 1; i < results.data.length; i += chunk) {
+          slice = results.data.slice(i, i + chunk);
+          $page = $('.js-invoice.hidden').clone();
+          $br = $('.js-page-break.hidden').clone();
+
+          slice.forEach(function(row) {
+            if (row.length === 14) {
+              var $tr = '<tr>';
+
+              $tr += '<td class="description">' + row[5];
+              $tr += '<td class="start">' + row[9];
+              $tr += '<td class="duration">' + row[11];
+              $tr += '<td class="amount">' + row[13];
+
+              subTotal += parseFloat(row[13]);
+
+              $page.find('.timesheet tbody').append($tr);
+            }
+          });
+
+          $('#js-dinamic-content').append($br.removeClass('hidden'));
+          $('#js-dinamic-content').append($page.removeClass('hidden'));
+        }
+
+        if (subTotal) {
+          updateFinalPrice();
+        }
+      };
+
+      $input.parse({config: {complete: onComplete}});
+    }
+
+    return false;
+  });
 
   // Updates the invoice header when client's name is changed
   $('body').on('keyup', '.company-info h2 .name', function() {
     $('.invoice__branding h2').text($(this).val());
   });
 
-  // Updates the company's data on each input change
-  $('.company-info').on('change', 'input, textarea', function() {
-    if (!$('.autocomplete-suggestions').is(':visible') && $('#company-autocomplete').val()) {
-      var $form = $('#company-form');
-      var $resp = null;
-
-      $resp = $.post($form.attr('action'), $form.serialize());
-
-      $resp.done(function(data) {
-        $('#company-id').val(data.id);
-
-      }).fail(function(data, state, xhr) {
-        if (xhr == 'BAD REQUEST')
-          console.log('Bad request.');
-
-        else
-          console.log('Server error.');
-      });
-    }
-  });
-
   // Creates a tax and updates the invoice price
-  $('.add-gov-registry').on('click', '.contextual-controls .add-button', function() {
-    var template = '<tr class="edit-tax"><td><input class="name base-field small" name="tax_name" placeholder="Register"/></td><td><input class="base-field small" name="tax_number" placeholder="Number"/></td><td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)"/></td></td></tr>'
+  // $('.add-gov-registry').on('click', '.contextual-controls .add-button', function() {
+  //   var template = '<tr class="edit-tax"><td><input class="name base-field small" name="tax_name" placeholder="Register"/></td><td><input class="base-field small" name="tax_number" placeholder="Number"/></td><td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)"/></td></td></tr>'
 
-    $('.table-list-add').append(template);
-  });
+  //   $('.table-list-add').append(template);
+  // });
 
   // Updates invoice price when a tax is changed
-  $('.company-info').on('blur', '.edit-tax input', function() {
-    var $tr = $(this).parents('tr');
+  // $('.company-info').on('blur', '.edit-tax input', function() {
+  //   var $tr = $(this).parents('tr');
 
-    if ($tr.find('.name').val()) {
-      var $resp = null;
-      var data = {};
+  //   if ($tr.find('.name').val()) {
+  //     var $resp = null;
+  //     var data = {};
 
-      $tr.find('input').each(function () {
-        var $inp = $(this);
+  //     $tr.find('input').each(function () {
+  //       var $inp = $(this);
 
-        data[$inp.attr('name')] = $inp.val();
-      });
+  //       data[$inp.attr('name')] = $inp.val();
+  //     });
 
-      $resp = $.post($tr.data('url'), {data: JSON.stringify(data)});
+  //     $resp = $.post($tr.data('url'), {data: JSON.stringify(data)});
 
-      $resp.done(function(data) {
-        $('.tax-info').html(data.html);
-        $('.invoice__amount__input').val('$ ' + data.json.total);
+  //     $resp.done(function(data) {
+  //       $('.tax-info').html(data.html);
+  //       $('.invoice__amount__input').val('$ ' + data.json.total);
 
-      }).fail(function (data, state, xhr) {
-        if (xhr == 'BAD REQUEST') {
-          console.log('Bad request.');
+  //     }).fail(function (data, state, xhr) {
+  //       if (xhr == 'BAD REQUEST') {
+  //         console.log('Bad request.');
 
-        } else {
-          console.log('Server error.');
-        }
-      });
-    }
-  });
+  //       } else {
+  //         console.log('Server error.');
+  //       }
+  //     });
+  //   }
+  // });
 
-  // Updates invoice data: price, services and description
-  $('body').on('blur', '.edit-invoice-input', function() {
-    var $resp = null;
-    var data = {};
+  // Auxiliar functions
+  // ------------------
 
-    $('.edit-invoice-input').each(function() {
-      data[$(this).attr('name')] = $(this).val();
+  var updateFinalPrice = function() {
+    var $inputs = $('.js-tax-value');
+    var taxes = 0;
+
+    $inputs.each(function(i, input) {
+      if (input.value) {
+        taxes += parseInt(input.value);
+      }
     });
 
-    $resp = $.post($('.invoice').data('url'), {data: JSON.stringify(data)});
+    total = subTotal * (1 + taxes / 100);
 
-    $resp.done(function(data) {
-      $('.invoice__amount__input').val('$ ' + data.total);
-
-    }).fail(function (data, state, xhr) {
-      if (xhr == 'BAD REQUEST')
-        console.log('Bad request.');
-
-      else
-        console.log('Server error.');
-    });
-  });
-
-
-  // Updates the invoice content with the data from the uploaded CSV file
-  $('body').on('submit', '#upload-timesheet', function() {
-    function valid_response(data) {
-      $('.timesheet-info').html(data.html);
-      $('.invoice__amount__input').val('$ ' + data.json);
-    }
-
-    var $form = $(this);
-    var formData = new FormData(this);
-
-    $.ajax({
-      url: $form.attr('action'),
-      type: 'POST',
-      data: formData,
-      cache: false,
-      success: valid_response,
-      contentType: false,
-      processData: false
-    });
-
-    return false;
-  });
+    $('.invoice__amount input').val(total.toFixed(2));
+  }
 });

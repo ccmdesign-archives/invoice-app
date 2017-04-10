@@ -5,9 +5,7 @@
 {% block content %}
   <section class="main-list wrapper">
     <div class="main-controls no-print">
-      <form method="post" action="{{ url_for('create_invoice') }}">
-        <button type="submit" class="main-controls__button" title="New Invoice"><i>description</i></button>
-      </form>
+      <a href="/new_invoice" class="main-controls__button" title="New Invoice"><i>description</i></a>
       <a href="/clients" class="main-controls__button" title="Client List"><i>people</i></a>
       <a href="/company" class="main-controls__button" title="Company"><i>business</i></a>
     </div>

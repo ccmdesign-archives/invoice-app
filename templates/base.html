@@ -68,6 +68,7 @@
           {% if g.user.is_authenticated %}
             <script src="{{ url_for('.static', filename='js/jquery.autocomplete.min.js') }}"></script>
             <script src="{{ url_for('.static', filename='js/scripts.js') }}"></script>
+            <script src="{{ url_for('.static', filename='js/papaparse.js') }}"></script>
           {% else %}
             <script src="{{ url_for('.static', filename='js/unlogged.js') }}"></script>
             <script src="{{ url_for('.static', filename='js/papaparse.js') }}"></script>
