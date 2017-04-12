@@ -37,16 +37,14 @@ def _get_array_chunks(array, size):
 
 
 def _value_with_taxes(invoice):
-    if invoice['client'].get('apply_taxes', False):
-        total_taxes = 0
+    total_taxes = 0
 
-        for tax in invoice['company'].get('taxes', []):
+    for tax in invoice['company'].get('taxes', []):
+        if tax['apply']:
             total_taxes += int(tax['value'])
 
-        return float(invoice['value']) * (1 + float(total_taxes) / 100)
+    return float(invoice['value']) * (1 + float(total_taxes) / 100)
 
-    else:
-        return invoice['value']
 
 
 def _update_pending_data(client_id):
@@ -247,6 +245,7 @@ def save_invoice(invoice_id=''):
     def str2float(x):
         return float(x) if x.strip() else 0
 
+    # Invoice
     if invoice_id:
         invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
         invoice['value'] = str2float(request.form['invoice_value'])
@@ -273,6 +272,7 @@ def save_invoice(invoice_id=''):
     # Client
     invoice['client'] = {
         '_id': ObjectId(request.form['client_id']) or None,
+        # 'apply_taxes': request.form['client_apply_taxes'],
         'name': request.form['client_name'],
         'email': request.form['client_email'],
         'phone': request.form['client_phone'],
@@ -282,15 +282,37 @@ def save_invoice(invoice_id=''):
     }
 
     # Company
-    invoice['company'] = {
-        '_id': ObjectId(request.form['company_id']) or None,
-        'name': request.form['company_name'],
-        'email': request.form['company_email'],
-        'phone': request.form['company_phone'],
-        'address': request.form['company_address'],
-        'contact': request.form['company_contact'],
-        'banking_info': request.form['company_banking_info']
-    }
+    form_taxes = request.form.getlist('invoice_taxes')
+
+    if request.form['company_id']:
+        company = mongo.db.company.find_one(ObjectId(request.form['company_id']))
+        invoice['company'] = {
+            '_id': company['_id'],
+            'name': company['name'],
+            'email': company['email'],
+            'phone': company['phone'],
+            'address': company['address'],
+            'contact': company['contact'],
+            'banking_info': company['banking_info'],
+            'taxes': company['taxes']
+        }
+    else:
+        invoice['company'] = {
+            '_id': None,
+            'name': request.form['company_name'],
+            'email': request.form['company_email'],
+            'phone': request.form['company_phone'],
+            'address': request.form['company_address'],
+            'contact': request.form['company_contact'],
+            'banking_info': request.form['company_banking_info'],
+            'taxes': []
+        }
+
+    for index, tax in enumerate(invoice['company']['taxes']):
+        if str(index) in form_taxes:
+            tax['apply'] = True
+        else:
+            tax['apply'] = False
 
     # Timesheet
     if request.files:
@@ -315,12 +337,11 @@ def save_invoice(invoice_id=''):
 
                     if row[11].strip():
                         aux = strptime(row[11], '%H:%M:%S')
-                        kwa = {}
-
-                        kwa['hours'] = aux.tm_hour
-                        kwa['minutes'] = aux.tm_min
-                        kwa['seconds'] = aux.tm_sec
-
+                        kwa = {
+                            'hours': aux.tm_hour,
+                            'minutes': aux.tm_min,
+                            'seconds': aux.tm_sec
+                        }
                         entry['duration'] = timedelta(**kwa).total_seconds()
 
                     entry['amount'] = float(row[13]) if row[13] else 0
@@ -354,54 +375,8 @@ def delete_invoice(invoice_id):
     return redirect(url_for('home'))
 
 
-@login_required
-@app.route('/edit_invoice/<invoice_id>', methods=['POST'])
-def edit_invoice(invoice_id):
-    # Update invoice
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    form = loads(request.form['data'])
-    invoice['value'] = float(form['total'].replace('$', '').strip())
-    total = _value_with_taxes(invoice)
-    doc = {'service': {}}
-    doc['value'] = invoice['value']
-    doc['service']['name'] = form['service_name']
-    doc['service']['description'] = form['service_description']
-    mongo.db.invoice.update({'_id': invoice['_id']}, {'$set': doc})
-
-    # Update client's pending invoices data
-    if invoice['client']:
-        _update_pending_data(invoice['client']['_id'])
-
-    return jsonify(total='{0:.2f}'.format(total))
-
-
 # Company controllers
 # -------------------
-
-@app.route('/get_companies/<invoice_id>', methods=['GET'])
-@login_required
-def get_companies(invoice_id):
-    invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    txt = request.args.get('q').strip()
-    mim = 'application/json'
-    res = {'query': txt, 'suggestions': []}
-    qry = {
-        'user_id': g.user.gh_id,
-        'name': {'$regex': txt, '$options': 'i'}
-    }
-
-    for company in mongo.db.company.find(qry).limit(_MAX_SUGGESTIONS):
-        dic = {}
-
-        invoice['company'] = company
-
-        dic['value'] = company['name']
-        dic['data'] = render_template('invoice_company.html', invoice=invoice)
-
-        res['suggestions'].append(dic)
-
-    return Response(response=dumps(res), status=200, mimetype=mim)
-
 
 @login_required
 @app.route('/company', methods=['GET', 'POST'])

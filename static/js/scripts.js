@@ -2,6 +2,10 @@ $(function () {
   var subTotal = 0;
   var total = 0;
 
+  if ($('.invoice__amount__real__input').val()) {
+    subTotal = parseFloat($('.invoice__amount__real__input').val());
+  }
+
   // Home
   // ----
 
@@ -33,7 +37,7 @@ $(function () {
   // Invoice
   // -------
 
-  // Autocomplete options
+  // Client autocomplete
   var opts = {
     serviceUrl: $('#client-autocomplete').data('url'),
     dataType: 'json',
@@ -54,7 +58,7 @@ $(function () {
 
   $('#client-autocomplete').autocomplete(opts);
 
-  // Submit invoice form
+  // Submits invoice form
   $('#js-save-invoice-button').click(function() {
     $('#js-invoice-form').submit();
   });
@@ -109,64 +113,47 @@ $(function () {
     return false;
   });
 
-  // Updates the invoice header when client's name is changed
+  // Updates the invoice header when company's name is changed
   $('body').on('keyup', '.company-info h2 .name', function() {
     $('.invoice__branding h2').text($(this).val());
   });
 
   // Creates a tax and updates the invoice price
-  // $('.add-gov-registry').on('click', '.contextual-controls .add-button', function() {
-  //   var template = '<tr class="edit-tax"><td><input class="name base-field small" name="tax_name" placeholder="Register"/></td><td><input class="base-field small" name="tax_number" placeholder="Number"/></td><td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)"/></td></td></tr>'
+  $('.add-gov-registry').on('click', '.contextual-controls .add-button', function() {
+    var template = '<tr class="edit-tax"><td><input class="name base-field small" name="tax_name" placeholder="Register"/></td><td><input class="base-field small" name="tax_number" placeholder="Number"/></td><td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)"/></td></td></tr>'
 
-  //   $('.table-list-add').append(template);
-  // });
+    $('.table-list-add').append(template);
+  });
 
   // Updates invoice price when a tax is changed
-  // $('.company-info').on('blur', '.edit-tax input', function() {
-  //   var $tr = $(this).parents('tr');
+  $('.js-tax').change(function() {
+    updateFinalPrice();
+  });
 
-  //   if ($tr.find('.name').val()) {
-  //     var $resp = null;
-  //     var data = {};
-
-  //     $tr.find('input').each(function () {
-  //       var $inp = $(this);
-
-  //       data[$inp.attr('name')] = $inp.val();
-  //     });
-
-  //     $resp = $.post($tr.data('url'), {data: JSON.stringify(data)});
-
-  //     $resp.done(function(data) {
-  //       $('.tax-info').html(data.html);
-  //       $('.invoice__amount__input').val('$ ' + data.json.total);
-
-  //     }).fail(function (data, state, xhr) {
-  //       if (xhr == 'BAD REQUEST') {
-  //         console.log('Bad request.');
-
-  //       } else {
-  //         console.log('Server error.');
-  //       }
-  //     });
-  //   }
-  // });
+  // Applies taxes when invoice value is manually changed
+  $('.invoice__amount__input').change(function() {
+    subTotal = parseFloat($(this).val());
+    updateFinalPrice();
+  });
 
   // Auxiliar functions
   // ------------------
 
   var updateFinalPrice = function() {
-    var $inputs = $('.js-tax-value');
+    var $inputs = $('.js-tax');
     var taxes = 0;
 
     $inputs.each(function(i, input) {
-      if (input.value) {
-        taxes += parseInt(input.value);
+      if (input.checked) {
+        taxes += parseInt($(input).data('tax-value'));
       }
     });
 
     total = subTotal * (1 + taxes / 100);
 
-    $('.invoice__amount input').val(total.toFixed(2));
+    if (subTotal && total) {
+      $('.invoice__amount__input').val(total.toFixed(2));
+      $('.invoice__amount__real__input').val(subTotal.toFixed(2));
+    }
   }
 });
