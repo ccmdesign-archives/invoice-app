@@ -11,7 +11,7 @@ gulp.task('sass', function() {
     .pipe(gulp.dest('static/css'))
 });
 
-gulp.task('flask', shell.task(['python app.py']));
+gulp.task('flask', shell.task(['python invoice_app.py']));
 
 gulp.task('watch', function() {
   gulp.watch('static/sass/*.scss', ['sass']);
