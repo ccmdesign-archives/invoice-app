@@ -11,7 +11,7 @@ from dotenv import read_dotenv
 _ENV_FILE = join(dirname(__file__), '.env')
 
 
-if isfile(_ENV_FILE) and not getenv('DATABASE_URL'):
+if isfile(_ENV_FILE):
     read_dotenv(_ENV_FILE)
 
 GITHUB_AUTH = {
@@ -25,4 +25,3 @@ DEBUG = eval(getenv('DEBUG', 'True').title())
 SECRET_KEY = getenv('SECRET_KEY', 'invoice-never-guess')
 ASSETS_DEBUG = DEBUG
 WTF_CSRF_ENABLED = eval(getenv('WTF_CSRF_ENABLED', 'True').title())
-SQLALCHEMY_DATABASE_URI = getenv('DATABASE_URL', '')

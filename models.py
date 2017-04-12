@@ -1,5 +1,6 @@
 # # -*- coding: utf-8 -*-
 
+
 class User():
     def __init__(self, gh_id):
         self.gh_id = gh_id

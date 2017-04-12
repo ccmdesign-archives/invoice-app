@@ -2,9 +2,7 @@
 
 ## Development environment (macOS Sierra)
 
-1. Download and install the [PostgresSQL App](http://postgresapp.com/).
-
-1. Open the PostgresSQL App and make sure the server is running.
+1. Follow the official instructions to install [MongoDB](https://docs.mongodb.com/master/tutorial/install-mongodb-on-os-x/)
 
 1. Clone the repo:
     ```
@@ -24,11 +22,6 @@
     source venv/bin/activate
     ```
 
-1. Update the `PATH` variable (Add this line to the `./venv/bin/activate` script):
-    ```
-    export PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH"
-    ```
-
 1. Copy env-sample to .env and set the variables:
     ```
     cp env-sample .env
@@ -44,17 +37,6 @@
 1. Create the database:
     ```
     createdb invoice
-    ```
-
-1. Setup the database:
-    ```
-    python db_manage.py db init
-    ```
-    ```
-    python db_manage.py db migrate
-    ```
-    ```
-    python db_manage.py db upgrade
     ```
 
 1. Run the local server:
