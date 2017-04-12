@@ -112,7 +112,7 @@
                   <tr class="invoice__grand-total">
                     <td>Total ($)</td>
                     <td class="invoice__amount" >
-                      <input type="text" class="invoice__amount__input edit-invoice-input" value="{{ format_price(invoice.value_with_taxes, invoice.currency) }}"/>
+                      <input type="text" class="invoice__amount__input edit-invoice-input" name="invoice_value_with_taxes" value="{{ format_price(invoice.value_with_taxes, invoice.currency) }}"/>
                       <input type="hidden" class="invoice__amount__real__input edit-invoice-input" name="invoice_value" value="{{ invoice.value }}"/>
                     </td>
                   </tr>

@@ -41,5 +41,5 @@
 
 1. Run the local server:
     ```
-    python app.py
+    python invoice_app.py
     ```

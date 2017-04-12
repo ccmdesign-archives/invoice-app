@@ -3,54 +3,35 @@
 # Python
 from csv import reader
 from time import strptime
-from json import dumps, loads
+from json import loads
 from bson import ObjectId
 from datetime import date, datetime, timedelta
 
 # Libs
-from flask import g, session, flash, jsonify
-from flask import abort, render_template, request, Response, url_for, redirect
+from flask import g, session, flash, jsonify, render_template, request, url_for, redirect
 from flask_login import login_user, logout_user, current_user, login_required
 from werkzeug.utils import secure_filename
 
 # Invoice
-from invoice_app import app, github, login_manager, mongo
 from models import User
+from invoice_app import app, github, login_manager, mongo
 
 
 # Maximun number of suggestions returned by the autocomplete
 _MAX_SUGGESTIONS = 5
 
-# Allowed extensions
-_ALLOWED_EXT = ['csv']
-
 # Maximun of CSV rows per page
 _MAX_ROWS_PER_PAGE = 20
 
 
-def _ajax_ok():
-    return 'ok'
-
-
-def _get_array_chunks(array, size):
-    return (array[pos:pos + size] for pos in xrange(0, len(array), size))
-
-
-def _value_with_taxes(invoice):
-    total_taxes = 0
-
-    for tax in invoice['company'].get('taxes', []):
-        if tax['apply']:
-            total_taxes += int(tax['value'])
-
-    return float(invoice['value']) * (1 + float(total_taxes) / 100)
-
+def _get_array_chunks(array):
+    return (array[pos:pos + _MAX_ROWS_PER_PAGE] for pos in xrange(0, len(array), _MAX_ROWS_PER_PAGE))
 
 
 def _update_pending_data(client_id):
     # Aggregate
     match = {'client._id': client_id, 'paid': False}
-    group = {'_id': None, 'count': {'$sum': 1}, 'value': {'$sum': '$value'}}
+    group = {'_id': None, 'count': {'$sum': 1}, 'value': {'$sum': '$value_with_taxes'}}
     pipeline = [{'$match': match}, {'$group': group}]
     result = list(mongo.db.invoice.aggregate(pipeline))
 
@@ -91,16 +72,16 @@ def github_authorized(resp):
     else:
         session['github_token'] = (resp['access_token'], '')
         gh_data = github.get('user').data
-        ghid = 'gh-%s' % gh_data['id']
-        user = mongo.db.user.find_one({'gh_id': ghid})
+        gh_id = 'gh-%s' % gh_data['id']
+        user = mongo.db.user.find_one({'gh_id': gh_id})
 
         if user is None:
-            user = {'gh_id': ghid}
+            user = {'gh_id': gh_id}
 
         user['name'] = gh_data.get('name', '')
         user['email'] = gh_data.get('email', '')
         user['gh_login'] = gh_data.get('login', '')
-        mongo.db.user.update({'gh_id': ghid}, user, upsert=True)
+        mongo.db.user.update({'gh_id': gh_id}, user, upsert=True)
         login_user(User(user['gh_id']), remember=True)
         return redirect(url_for('home'))
 
@@ -143,7 +124,7 @@ def before_request():
                 g.user.paid_invoices += 1
 
                 if invoice['company']:
-                    paid_value += _value_with_taxes(invoice)
+                    paid_value += invoice['value_with_taxes']
                 else:
                     paid_value += invoice['value']
 
@@ -151,7 +132,7 @@ def before_request():
                 g.user.open_invoices += 1
 
                 if invoice['company']:
-                    open_value += _value_with_taxes(invoice)
+                    open_value += invoice['value_with_taxes']
                 else:
                     open_value += invoice['value']
 
@@ -159,7 +140,7 @@ def before_request():
         g.user.open_invoices_value = '{0:.2f}'.format(open_value)
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     if g.user is not None and g.user.is_authenticated:
         return redirect(url_for('home'))
@@ -167,17 +148,10 @@ def index():
         return render_template('unlogged_invoice.html', today=date.today())
 
 
-@app.route('/home', methods=['GET'])
 @login_required
+@app.route('/home', methods=['GET'])
 def home():
     invoices = list(mongo.db.invoice.find({'user_id': g.user.gh_id}))
-
-    for invoice in invoices:
-        if invoice['company']:
-            invoice['value_with_taxes'] = _value_with_taxes(invoice)
-        else:
-            invoice['value_with_taxes'] = invoice['value']
-
     return render_template('home.html', invoices=invoices)
 
 
@@ -191,17 +165,12 @@ def toggle_invoice_status(invoice_id):
         url = url_for('toggle_invoice_status', invoice_id=invoice['_id'])
         doc = {'$set': {'paid': form['paid']}}
         mongo.db.invoice.update({'_id': invoice['_id']}, doc)
-
-        if invoice['client']:
-            _update_pending_data(invoice['client']['_id'])
-
         return redirect(url)
 
     elif request.method == 'GET':
         dic = {'paid': [], 'open': []}
 
         for invoice in mongo.db.invoice.find({'user_id': g.user.gh_id}):
-            invoice['value_with_taxes'] = _value_with_taxes(invoice)
             template = render_template('home_table_row.html', invoice=invoice)
 
             if invoice['paid']:
@@ -223,22 +192,13 @@ def new_invoice():
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def invoice(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
-    invoice['timesheet'] = _get_array_chunks(invoice['timesheet'], _MAX_ROWS_PER_PAGE)
-
-    if invoice['company']:
-        invoice['value_with_taxes'] = _value_with_taxes(invoice)
-    else:
-        invoice['value_with_taxes'] = invoice['value']
-
+    invoice['timesheet'] = _get_array_chunks(invoice['timesheet'])
     return render_template('invoice.html', invoice=invoice)
 
 
 @app.route('/save_invoice/', methods=['POST'])
 @app.route('/save_invoice/<invoice_id>', methods=['POST'])
 def save_invoice(invoice_id=''):
-    def allowed_file(file):
-        return '.' in file and file.rsplit('.', 1)[1] in _ALLOWED_EXT
-
     def str2int(x):
         return int(x) if x.strip() else 0
 
@@ -249,12 +209,14 @@ def save_invoice(invoice_id=''):
     if invoice_id:
         invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
         invoice['value'] = str2float(request.form['invoice_value'])
+        invoice['value_with_taxes'] = str2float(request.form['invoice_value_with_taxes'])
     else:
         count = mongo.db.invoice.find().count()
         invoice = {
             'user_id': g.user.gh_id,
             'tag_number': '%s%03d' % (date.today().year, count + 1),
             'value': str2float(request.form['invoice_value']),
+            'value_with_taxes': str2float(request.form['invoice_value_with_taxes']),
             'created': datetime.now(),
             'company': {},
             'client': {},
@@ -272,7 +234,6 @@ def save_invoice(invoice_id=''):
     # Client
     invoice['client'] = {
         '_id': ObjectId(request.form['client_id']) or None,
-        # 'apply_taxes': request.form['client_apply_taxes'],
         'name': request.form['client_name'],
         'email': request.form['client_email'],
         'phone': request.form['client_phone'],
@@ -319,7 +280,7 @@ def save_invoice(invoice_id=''):
         file = request.files['file']
         name = secure_filename(file.filename).strip() if file else ''
 
-        if name and allowed_file(name):
+        if name:
             total = 0
 
             for idx, row in enumerate(reader(file)):
@@ -354,6 +315,9 @@ def save_invoice(invoice_id=''):
         mongo.db.invoice.update({'_id': invoice['_id']}, invoice)
     else:
         invoice['_id'] = mongo.db.invoice.insert(invoice)
+
+    if invoice['client']:
+        _update_pending_data(invoice['client']['_id'])
 
     return redirect(url_for('invoice', invoice_id=invoice['_id']))
 
@@ -460,11 +424,7 @@ def create_client():
     client['contact'] = request.form['contact_name']
     client['currency'] = request.form['currency']
     client['vendor_number'] = request.form['vendor_number']
-    client['apply_taxes'] = request.form.get('apply_taxes', '') == 'on'
-    client['pending'] = {
-        'count': 0,
-        'value': 0
-    }
+    client['pending'] = {'count': 0, 'value': 0}
     mongo.db.iclient.insert(client)
     return redirect(url_for('clients'))
 

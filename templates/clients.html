@@ -4,23 +4,26 @@
 
 {% block content %}
   <div class="wrapper">
+    {# Side buttons #}
     <div class="main-controls no-print">
-      <form method="post" action="{{ url_for('new_invoice') }}"><button type="submit" class="main-controls__button" title="New Invoice"><i>description</i></button></form>
+      <a href="{{ url_for('new_invoice') }}" class="main-controls__button" title="New Invoice"><i>description</i></a>
       <a href="{{ url_for('clients') }}" class="main-controls__button" title="Client List"><i>people</i></a>
+      <a href="{{ url_for('company') }}" class="main-controls__button" title="Company"><i>business</i></a>
     </div>
+    {# End side buttons #}
 
+    {# New client form #}
     <div class="new-client">
       <form action="{{ url_for('create_client') }}" method="post" class="form">
+        <h2>New Client</h2>
         <div class="grid-row">
           <div class="grid-half">
-            <h2>New Client</h2>
             <input type="text" name="client_name" placeholder="Client Name" class="base-field">
             <input type="text" name="contact_name" placeholder="Contact Person" class="base-field">
             <input type="text" name="email" placeholder="Contact Email" class="base-field">
             <input type="text" name="phone" placeholder="Contact Phone" class="base-field">
           </div>
           <div class="grid-half">
-            <div class="checkbox align-with-title"><input id="apply-taxes-to-client" name="apply_taxes" type="checkbox"><label for="apply-taxes-to-client">Apply Sales Taxes</label></div>
             <input type="text" name="vendor_number" placeholder="Your vendor number with this client" class="base-field">
             <input type="text" name="currency" placeholder="Currency" class="base-field">
             <textarea class="base-field-textarea" name="address" placeholder="Client Address"></textarea>
@@ -29,9 +32,11 @@
         </div>
       </form>
     </div>
+    {# End new client form #}
   </div>
 
-  <section class="client-list wrapper">
+  {# Client's list #}
+  <div class="client-list wrapper">
     <table class="list list--opened">
       <thead>
         <th></th>
@@ -46,5 +51,6 @@
         {% endfor %}
       </tbody>
     </table>
-  </section>
+  </div>
+  {# End client's list #}
 {% endblock %}

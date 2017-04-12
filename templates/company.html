@@ -5,8 +5,9 @@
 {% block content %}
   <div class="wrapper">
     <div class="main-controls no-print">
-      <form method="post" action="{{ url_for('new_invoice') }}"><button type="submit" class="main-controls__button" title="New Invoice"><i>description</i></button></form>
+      <a href="{{ url_for('new_invoice') }}" class="main-controls__button" title="New Invoice"><i>description</i></a>
       <a href="{{ url_for('clients') }}" class="main-controls__button" title="Client List"><i>people</i></a>
+      <a href="{{ url_for('company') }}" class="main-controls__button" title="Company"><i>business</i></a>
     </div>
 
     <div class="new-company">
