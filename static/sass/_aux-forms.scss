@@ -29,9 +29,6 @@
   }
 }
 
-
-.add-gov-registry { display: none; }
-
 .form {
   h3 {
     text-transform: uppercase;
@@ -50,7 +47,7 @@
       border-bottom: 1px solid rgba(black, .1);
     }
     td {
-      input { 
+      input {
         border: 0;
         cursor: text;
       }

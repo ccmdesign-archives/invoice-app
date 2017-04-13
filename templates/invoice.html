@@ -4,10 +4,10 @@
 
 {% block content %}
 
-  {# Pending version - Editable #}
-  {# -------------------------- #}
+  {# Editable version #}
+  {# ---------------- #}
 
-  {% if not invoice.paid %}
+  {% if editable %}
     {# Side buttons #}
     <div class="main-controls no-print">
       <button id="js-save-invoice-button" type="submit" class="main-controls__button" title="Save Invoice"><i>save</i></button>
@@ -210,8 +210,8 @@
     </form>
     {# End invoice form #}
 
-  {# Paid version - Non editable #}
-  {# --------------------------- #}
+  {# Non editable version #}
+  {# -------------------- #}
 
   {% else %}
     {# Side buttons #}

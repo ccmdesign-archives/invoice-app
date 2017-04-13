@@ -165,6 +165,10 @@ def toggle_invoice_status(invoice_id):
         url = url_for('toggle_invoice_status', invoice_id=invoice['_id'])
         doc = {'$set': {'paid': form['paid']}}
         mongo.db.invoice.update({'_id': invoice['_id']}, doc)
+
+        if invoice['client']:
+            _update_pending_data(invoice['client']['_id'])
+
         return redirect(url)
 
     elif request.method == 'GET':
@@ -188,12 +192,12 @@ def new_invoice():
     return render_template('invoice_form.html', company=company)
 
 
-@login_required
 @app.route('/invoice/<invoice_id>', methods=['GET'])
 def invoice(invoice_id):
     invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
     invoice['timesheet'] = _get_array_chunks(invoice['timesheet'])
-    return render_template('invoice.html', invoice=invoice)
+    editable = not invoice['paid'] and g.user and g.user.is_authenticated
+    return render_template('invoice.html', invoice=invoice, editable=editable)
 
 
 @app.route('/save_invoice/', methods=['POST'])
