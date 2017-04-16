@@ -1,0 +1,57 @@
+.add-gov-registry {
+  padding: 20px 0;
+}
+
+.tax-table {
+  width: 100%;
+  border-top: 1px solid rgba(black, 0.1);
+
+  td:first-child { 
+    width: 40%; 
+    input { text-align: left; }
+  }
+  td { 
+    width: 20%;
+    text-align: right;
+    input { text-align: right; }
+  }
+
+  &__add {
+    td {
+      background-color: rgba($main-color, .1);
+      input { 
+        @include placeholder { color: $main-color; }
+      }
+    }
+  }
+
+  td {
+    border-bottom: 1px solid rgba(black, 0.1);
+    padding: 5px 0;
+
+    input,
+    input:hover,
+    input:focus {
+      border: 0;
+    }
+  }
+
+  .tax-control {
+    font-size: 14px;
+    color: $accent-color;
+    padding: 2px 8px;
+    cursor: pointer;
+    display: inline-block;
+
+    &:hover {
+      color: $red;
+    }
+
+    &--check {
+      color: rgba($main-color, .7);
+    }
+    &--check:hover {
+      color: $main-color;
+    }
+  }
+}
