@@ -13,11 +13,13 @@
     <div class="new-company">
       <form method="post" class="form">
         <h2>Company Information</h2>
+
         <input type="text" name="company_name" placeholder="Company Name" class="base-field" value="{{ company.name }}">
         <input type="text" name="contact_name" placeholder="Contact Person" class="base-field" value="{{ company.contact }}">
         <input type="text" name="email" placeholder="Contact Email" class="base-field" value="{{ company.email }}">
         <input type="text" name="phone" placeholder="Contact Phone" class="base-field" value="{{ company.phone }}">
         <input type="text" name="invoice_num" placeholder="Current Invoice Number" class="base-field" value="{{ company.current_invoice_num }}">
+
         <textarea class="base-field-textarea" name="address" placeholder="Company Address" value="{{ company.address }}">{{ company.address }}</textarea>
         <textarea class="base-field-textarea" name="banking" placeholder="Banking Information" value="{{ company.banking_info }}">{{ company.banking_info }}</textarea>
 
@@ -30,32 +32,22 @@
                 <td><input class="name base-field small" name="tax_name" placeholder="Register" value="{{ i.name }}"/></td>
                 <td><input class="base-field small" name="tax_number" placeholder="Number" value="{{ i.number }}"/></td>
                 <td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)" value="{{ i.value }}"/></td>
+                <td><span class="tax-control js-delete-tax"><i class="material-icons">close</i></span></td>
               </tr>
             {% endfor %}
-            
-            {# Adicionei isso pois não estava puxando as dados do DB (ou não está salvando) #}
-            <tr>
-              <td><input class="name base-field" name="tax_name" placeholder="Register" value="NEQ"/></td>
-              <td><input class="base-field" name="tax_number" placeholder="Number" value="12345678"/></td>
-              <td><input class="base-field" name="tax_value" placeholder="Tax % (0.XX)" value="0.05"/></td>
-              <td><span class="tax-control"><i class="material-icons">close</i></span></td>
-            </tr>
-            
 
             <tr class="tax-table__add">
-              <td><input class="name base-field " name="tax_name" placeholder="Registration"/></td>
-              <td><input class="base-field " name="tax_number" placeholder="Number"/></td>
-              <td><input class="base-field " name="tax_value" placeholder="Tax % (0.XX)"/></td>
-              <td><span class="tax-control tax-control--check"><i class="material-icons">check</i></span></td>
+              <td><input id="js-new-tax-name" class="name base-field" placeholder="Registration"/></td>
+              <td><input id="js-new-tax-number" class="base-field" placeholder="Number"/></td>
+              <td><input id="js-new-tax-value" class="base-field" placeholder="Tax % (0.XX)"/></td>
+              <td><span id="js-add-tax" class="tax-control tax-control--check"><i class="material-icons">check</i></span></td>
             </tr>
           </table>
         </div>
 
         <div>
-          <button class="button" type="submit">Save</button>  
+          <button class="button" type="submit">Save</button>
         </div>
-        
-        
       </form>
     </div>
   </div>

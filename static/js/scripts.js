@@ -118,14 +118,7 @@ $(function () {
     $('.invoice__branding h2').text($(this).val());
   });
 
-  // Creates a tax and updates the invoice price
-  $('.add-gov-registry').on('click', '.contextual-controls .add-button', function() {
-    var template = '<tr class="edit-tax"><td><input class="name base-field small" name="tax_name" placeholder="Register"/></td><td><input class="base-field small" name="tax_number" placeholder="Number"/></td><td><input class="base-field small" name="tax_value" placeholder="Tax % (0.XX)"/></td></td></tr>'
-
-    $('.table-list-add').append(template);
-  });
-
-  // Updates invoice price when a tax is changed
+  // Updates invoice price when a tax is checked/unchecked
   $('.js-tax').change(function() {
     updateFinalPrice();
   });
@@ -134,6 +127,31 @@ $(function () {
   $('.invoice__amount__input').change(function() {
     subTotal = parseFloat($(this).val());
     updateFinalPrice();
+  });
+
+  // Company
+  // -------
+
+  // Creates a tax row
+  $('#js-add-tax').click(function() {
+    var name = $('#js-new-tax-name').val();
+    var number = $('#js-new-tax-number').val();
+    var value = $('#js-new-tax-value').val();
+    var $taxRow = $('<tr>');
+    var $row = $(this).closest('tr');
+
+    $taxRow.append($('<td>').append($('<input>').addClass('name base-field small').attr('name', 'tax_name').val(name)));
+    $taxRow.append($('<td>').append($('<input>').addClass('base-field small').attr('name', 'tax_number').val(number)));
+    $taxRow.append($('<td>').append($('<input>').addClass('base-field small').attr('name', 'tax_value').val(value)));
+    $taxRow.append($('<td>').append($('<span>').addClass('tax-control js-delete-tax').append($('<i>').addClass('material-icons').text('close'))));
+
+    $row.before($taxRow);
+    $row.find('input').val('');
+  });
+
+  // Delete a tax row
+  $('.add-gov-registry').on('click', '.js-delete-tax', function() {
+    $(this).closest('tr').remove();
   });
 
   // Auxiliar functions
@@ -145,11 +163,11 @@ $(function () {
 
     $inputs.each(function(i, input) {
       if (input.checked) {
-        taxes += parseInt($(input).data('tax-value'));
+        taxes += parseFloat($(input).data('tax-value'));
       }
     });
 
-    total = subTotal * (1 + taxes / 100);
+    total = subTotal * (1 + taxes);
 
     if (subTotal && total) {
       $('.invoice__amount__input').val(total.toFixed(2));
