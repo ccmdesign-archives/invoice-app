@@ -2,6 +2,8 @@
 .DS_Store
 *.pyc
 static/css/
+static/.sass-cache/
+static/.webassets-cache/
 node_modules/
 deploy.sh
 .rsync_exclude
