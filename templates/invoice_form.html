@@ -23,7 +23,7 @@
 
           <div class="grid-row">
             <div class="grid-full">
-              <h2>To <input id="client-autocomplete" type="text" class="name" name="client_name" placeholder="Client Name" data-url="{{ url_for('get_clients') }}" autocomplete="off"/></h2>
+              <h2>To <input id="client-autocomplete" type="text" class="name" name="client_name" placeholder="Client Name" data-url="{{ url_for('get_clients') }}" autocomplete="off" /></h2>
             </div>
           </div>
 
@@ -49,13 +49,11 @@
             <a href="{{ url_for('company') }}" target="_blank" class="contextual-controls__button" title="Edit Company"><i class="material-icons">edit</i></a>
           </div>
 
-          {% if company %}
-            <input id="#company-id" type="hidden" name="company_id" value="{{ company._id }}" />
-          {% endif %}
+          <input id="#company-id" type="hidden" name="company_id" {% if company %}value="{{ company._id }}"{% endif %} />
 
           <div class="grid-row">
             <div class="grid-full">
-              <h2>From <input type="text" class="name" name="company_name" placeholder="Company Name" {% if company %}value="{{ company.name }}"{% endif %} /></h2>
+              <h2>From <input type="text" class="name" name="company_name" placeholder="Company Name" {% if company %}value="{{ company.name }}"{% endif %} autocomplete="off" /></h2>
             </div>
           </div>
 
@@ -77,17 +75,19 @@
             </div>
           </div>
 
-          <div class="grid-row">
-            <div class="grid-full form">
-              <h4>Taxes</h4>
-              {% for i in company.taxes %}
-                  <div class="checkbox">
-                    <input id="tax-{{ loop.index }}" name="invoice_taxes" class="js-tax" type="checkbox" value="{{ loop.index0 }}" data-tax-value="{{ i.value }}">
-                    <label for="tax-{{ loop.index }}">{{ i.name }}, {{ i.number }}, {{ i.value }}</label>
-                  </div>
-              {% endfor %}
+          {% if company.taxes %}
+            <div class="grid-row">
+              <div class="grid-full form">
+                <h4>Taxes</h4>
+                {% for i in company.taxes %}
+                    <div class="checkbox">
+                      <input id="tax-{{ loop.index }}" name="invoice_taxes" class="js-tax" type="checkbox" value="{{ loop.index0 }}" data-tax-value="{{ i.value }}">
+                      <label for="tax-{{ loop.index }}">{{ i.name }}, {{ i.number }}, {{ i.value }}</label>
+                    </div>
+                {% endfor %}
+              </div>
             </div>
-          </div>
+          {% endif %}
         </div>
         {# End company info #}
 

@@ -34,11 +34,6 @@
     pip install -r requirements.txt
     ```
 
-1. Create the database:
-    ```
-    createdb invoice
-    ```
-
 1. Run the local server:
     ```
     python invoice_app.py

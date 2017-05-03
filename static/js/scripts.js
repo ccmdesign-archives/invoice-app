@@ -16,6 +16,9 @@ $(function () {
 
       $('.widget__primary-value.open').text(data.open.length);
       $('.widget__primary-value.paid').text(data.paid.length);
+      $('.widget__secondary-value.open').text(data.open_value);
+      $('.widget__secondary-value.paid').text(data.paid_value);
+
     }
 
     var $resp = null,

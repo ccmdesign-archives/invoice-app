@@ -6,11 +6,11 @@
   width: 100%;
   border-top: 1px solid rgba(black, 0.1);
 
-  td:first-child { 
-    width: 40%; 
+  td:first-child {
+    width: 40%;
     input { text-align: left; }
   }
-  td { 
+  td {
     width: 20%;
     text-align: right;
     input { text-align: right; }
@@ -19,7 +19,7 @@
   &__add {
     td {
       background-color: rgba($main-color, .1);
-      input { 
+      input {
         @include placeholder { color: $main-color; }
       }
     }
@@ -54,4 +54,8 @@
       color: $main-color;
     }
   }
+}
+
+.new-company__submit {
+  margin: 0 0 20px 0;
 }

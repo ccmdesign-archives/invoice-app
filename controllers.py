@@ -28,7 +28,7 @@ def _get_array_chunks(array):
     return (array[pos:pos + _MAX_ROWS_PER_PAGE] for pos in xrange(0, len(array), _MAX_ROWS_PER_PAGE))
 
 
-def _update_pending_data(client_id):
+def _update_clients_data(client_id):
     # Aggregate
     match = {'client._id': client_id, 'paid': False}
     group = {'_id': None, 'count': {'$sum': 1}, 'value': {'$sum': '$value_with_taxes'}}
@@ -46,7 +46,6 @@ def _update_pending_data(client_id):
         doc['$set']['pending.value'] = 0
 
     mongo.db.iclient.update({'_id': client_id}, doc)
-
 
 # Login manager
 # -------------
@@ -167,20 +166,25 @@ def toggle_invoice_status(invoice_id):
         mongo.db.invoice.update({'_id': invoice['_id']}, doc)
 
         if invoice['client']:
-            _update_pending_data(invoice['client']['_id'])
+            _update_clients_data(invoice['client']['_id'])
 
         return redirect(url)
 
     elif request.method == 'GET':
-        dic = {'paid': [], 'open': []}
+        dic = {'paid': [], 'open': [], 'paid_value': 0, 'open_value': 0}
 
         for invoice in mongo.db.invoice.find({'user_id': g.user.gh_id}):
             template = render_template('home_table_row.html', invoice=invoice)
 
             if invoice['paid']:
                 dic['paid'].append(template.strip())
+                dic['paid_value'] += invoice['value_with_taxes']
             else:
                 dic['open'].append(template.strip())
+                dic['open_value'] += invoice['value_with_taxes']
+
+            dic['open_value'] = 'USD %0.2f' % dic['open_value']
+            dic['paid_value'] = 'USD %0.2f' % dic['paid_value']
 
         return jsonify(**dic)
 
@@ -209,16 +213,26 @@ def save_invoice(invoice_id=''):
     def str2float(x):
         return float(x) if x.strip() else 0
 
+    company = {}
+
     # Invoice
     if invoice_id:
         invoice = mongo.db.invoice.find_one_or_404(ObjectId(invoice_id))
         invoice['value'] = str2float(request.form['invoice_value'])
         invoice['value_with_taxes'] = str2float(request.form['invoice_value_with_taxes'])
+
     else:
-        count = mongo.db.invoice.find().count()
+        company = mongo.db.company.find_one({'user_id': g.user.gh_id})
+
+        if company:
+            invoice_number = company['current_invoice_num'] + 1
+            mongo.db.company.update({'_id': company['_id']}, {'$inc': {'current_invoice_num': 1}})
+        else:
+            invoice_number = mongo.db.invoice.find().count() + 1
+
         invoice = {
             'user_id': g.user.gh_id,
-            'tag_number': '%s%03d' % (date.today().year, count + 1),
+            'tag_number': '%s%03d' % (date.today().year, invoice_number),
             'value': str2float(request.form['invoice_value']),
             'value_with_taxes': str2float(request.form['invoice_value_with_taxes']),
             'created': datetime.now(),
@@ -237,7 +251,7 @@ def save_invoice(invoice_id=''):
 
     # Client
     invoice['client'] = {
-        '_id': ObjectId(request.form['client_id']) or None,
+        '_id': ObjectId(request.form['client_id']) if request.form['client_id'] else None,
         'name': request.form['client_name'],
         'email': request.form['client_email'],
         'phone': request.form['client_phone'],
@@ -250,7 +264,9 @@ def save_invoice(invoice_id=''):
     form_taxes = request.form.getlist('invoice_taxes')
 
     if request.form['company_id']:
-        company = mongo.db.company.find_one(ObjectId(request.form['company_id']))
+        if not company:
+            company = mongo.db.company.find_one({'_id': ObjectId(request.form['company_id'])})
+
         invoice['company'] = {
             '_id': company['_id'],
             'name': company['name'],
@@ -261,6 +277,7 @@ def save_invoice(invoice_id=''):
             'banking_info': company['banking_info'],
             'taxes': company['taxes']
         }
+
     else:
         invoice['company'] = {
             '_id': None,
@@ -321,7 +338,7 @@ def save_invoice(invoice_id=''):
         invoice['_id'] = mongo.db.invoice.insert(invoice)
 
     if invoice['client']:
-        _update_pending_data(invoice['client']['_id'])
+        _update_clients_data(invoice['client']['_id'])
 
     return redirect(url_for('invoice', invoice_id=invoice['_id']))
 
