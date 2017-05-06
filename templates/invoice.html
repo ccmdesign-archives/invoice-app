@@ -89,7 +89,7 @@
 
             <div class="grid-row">
               <div class="grid-full form">
-                <h4>Taxes</h4>
+                <h4>Government Registrations</h4>
                 {% for i in invoice.company.taxes %}
                     <div class="checkbox">
                       <input id="tax-{{ loop.index }}" class="js-tax" name="invoice_taxes" type="checkbox" value="{{ loop.index0 }}" data-tax-value="{{ i.value }}" {% if i.apply %}checked{% endif %}>
@@ -280,7 +280,7 @@
 
           <div class="grid-row">
             <div class="grid-full">
-              <h4>Taxes</h4>
+              <h4>Government Registrations</h4>
               {% for i in invoice.company.taxes %}
                   {% if i.apply %}
                     <label for="tax-{{ loop.index }}">{{ i.name }}, {{ i.number }}, {{ i.value }}</label>
@@ -301,7 +301,7 @@
               <tbody>
                 <tr class="invoice__grand-total">
                   <td>Total ($)</td>
-                  <td class="invoice__amount" >
+                  <td class="invoice__amount">
                     <input readonlys type="text" class="invoice__amount__input edit-invoice-input" value="{{ format_price(invoice.value, invoice.currency) }}"/>
                   </td>
                 </tr>

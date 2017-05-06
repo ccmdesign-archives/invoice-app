@@ -13,6 +13,12 @@ from flask_pymongo import PyMongo
 app = Flask(__name__)
 app.config.from_object('config')
 
+if not app.debug:
+    import logging
+    handler = logging.FileHandler('logs/invoice-error.log')
+    handler.setLevel(logging.ERROR)
+    app.logger.addHandler(handler)
+
 mongo = PyMongo(app)
 
 # Github login

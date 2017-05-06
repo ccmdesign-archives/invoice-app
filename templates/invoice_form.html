@@ -78,7 +78,7 @@
           {% if company.taxes %}
             <div class="grid-row">
               <div class="grid-full form">
-                <h4>Taxes</h4>
+                <h4>Government Registrations</h4>
                 {% for i in company.taxes %}
                     <div class="checkbox">
                       <input id="tax-{{ loop.index }}" name="invoice_taxes" class="js-tax" type="checkbox" value="{{ loop.index0 }}" data-tax-value="{{ i.value }}">
